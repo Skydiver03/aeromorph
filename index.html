@@ -186,7 +186,7 @@
         </div>
     </header>
 
-    <!-- TAB 1: WIND TUNNEL SIMULATOR (ONLY VISIBLE ON SIMULATOR TAB) -->
+    <!-- TAB 1: WIND TUNNEL SIMULATOR -->
     <main id="view-simulator" class="tab-view flex-grow flex flex-col">
         <!-- Hero Header -->
         <section class="relative pt-6 pb-6 px-4 sm:px-6 lg:px-8 border-b border-navy-800/80 bg-gradient-to-b from-navy-900/40 to-navy-950">
@@ -354,7 +354,7 @@
                                 <span id="stat-fuel-saving" class="font-mono font-bold text-emerald-400 text-sm">+8.4% Net</span>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-1">
-                                Check the new <button onclick="switchTab('calculator')" class="text-emerald-400 underline font-semibold">Fuel & Carbon ROI tab</button> for full fleet economics.
+                                Check the <button onclick="switchTab('calculator')" class="text-emerald-400 underline font-semibold">Fuel & Carbon ROI tab</button> for full fleet economics.
                             </p>
                         </div>
 
@@ -426,14 +426,12 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Left Input Matrix -->
             <div class="lg:col-span-5 flex flex-col gap-5">
                 <div class="hud-border p-6 rounded-2xl space-y-5">
                     <h3 class="font-space font-bold text-white text-base flex items-center gap-2 pb-3 border-b border-navy-700">
                         <i class="fa-solid fa-plane-departure text-cyan-400"></i> Mission Parameters
                     </h3>
 
-                    <!-- Aircraft Category -->
                     <div>
                         <label class="block text-xs text-slate-300 font-medium mb-1.5">Aircraft Airframe Class</label>
                         <select id="calc-plane-type" onchange="runRoiCalculation()" class="w-full bg-navy-900 border border-navy-700 text-slate-200 rounded-lg p-2.5 text-xs font-mono focus:border-cyan-400 focus:outline-none">
@@ -443,7 +441,6 @@
                         </select>
                     </div>
 
-                    <!-- Fleet Size Slider -->
                     <div>
                         <div class="flex justify-between text-xs mb-1.5">
                             <span class="text-slate-300 font-medium">Airline Fleet Size</span>
@@ -457,7 +454,6 @@
                         </div>
                     </div>
 
-                    <!-- Jet Fuel Cost Slider -->
                     <div>
                         <div class="flex justify-between text-xs mb-1.5">
                             <span class="text-slate-300 font-medium">Jet A-1 Fuel Cost ($ / Gallon)</span>
@@ -471,7 +467,6 @@
                         </div>
                     </div>
 
-                    <!-- Aerodynamic Morphing Drag Reduction -->
                     <div>
                         <div class="flex justify-between text-xs mb-1.5">
                             <span class="text-slate-300 font-medium">Aerodynamic Cruise Drag Cut</span>
@@ -487,10 +482,8 @@
                 </div>
             </div>
 
-            <!-- Right Results Output Cards -->
             <div class="lg:col-span-7 flex flex-col gap-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Metric Card 1: Fuel Saved -->
                     <div class="hud-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                             <span>Annual Jet Fuel Saved</span>
@@ -500,7 +493,6 @@
                         <div class="text-xs font-mono text-cyan-400 mt-1">Gallons / Year (<span id="res-fuel-litres">18.2M</span> Liters)</div>
                     </div>
 
-                    <!-- Metric Card 2: Financial Savings -->
                     <div class="hud-border p-5 rounded-2xl border-emerald-500/30">
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                             <span>Direct Fleet Cost Savings</span>
@@ -510,7 +502,6 @@
                         <div class="text-xs font-mono text-emerald-300 mt-1">USD / Year (₹<span id="res-cost-inr">110.6</span> Crores INR)</div>
                     </div>
 
-                    <!-- Metric Card 3: CO2 Emission Offset -->
                     <div class="hud-border p-5 rounded-2xl border-cyan-500/30">
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                             <span>Carbon Dioxide ($CO_2$) Mitigated</span>
@@ -520,7 +511,6 @@
                         <div class="text-xs font-mono text-cyan-400 mt-1">Metric Tons of $CO_2$ / Year</div>
                     </div>
 
-                    <!-- Metric Card 4: Noise Surcharge Relief -->
                     <div class="hud-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                             <span>Airport Noise Curfew Advantage</span>
@@ -531,7 +521,6 @@
                     </div>
                 </div>
 
-                <!-- Strategic Summary Quote for Presentation Defense -->
                 <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-2xl">
                     <h4 class="font-space font-bold text-white text-sm mb-1 flex items-center gap-2">
                         <i class="fa-solid fa-bullseye text-cyan-400"></i> Key Defense Argument for NMIMS Evaluators
@@ -544,7 +533,7 @@
         </div>
     </main>
 
-    <!-- TAB 2: SLIDE DECK PRESENTATION (ORIGINAL PDF EMBEDDED VIEWER) -->
+    <!-- TAB 2: SLIDE DECK PRESENTATION -->
     <main id="view-slides" class="tab-view hidden flex-grow py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-navy-900 border border-navy-700/80 p-4 rounded-xl">
             <div>
@@ -578,7 +567,7 @@
         </div>
     </main>
 
-    <!-- TAB 3: FLIGHT DATA & MATH (ONLY VISIBLE ON RESEARCH TAB) -->
+    <!-- TAB 3: FLIGHT DATA & MATH -->
     <main id="view-research" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="mb-8">
             <div class="flex items-center gap-2 text-cyan-400 font-mono text-xs uppercase tracking-wider mb-1">
@@ -589,8 +578,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- Mathematical Formulations (5 Cols) -->
             <div class="lg:col-span-5 flex flex-col gap-4">
                 <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-xl">
                     <div class="flex items-center justify-between mb-2">
@@ -634,7 +621,6 @@
                 </div>
             </div>
 
-            <!-- Flight Demonstrator Table (7 Cols) -->
             <div class="lg:col-span-7 bg-navy-900 border border-navy-700/80 p-5 rounded-xl overflow-x-auto">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-space font-bold text-white text-base">Validated Flight Test Programs Comparison</h3>
@@ -698,11 +684,10 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
     </main>
 
-    <!-- TAB 4: TEAM & NMIMS MPSTME (ONLY VISIBLE ON TEAM TAB) -->
+    <!-- TAB 4: TEAM & NMIMS MPSTME -->
     <main id="view-team" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="text-center max-w-2xl mx-auto mb-10">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-2">
@@ -714,9 +699,7 @@
             </p>
         </div>
 
-        <!-- 4 Speaker Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            
             <!-- Speaker 1 -->
             <div class="hud-border p-5 rounded-2xl flex flex-col justify-between hover:border-cyan-400/50 transition-all duration-300">
                 <div>
@@ -800,10 +783,8 @@
                     Presented Slides 31 to 41 & Q&A
                 </div>
             </div>
-
         </div>
 
-        <!-- College Institutional Affiliation Banner -->
         <div class="mt-8 bg-navy-950 p-5 rounded-2xl border border-navy-700/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white text-2xl">
@@ -1019,6 +1000,7 @@
                 this.particles = [];
                 this.width = 0;
                 this.height = 0;
+                this.animTime = 0;
                 this.resize();
                 window.addEventListener('resize', () => this.resize());
                 this.initParticles();
@@ -1031,23 +1013,24 @@
                     this.canvas.height = rect.height;
                     this.width = rect.width;
                     this.height = rect.height;
+                    this.initParticles();
                 }
             }
 
             initParticles() {
                 this.particles = [];
-                const count = 300;
+                const count = 280;
                 for (let i = 0; i < count; i++) {
+                    const seedY = 15 + (i / count) * (this.height - 30);
                     const startX = Math.random() * this.width;
-                    const startY = Math.random() * this.height;
                     this.particles.push({
                         x: startX,
-                        y: startY,
+                        y: seedY,
                         prevX: startX,
-                        prevY: startY,
-                        baseY: startY,
+                        prevY: seedY,
+                        seedY: seedY,
+                        speedOffset: 0.95 + Math.random() * 0.1,
                         turbIntensity: 0,
-                        age: Math.random() * 100,
                         justReset: true
                     });
                 }
@@ -1251,6 +1234,128 @@
                 ctx.restore();
             }
 
+            // Analytical streamlined flow coordinate function (immune to clipping, folding, or lag)
+            getStreamlinePoint(X, seedY, chord, centerX, centerY, aoaDeg, flapDeg) {
+                const aoaRad = (aoaDeg * Math.PI) / 180;
+                const flapRad = (flapDeg * Math.PI) / 180;
+                const cosA = Math.cos(aoaRad);
+                const sinA = Math.sin(aoaRad);
+
+                // Transform world X into local chord coordinate
+                const dxWorld = X - centerX;
+                const xLoc = dxWorld / Math.max(0.7, cosA);
+                const chordNorm = (xLoc / chord) + 0.28;
+
+                // Centerline offset from horizontal center
+                const dSeed = seedY - centerY;
+                const isUpper = dSeed < 0;
+                const normDist = Math.min(1.0, Math.abs(dSeed) / (this.height * 0.48));
+
+                let yAirfoil = centerY;
+                let turb = 0;
+
+                if (chordNorm < 0) {
+                    // Upwash region ahead of leading edge
+                    const upwashFactor = Math.exp(chordNorm / 0.25);
+                    const leOffset = (-0.28 * chord) * sinA;
+                    const shift = leOffset * upwashFactor * (1 - normDist);
+                    return { y: seedY + shift, turbIntensity: 0 };
+                } 
+                else if (chordNorm <= 1.0) {
+                    // Over the wing body
+                    const yt = nacaHalfThickness(chordNorm, chord, 0.13);
+                    let spineY = 0;
+
+                    if (this.isMorphing) {
+                        if (chordNorm > 0.65) {
+                            const s = (chordNorm - 0.65) * chord;
+                            const Lm = 0.35 * chord;
+                            if (Math.abs(flapRad) > 1e-4) {
+                                const R = Lm / flapRad;
+                                const phi = flapRad * (s / Lm);
+                                spineY = R * (1.0 - Math.cos(phi));
+                            }
+                            if (aoaDeg > 17 && isUpper) {
+                                turb = Math.min(1.0, (aoaDeg - 17) * 0.25);
+                            }
+                        }
+                    } else {
+                        if (chordNorm > 0.70) {
+                            const s = (chordNorm - 0.70) * chord;
+                            spineY = s * Math.sin(flapRad);
+                            if (isUpper) {
+                                if (aoaDeg > 12) turb = Math.min(1.0, (aoaDeg - 12) * 0.18 + flapDeg * 0.02);
+                                else if (flapDeg > 10) turb = Math.min(1.0, (flapDeg - 10) * 0.04);
+                            }
+                        }
+                    }
+
+                    // World coordinates of top and bottom skin at station X
+                    const localY = isUpper ? (spineY - yt) : (spineY + yt);
+                    yAirfoil = centerY + (xLoc * sinA) + (localY * cosA);
+
+                    // Strictly bounded streamline placement outside wing skin
+                    let yPos;
+                    if (isUpper) {
+                        yPos = yAirfoil - (Math.abs(dSeed) * (0.8 + 0.2 * normDist));
+                    } else {
+                        yPos = yAirfoil + (Math.abs(dSeed) * (0.8 + 0.2 * normDist));
+                    }
+
+                    // Smooth vortex waviness if separated over flap
+                    if (turb > 0.05 && isUpper) {
+                        const wave = Math.sin((X - centerX) * 0.1 - this.animTime * 8);
+                        yPos -= Math.abs(wave) * turb * (flapDeg * 0.4 + 4);
+                    }
+
+                    return { y: yPos, turbIntensity: turb };
+                } 
+                else {
+                    // Wake region behind trailing edge
+                    const wakeDist = (chordNorm - 1.0) * chord;
+                    let teSpine = 0;
+
+                    if (this.isMorphing) {
+                        const Lm = 0.35 * chord;
+                        if (Math.abs(flapRad) > 1e-4) {
+                            const R = Lm / flapRad;
+                            teSpine = R * (1.0 - Math.cos(flapRad));
+                        }
+                        if (aoaDeg > 17 && isUpper) turb = Math.min(1.0, (aoaDeg - 17) * 0.25);
+                    } else {
+                        teSpine = (0.30 * chord) * Math.sin(flapRad);
+                        if (isUpper && (flapDeg > 10 || aoaDeg > 12)) {
+                            turb = Math.min(1.0, (flapDeg * 0.03 + (aoaDeg - 10) * 0.1));
+                        }
+                    }
+
+                    const teWorldX = centerX + (0.72 * chord) * cosA - teSpine * sinA;
+                    const teWorldY = centerY + (0.72 * chord) * sinA + teSpine * cosA;
+
+                    // Downwash vector angle
+                    const downwashAngle = (aoaDeg * 0.45 + flapDeg * 0.40) * Math.PI / 180;
+                    const wakeCenterY = teWorldY + (X - teWorldX) * Math.sin(downwashAngle);
+
+                    let yPos;
+                    if (isUpper) {
+                        yPos = wakeCenterY - (Math.abs(dSeed) * 0.85);
+                    } else {
+                        yPos = wakeCenterY + (Math.abs(dSeed) * 0.85);
+                    }
+
+                    // Smooth relaxation toward free stream near tunnel exit
+                    const relax = Math.min(1.0, wakeDist / (this.width * 0.4));
+                    yPos = yPos * (1 - relax * 0.35) + (seedY + Math.tan(aoaRad) * (X - centerX) * 0.25) * (relax * 0.35);
+
+                    if (turb > 0.05 && isUpper) {
+                        const wave = Math.sin((X - teWorldX) * 0.08 - this.animTime * 9);
+                        yPos += wave * turb * (flapDeg * 0.4 + 5) * (1 - relax * 0.5);
+                    }
+
+                    return { y: yPos, turbIntensity: turb };
+                }
+            }
+
             render() {
                 this.ctx.fillStyle = 'rgba(6, 10, 18, 0.32)';
                 this.ctx.fillRect(0, 0, this.width, this.height);
@@ -1260,107 +1365,27 @@
                 const centerX = this.width * 0.42;
                 const centerY = this.height * 0.50;
 
-                const baseSpeed = (simState.speed / 450) * 8.5;
-                const aoaRad = (simState.aoa * Math.PI) / 180;
+                const baseSpeed = (simState.speed / 450) * 7.5;
+                const aoaDeg = simState.aoa;
                 const flapDeg = simState.flap;
-                const flapRad = (flapDeg * Math.PI) / 180;
+
+                this.animTime += 0.04;
 
                 this.particles.forEach(p => {
-                    p.age += 1;
                     p.prevX = p.x;
                     p.prevY = p.y;
-                    p.x += baseSpeed;
-
-                    const dx = p.x - centerX;
-                    const normX = (dx / chord) + 0.28;
-
-                    let targetY = p.baseY;
-                    let targetTurb = 0;
-
-                    const globalAoAShift = Math.tan(aoaRad) * dx * 0.55;
-                    targetY += globalAoAShift;
-
-                    // Impermeable Boundary Check
-                    if (normX >= -0.05 && normX <= 1.05) {
-                        const clampedNormX = Math.max(0, Math.min(1.0, normX));
-                        const yt = nacaHalfThickness(clampedNormX, chord, 0.13);
-
-                        let spineY = 0;
-                        if (normX > 0.65) {
-                            if (this.isMorphing) {
-                                const s = (normX - 0.65) * chord;
-                                const L_morph = 0.35 * chord;
-                                if (Math.abs(flapRad) > 1e-4) {
-                                    const R = L_morph / flapRad;
-                                    const phi = flapRad * Math.min(1.0, s / L_morph);
-                                    spineY = R * (1.0 - Math.cos(phi));
-                                }
-                                if (simState.aoa > 17 && p.baseY < centerY) {
-                                    targetTurb = Math.min(1.0, (simState.aoa - 17) * 0.25);
-                                }
-                            } else {
-                                if (normX > 0.70) {
-                                    const localFlapX = (normX - 0.70) * chord;
-                                    spineY = localFlapX * Math.sin(flapRad);
-                                }
-                                if (p.baseY < centerY) {
-                                    if (simState.aoa > 12) {
-                                        targetTurb = Math.min(1.0, (simState.aoa - 12) * 0.18 + (flapDeg * 0.02));
-                                    } else if (flapDeg > 10) {
-                                        targetTurb = Math.min(1.0, (flapDeg - 10) * 0.04);
-                                    }
-                                }
-                            }
-                        }
-
-                        const surfaceUpperY = centerY + spineY - yt;
-                        const surfaceLowerY = centerY + spineY + yt;
-
-                        if (p.baseY < centerY) {
-                            const offsetFromCenter = centerY - p.baseY;
-                            const targetUpper = surfaceUpperY - (offsetFromCenter * 0.6);
-                            targetY = Math.min(surfaceUpperY - 3, targetUpper);
-                        } else {
-                            const offsetFromCenter = p.baseY - centerY;
-                            const targetLower = surfaceLowerY + (offsetFromCenter * 0.6);
-                            targetY = Math.max(surfaceLowerY + 3, targetLower);
-                        }
-
-                    } else if (normX > 1.05) {
-                        const wakeDist = (normX - 1.05) * chord;
-                        let teDrop = 0;
-
-                        if (this.isMorphing) {
-                            const L_morph = 0.35 * chord;
-                            if (Math.abs(flapRad) > 1e-4) {
-                                const R = L_morph / flapRad;
-                                teDrop = R * (1.0 - Math.cos(flapRad));
-                            }
-                        } else {
-                            teDrop = (0.30 * chord) * Math.sin(flapRad);
-                        }
-
-                        const downwashSlope = Math.sin((flapDeg * 0.5 + simState.aoa * 0.4) * Math.PI / 180);
-                        targetY += (teDrop * 0.85) + (downwashSlope * wakeDist * 0.35);
-                    }
-
-                    p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
-                    if (p.turbIntensity > 0.05) {
-                        const eddyAmp = p.turbIntensity * (flapDeg * 0.45 + simState.aoa * 1.1 + 2);
-                        targetY += Math.sin(p.age * 0.38 + p.baseY * 0.1) * eddyAmp;
-                        p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
-                    }
-
-                    p.y += (targetY - p.y) * 0.18;
+                    p.x += baseSpeed * p.speedOffset;
 
                     if (p.x > this.width) {
                         p.x = 0;
-                        p.y = p.baseY;
                         p.prevX = 0;
-                        p.prevY = p.baseY;
-                        p.turbIntensity = 0;
                         p.justReset = true;
                     }
+
+                    // Direct analytical streamline evaluation (completely immune to folding or penetration)
+                    const pt = this.getStreamlinePoint(p.x, p.seedY, chord, centerX, centerY, aoaDeg, flapDeg);
+                    p.y = pt.y;
+                    p.turbIntensity = pt.turbIntensity;
 
                     if (!p.justReset && p.x >= p.prevX) {
                         this.ctx.beginPath();
@@ -1373,7 +1398,7 @@
                             const b = Math.round(70 * (1 - p.turbIntensity));
                             const alpha = 0.4 + p.turbIntensity * 0.45;
                             this.ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                            this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.6;
+                            this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.5;
                         } else {
                             this.ctx.strokeStyle = this.isMorphing ? 'rgba(52, 211, 153, 0.55)' : 'rgba(56, 189, 248, 0.45)';
                             this.ctx.lineWidth = 1.25;
@@ -1384,7 +1409,7 @@
                     p.justReset = false;
                 });
 
-                this.drawAirfoil(this.ctx, centerX, centerY, chord, simState.aoa, simState.flap);
+                this.drawAirfoil(this.ctx, centerX, centerY, chord, aoaDeg, flapDeg);
             }
         }
 
