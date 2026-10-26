@@ -202,13 +202,13 @@
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        STRICT BOUNDARY-CONFINED STREAMLINE ENGINE · ZERO AIRFOIL PENETRATION
+                        CONTINUOUS STREAMLINE KINEMATICS · HONEYCOMB CELLULAR INTERNAL STRUCTURE
                     </div>
                     <h1 class="font-space text-2xl sm:text-3xl font-bold text-white tracking-tight">
                         Dual Aeroacoustic Wind Tunnel Simulator
                     </h1>
                     <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                        Observe natural streamline curvature over compliant morphing wings versus flow detachment and adverse pressure stalls over rigid hinged flaps.
+                        Compare rigid Fowler flap step discontinuities against constant arc-length compliant camber morphing with zero-Poisson honeycomb cores.
                     </p>
                 </div>
                 <!-- Flight Presets -->
@@ -254,7 +254,7 @@
                                     <label class="text-slate-300 font-medium">Trailing Edge Deflection (δ)</label>
                                     <span id="ui-flap-val" class="font-mono text-cyan-400 font-bold bg-navy-800 px-2 py-0.5 rounded border border-navy-700">0°</span>
                                 </div>
-                                <input type="range" id="slider-flap" min="0" max="35" step="1" value="0">
+                                <input type="range" id="slider-flap" min="0" max="35" step="0.5" value="0">
                                 <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
                                     <span>0° (Clean Wing)</span>
                                     <span>15° (Takeoff)</span>
@@ -267,7 +267,7 @@
                                     <label class="text-slate-300 font-medium">Angle of Attack (α)</label>
                                     <span id="ui-aoa-val" class="font-mono text-cyan-400 font-bold bg-navy-800 px-2 py-0.5 rounded border border-navy-700">2°</span>
                                 </div>
-                                <input type="range" id="slider-aoa" min="-2" max="22" step="1" value="2">
+                                <input type="range" id="slider-aoa" min="-2" max="22" step="0.5" value="2">
                                 <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
                                     <span>-2° (Descent)</span>
                                     <span>8° (Climb)</span>
@@ -280,7 +280,7 @@
                                     <label class="text-slate-300 font-medium">Airspeed (Velocity)</label>
                                     <span id="ui-speed-val" class="font-mono text-cyan-400 font-bold bg-navy-800 px-2 py-0.5 rounded border border-navy-700">450 km/h (M 0.37)</span>
                                 </div>
-                                <input type="range" id="slider-speed" min="150" max="850" step="25" value="450">
+                                <input type="range" id="slider-speed" min="150" max="850" step="10" value="450">
                                 <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
                                     <span>150 (Approach)</span>
                                     <span>500 km/h</span>
@@ -387,7 +387,7 @@
                         <div class="h-64 sm:h-72 w-full relative">
                             <canvas id="canvas-conv" class="w-full h-full block rounded-lg"></canvas>
                             <div class="absolute bottom-2 left-2 text-[10px] font-mono text-slate-400 bg-navy-950/80 px-2 py-1 rounded border border-navy-800">
-                                Flow: <span class="text-cyan-400">Attached Streamlines</span> · <span class="text-rose-400">Separated Wake Bubble</span>
+                                Flow: <span class="text-cyan-400">Laminar Streamlines</span> · <span class="text-rose-400">Detached Shear Eddies</span>
                             </div>
                         </div>
                     </div>
@@ -453,7 +453,7 @@
                         </div>
                         <input type="range" id="calc-fleet-slider" min="1" max="100" step="1" value="20" oninput="runRoiCalculation()">
                         <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                            <span>1 Plane</span>
+                            <span>1 Plane (Single Testbed)</span>
                             <span>50 Planes</span>
                             <span>100 Planes (Major Carrier)</span>
                         </div>
@@ -538,7 +538,7 @@
         </div>
     </main>
 
-    <!-- TAB 2: SLIDE DECK PRESENTATION -->
+    <!-- TAB 2: SLIDE DECK PRESENTATION (ORIGINAL PDF EMBEDDED VIEWER) -->
     <main id="view-slides" class="tab-view hidden flex-grow py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-navy-900 border border-navy-700/80 p-4 rounded-xl">
             <div>
@@ -572,7 +572,7 @@
         </div>
     </main>
 
-    <!-- TAB 3: FLIGHT DATA & MATH -->
+    <!-- TAB 3: FLIGHT DATA & MATH (FORMULAS WITH MATHJAX RENDERING) -->
     <main id="view-research" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="mb-8">
             <div class="flex items-center gap-2 text-cyan-400 font-mono text-xs uppercase tracking-wider mb-1">
@@ -583,6 +583,8 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Mathematical Formulations -->
             <div class="lg:col-span-5 flex flex-col gap-4">
                 <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-xl">
                     <div class="flex items-center justify-between mb-2">
@@ -626,6 +628,7 @@
                 </div>
             </div>
 
+            <!-- Flight Demonstrator Table -->
             <div class="lg:col-span-7 bg-navy-900 border border-navy-700/80 p-5 rounded-xl overflow-x-auto">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-space font-bold text-white text-base">Validated Flight Test Programs Comparison</h3>
@@ -689,6 +692,7 @@
                     </tbody>
                 </table>
             </div>
+
         </div>
     </main>
 
@@ -819,37 +823,54 @@
         </div>
     </footer>
 
-    <!-- CORE SIMULATION JS ENGINE -->
+    <!-- CORE SIMULATION JAVASCRIPT ENGINE -->
     <script>
-        // Tab Switcher
+        // ==========================================
+        // TAB NAVIGATION ENGINE
+        // ==========================================
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+            const views = document.querySelectorAll('.tab-view');
+            views.forEach(v => v.classList.add('hidden'));
+
             const targetView = document.getElementById(`view-${tabId}`);
             if (targetView) targetView.classList.remove('hidden');
 
-            document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+            const navButtons = document.querySelectorAll('.nav-tab-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+
             const activeBtn = document.getElementById(`tab-btn-${tabId}`);
             if (activeBtn) activeBtn.classList.add('active');
 
             if (tabId === 'simulator') {
                 setTimeout(() => {
-                    convTunnel.resize();
-                    morphTunnel.resize();
+                    if (convTunnel) convTunnel.resize();
+                    if (morphTunnel) morphTunnel.resize();
                 }, 50);
             }
+
             if (tabId === 'research' && window.MathJax) {
                 window.MathJax.typesetPromise();
             }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
-        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-        function toggleMobileMenu() { mobileMenu.classList.toggle('hidden'); }
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
 
-        // Flight Telemetry
-        let simState = { flap: 0, aoa: 2, speed: 450 };
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // 1. CONTINUOUS STREAMLINE WIND TUNNEL ENGINE
+        // ==========================================
+        let simState = {
+            flap: 0,
+            aoa: 2,
+            speed: 450 // km/h
+        };
 
         const sliderFlap = document.getElementById('slider-flap');
         const sliderAoa = document.getElementById('slider-aoa');
@@ -870,6 +891,7 @@
         const statFuelSaving = document.getElementById('stat-fuel-saving');
         const uiFlightStatus = document.getElementById('ui-flight-status');
         const tagConvStall = document.getElementById('tag-conv-stall');
+        const tagMorphAttached = document.getElementById('tag-morph-attached');
 
         function updateTelemetry() {
             simState.flap = parseFloat(sliderFlap.value);
@@ -883,8 +905,10 @@
 
             let c_cl = 0.25 + (simState.aoa * 0.09) + (simState.flap * 0.038);
             let c_cd = 0.02 + Math.pow(simState.aoa * 0.016, 2) + Math.pow(simState.flap * 0.022, 2);
-            if (simState.flap > 12) c_cd += (simState.flap - 12) * 0.012;
-
+            
+            if (simState.flap > 12) {
+                c_cd += (simState.flap - 12) * 0.012;
+            }
             let isStalled = false;
             if (simState.aoa > 14) {
                 isStalled = true;
@@ -899,7 +923,7 @@
             let m_cd = 0.018 + Math.pow(simState.aoa * 0.013, 2) + Math.pow(simState.flap * 0.009, 2);
             if (simState.aoa > 18) {
                 m_cl -= (simState.aoa - 18) * 0.04;
-                m_cd += 0.03;
+                m_cd += (simState.aoa - 18) * 0.03;
             }
             let m_noise = 64 + (mach * 22) + (simState.flap * 0.35);
 
@@ -925,14 +949,22 @@
                 tagConvStall.classList.remove('hidden');
                 uiFlightStatus.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse";
                 uiFlightStatus.innerText = "CRITICAL STALL DETECTED";
-            } else if (simState.flap > 18) {
+            } else if (simState.flap > 14) {
                 tagConvStall.classList.remove('hidden');
                 uiFlightStatus.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40";
-                uiFlightStatus.innerText = "HIGH-DRAG LANDING REGIME";
+                uiFlightStatus.innerText = "FLAP SEPARATION REGIME";
             } else {
                 tagConvStall.classList.add('hidden');
                 uiFlightStatus.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
                 uiFlightStatus.innerText = "OPTIMAL LAMINAR FLOW";
+            }
+
+            if (simState.aoa > 18.5) {
+                tagMorphAttached.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40";
+                tagMorphAttached.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>SOFT TRAILING BUFFET`;
+            } else {
+                tagMorphAttached.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+                tagMorphAttached.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i>LAMINAR ATTACHED`;
             }
         }
 
@@ -968,21 +1000,30 @@
             updateTelemetry();
         }
 
+        // Exact NACA 0013 half-thickness and analytic slope dy_t/dx
         function nacaHalfThickness(xNorm, chord, tRatio = 0.13) {
-            if (xNorm < 0) xNorm = 0;
-            if (xNorm > 1) xNorm = 1;
-            return 5 * tRatio * chord * (
-                0.2969 * Math.sqrt(xNorm) - 
-                0.1260 * xNorm - 
-                0.3516 * Math.pow(xNorm, 2) + 
-                0.2843 * Math.pow(xNorm, 3) - 
-                0.1015 * Math.pow(xNorm, 4)
+            const u = Math.max(0, Math.min(1, xNorm));
+            const yt = 5 * tRatio * (
+                0.2969 * Math.sqrt(u) - 
+                0.1260 * u - 
+                0.3516 * u * u + 
+                0.2843 * u * u * u - 
+                0.1015 * u * u * u * u
+            );
+            return yt * chord;
+        }
+
+        function nacaThicknessSlope(xNorm, tRatio = 0.13) {
+            const u = Math.max(0.008, Math.min(1, xNorm));
+            return 5 * tRatio * (
+                0.14845 / Math.sqrt(u) -
+                0.1260 -
+                0.7032 * u +
+                0.8529 * u * u -
+                0.4060 * u * u * u
             );
         }
 
-        // ================================================================
-        // EXACT STREAMLINE FLOW SIMULATOR (ZERO-PENETRATION BOUNDARY ENGINE)
-        // ================================================================
         class FlowSimulator {
             constructor(canvasId, isMorphing) {
                 this.canvas = document.getElementById(canvasId);
@@ -991,6 +1032,10 @@
                 this.particles = [];
                 this.width = 0;
                 this.height = 0;
+                this.time = 0;
+                // Smoothly interpolated internal state so rapid slider dragging never teleports streamlines
+                this.smoothAoa = simState.aoa;
+                this.smoothFlap = simState.flap;
                 this.resize();
                 window.addEventListener('resize', () => this.resize());
                 this.initParticles();
@@ -1009,324 +1054,459 @@
 
             initParticles() {
                 this.particles = [];
-                // 350 particles distributed across 32 smooth streamline lanes
-                const numLanes = 32;
-                const particlesPerLane = 11;
+                const numLanes = 28; // Distinct wind-tunnel smoke rakes
+                const perLane = 16;
                 for (let lane = 0; lane < numLanes; lane++) {
-                    const seedY = 12 + (lane / (numLanes - 1)) * (this.height - 24);
-                    for (let p = 0; p < particlesPerLane; p++) {
-                        const startX = (p / particlesPerLane) * this.width + Math.random() * 15;
+                    const laneY = ((lane + 0.5) / numLanes) * this.height;
+                    for (let k = 0; k < perLane; k++) {
+                        const startX = ((k + Math.random() * 0.6) / perLane) * this.width;
                         this.particles.push({
                             x: startX,
-                            y: seedY,
+                            y: laneY,
                             prevX: startX,
-                            prevY: seedY,
-                            seedY: seedY,
-                            speedOffset: 0.96 + Math.random() * 0.08,
+                            prevY: laneY,
+                            baseY: laneY,
+                            turb: 0,
+                            phase: lane * 0.7 + k * 1.3,
                             justReset: true
                         });
                     }
                 }
             }
 
-            // Computes exact world-space upper and lower airfoil contours
-            computeAirfoilGeometry(chord, centerX, centerY, aoaDeg, flapDeg) {
-                const aoaRad = (aoaDeg * Math.PI) / 180;
+            // Analytic airfoil geometry in local chord coordinates u in [0, 1]
+            // Returns camber y_c, slope dy_c/dx, half-thickness y_t, and upper/lower surfaces
+            sampleWingProfile(u, chord, flapDeg) {
+                const uClamped = Math.max(0, Math.min(1, u));
+                const yt = nacaHalfThickness(uClamped, chord, 0.13);
+                const dyt = nacaThicknessSlope(uClamped, 0.13);
                 const flapRad = (flapDeg * Math.PI) / 180;
-                const cosA = Math.cos(aoaRad);
-                const sinA = Math.sin(aoaRad);
 
-                const samples = 60;
+                let yc = 0;
+                let dyc = 0;
+
+                if (this.isMorphing) {
+                    // Seamless C1-continuous quadratic/cubic camber morphing starting at x = 0.58c
+                    const u0 = 0.58;
+                    if (uClamped > u0) {
+                        const s = (uClamped - u0) / (1 - u0);
+                        const maxDrop = (1 - u0) * chord * Math.tan(flapRad * 0.78) * 0.58;
+                        yc = maxDrop * (0.65 * s * s + 0.35 * s * s * s);
+                        dyc = (maxDrop / ((1 - u0) * chord)) * (1.30 * s + 1.05 * s * s);
+                    }
+                } else {
+                    // Rigid hinged Fowler flap at x = 0.70c with sharp slope discontinuity
+                    const uHinge = 0.70;
+                    if (uClamped > uHinge) {
+                        const dx = (uClamped - uHinge) * chord;
+                        yc = dx * Math.tan(flapRad * 0.85);
+                        dyc = Math.tan(flapRad * 0.85);
+                    }
+                }
+
+                return {
+                    yc,
+                    dyc,
+                    yt,
+                    dyt,
+                    yUp: yc - yt,
+                    yLow: yc + yt,
+                    dyUp: dyc - dyt,
+                    dyLow: dyc + dyt
+                };
+            }
+
+            drawHoneycombCell(ctx, cx, cy, size) {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i;
+                    const hx = cx + size * Math.cos(angle);
+                    const hy = cy + size * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(hx, hy);
+                    else ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = 'rgba(52, 211, 153, 0.40)';
+                ctx.lineWidth = 1.0;
+                ctx.stroke();
+            }
+
+            drawAirfoil(ctx, centerX, centerY, chord, aoaDeg, flapDeg) {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate((aoaDeg * Math.PI) / 180);
+
+                const samples = 75;
                 const upperPoints = [];
                 const lowerPoints = [];
 
-                for (let i = 0; i <= samples; i++) {
-                    const u = i / samples; // chordwise station 0 to 1
-                    const yt = nacaHalfThickness(u, chord, 0.13);
-                    let spineX = u * chord;
-                    let spineZ = 0;
-                    let phi = 0;
-
-                    if (this.isMorphing) {
-                        if (u > 0.65) {
-                            const s = (u - 0.65) * chord;
-                            const Lm = 0.35 * chord;
-                            if (Math.abs(flapRad) > 1e-4) {
-                                const R = Lm / flapRad;
-                                phi = flapRad * (s / Lm);
-                                spineX = 0.65 * chord + R * Math.sin(phi);
-                                spineZ = R * (1.0 - Math.cos(phi));
-                            }
-                        }
-                    } else {
-                        if (u > 0.70) {
-                            const s = (u - 0.70) * chord;
-                            spineX = 0.70 * chord + s * Math.cos(flapRad);
-                            spineZ = s * Math.sin(flapRad);
-                            phi = flapRad;
-                        }
+                if (this.isMorphing) {
+                    for (let i = 0; i <= samples; i++) {
+                        const u = i / samples;
+                        const x = (u - 0.28) * chord;
+                        const prof = this.sampleWingProfile(u, chord, flapDeg);
+                        upperPoints.push({ x, y: prof.yUp });
+                        lowerPoints.push({ x, y: prof.yLow });
                     }
 
-                    // Local offsets perpendicular to local spine
-                    const uxLocal = spineX - yt * Math.sin(phi);
-                    const uzLocal = spineZ - yt * Math.cos(phi);
-                    const lxLocal = spineX + yt * Math.sin(phi);
-                    const lzLocal = spineZ + yt * Math.cos(phi);
+                    ctx.beginPath();
+                    ctx.moveTo(upperPoints[0].x, upperPoints[0].y);
+                    for (let p of upperPoints) ctx.lineTo(p.x, p.y);
+                    for (let k = lowerPoints.length - 1; k >= 0; k--) ctx.lineTo(lowerPoints[k].x, lowerPoints[k].y);
+                    ctx.closePath();
 
-                    // World transform rotated around quarter-chord (0.25c)
-                    const x0 = 0.25 * chord;
-                    const udx = uxLocal - x0;
-                    const ldx = lxLocal - x0;
+                    const morphGrad = ctx.createLinearGradient(-0.28 * chord, 0, 0.72 * chord, 0);
+                    morphGrad.addColorStop(0, '#0f172a');
+                    morphGrad.addColorStop(0.60, '#1e293b');
+                    morphGrad.addColorStop(1, '#064e3b');
+                    ctx.fillStyle = morphGrad;
+                    ctx.fill();
+                    ctx.strokeStyle = '#34d399';
+                    ctx.lineWidth = 2.2;
+                    ctx.stroke();
 
-                    upperPoints.push({
-                        x: centerX + udx * cosA - uzLocal * sinA,
-                        y: centerY + udx * sinA + uzLocal * cosA
-                    });
-                    lowerPoints.push({
-                        x: centerX + ldx * cosA - lzLocal * sinA,
-                        y: centerY + ldx * sinA + lzLocal * cosA
-                    });
+                    const sparX = (0.25 - 0.28) * chord;
+                    const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
+
+                    ctx.save();
+                    ctx.clip();
+                    const cellSize = 7.5;
+                    const startX = -0.15 * chord;
+                    for (let col = 0; col < 9; col++) {
+                        const hx = startX + col * (cellSize * 2.3);
+                        const uCol = (hx / chord) + 0.28;
+                        const profCol = this.sampleWingProfile(uCol, chord, flapDeg);
+                        const rowCount = col < 5 ? 3 : 2;
+                        for (let row = -rowCount; row <= rowCount; row++) {
+                            const offset = (col % 2 === 0) ? 0 : cellSize * 0.86;
+                            const hy = profCol.yc + row * (cellSize * 1.75) + offset;
+                            this.drawHoneycombCell(ctx, hx, hy, cellSize);
+                        }
+                    }
+                    ctx.restore();
+
+                    // Compliant FishBAC ribs in trailing edge
+                    ctx.beginPath();
+                    for (let m = 1; m <= 5; m++) {
+                        const uRib = 0.58 + (m / 6) * 0.38;
+                        const idx = Math.round(uRib * samples);
+                        if (upperPoints[idx] && lowerPoints[idx]) {
+                            ctx.moveTo(upperPoints[idx].x, upperPoints[idx].y + 2);
+                            ctx.lineTo(lowerPoints[idx].x, lowerPoints[idx].y - 2);
+                        }
+                    }
+                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
+                    ctx.lineWidth = 1.4;
+                    ctx.stroke();
+
+                } else {
+                    const xHingeNorm = 0.70;
+                    const hingeX = (xHingeNorm - 0.28) * chord;
+
+                    for (let i = 0; i <= samples; i++) {
+                        const u = (i / samples) * xHingeNorm;
+                        const x = (u - 0.28) * chord;
+                        const yt = nacaHalfThickness(u, chord, 0.13);
+                        upperPoints.push({ x, y: -yt });
+                        lowerPoints.push({ x, y: yt });
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(upperPoints[0].x, upperPoints[0].y);
+                    for (let p of upperPoints) ctx.lineTo(p.x, p.y);
+                    for (let j = lowerPoints.length - 1; j >= 0; j--) ctx.lineTo(lowerPoints[j].x, lowerPoints[j].y);
+                    ctx.closePath();
+
+                    const convGrad = ctx.createLinearGradient(-0.28 * chord, 0, hingeX, 0);
+                    convGrad.addColorStop(0, '#0f172a');
+                    convGrad.addColorStop(1, '#1e293b');
+                    ctx.fillStyle = convGrad;
+                    ctx.fill();
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 2.0;
+                    ctx.stroke();
+
+                    const sparX = (0.25 - 0.28) * chord;
+                    const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
+                    ctx.fillStyle = '#64748b';
+                    ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
+
+                    // Hinged Flap Element
+                    const flapUpper = [];
+                    const flapLower = [];
+                    const flapSamples = 28;
+                    for (let k = 0; k <= flapSamples; k++) {
+                        const u = xHingeNorm + (k / flapSamples) * (1 - xHingeNorm);
+                        const x = (u - 0.28) * chord;
+                        const prof = this.sampleWingProfile(u, chord, flapDeg);
+                        flapUpper.push({ x, y: prof.yUp });
+                        flapLower.push({ x, y: prof.yLow });
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(flapUpper[0].x, flapUpper[0].y);
+                    for (let p of flapUpper) ctx.lineTo(p.x, p.y);
+                    for (let j = flapLower.length - 1; j >= 0; j--) ctx.lineTo(flapLower[j].x, flapLower[j].y);
+                    ctx.closePath();
+
+                    ctx.fillStyle = '#334155';
+                    ctx.fill();
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 2.0;
+                    ctx.stroke();
+
+                    // Hinge Pin Indicator
+                    ctx.beginPath();
+                    ctx.arc(hingeX, 0, 4.0, 0, Math.PI * 2);
+                    ctx.fillStyle = flapDeg > 0 ? '#f43f5e' : '#94a3b8';
+                    ctx.fill();
                 }
 
-                return { upper: upperPoints, lower: lowerPoints };
+                ctx.restore();
+            }
+
+            // Compute continuous local wind-tunnel velocity at world coordinate (wx, wy)
+            computeFlowVelocity(wx, wy, centerX, centerY, chord, aoaDeg, flapDeg) {
+                const aoaRad = (aoaDeg * Math.PI) / 180;
+                const cosA = Math.cos(aoaRad);
+                const sinA = Math.sin(aoaRad);
+
+                // Transform world point into wing-aligned coordinates (lx, ly)
+                const dx = wx - centerX;
+                const dy = wy - centerY;
+                const lx = dx * cosA + dy * sinA;
+                const ly = -dx * sinA + dy * cosA;
+
+                // Normalized chord coordinate u in [-inf, +inf], where [0, 1] is LE to TE
+                const u = (lx / chord) + 0.28;
+
+                // Effective circulation strength (controls upwash ahead and downwash behind)
+                const clEff = (aoaDeg * 0.055) + (flapDeg * (this.isMorphing ? 0.042 : 0.028));
+
+                // Separation parameters: smooth and continuous across all slider positions
+                let sepSeverity = 0;
+                let uSep = 1.0;
+
+                if (this.isMorphing) {
+                    // Morphing wing stays attached up to AoA 18 deg
+                    if (aoaDeg > 17.5) {
+                        sepSeverity = Math.min(1.0, (aoaDeg - 17.5) / 5.0);
+                        uSep = 0.88 - 0.35 * sepSeverity;
+                    }
+                } else {
+                    // Conventional wing separates either at the flap kink (flap > 12 deg) or upper stall (AoA > 12.5 deg)
+                    const flapSep = Math.max(0, Math.min(1.0, (flapDeg - 11) / 18));
+                    const stallSep = Math.max(0, Math.min(1.0, (aoaDeg - 12.5) / 7.5));
+                    sepSeverity = Math.max(flapSep, stallSep);
+
+                    const uFlapSep = 0.70;
+                    const uStallSep = 0.70 - 0.52 * stallSep;
+                    // Smooth blend between flap-hinge separation and leading-edge stall separation
+                    uSep = stallSep > 0.05
+                        ? uFlapSep * (1 - stallSep) + uStallSep * stallSep
+                        : uFlapSep;
+                }
+
+                // Default freestream in world frame is (1, 0), which in wing frame is (cosA, -sinA)
+                let vxLocal = cosA;
+                let vyLocal = -sinA;
+                let turbLevel = 0;
+
+                // 1. UPSTREAM UPWASH (u < 0)
+                if (u < 0) {
+                    const distLE = Math.hypot(lx - (-0.28 * chord), ly);
+                    const decay = Math.exp(-distLE / (0.45 * chord));
+                    // Smooth stagnation dividing streamline + circulation upwash
+                    const nosePush = (ly < 0 ? -1 : 1) * 0.42 * Math.exp(-Math.abs(ly) / (0.14 * chord)) * Math.exp(u * 4.5);
+                    const upwash = -0.28 * clEff * decay;
+                    vyLocal += nosePush + upwash;
+                    vxLocal *= (1 - 0.25 * Math.exp(-distLE / (0.12 * chord)));
+                }
+                // 2. OVER & UNDER THE WING CHORD (0 <= u <= 1)
+                else if (u >= 0 && u <= 1.0) {
+                    const prof = this.sampleWingProfile(u, chord, flapDeg);
+                    const isUpper = ly < prof.yc;
+                    const surfY = isUpper ? prof.yUp : prof.yLow;
+                    const surfSlope = isUpper ? prof.dyUp : prof.dyLow;
+
+                    // Distance from skin surface
+                    const distFromSkin = isUpper ? (surfY - ly) : (ly - surfY);
+                    const decay = Math.exp(-Math.max(0, distFromSkin) / (0.32 * chord));
+
+                    // Bernoulli suction speed-up over upper camber
+                    const speedBoost = isUpper
+                        ? 1.0 + (0.28 + 0.18 * Math.max(0, clEff)) * decay * Math.sin(Math.PI * u)
+                        : 1.0 - 0.08 * decay * Math.sin(Math.PI * u);
+
+                    if (isUpper && sepSeverity > 0.01 && u > uSep) {
+                        // Detached shear layer line starting at uSep
+                        const profSep = this.sampleWingProfile(uSep, chord, flapDeg);
+                        const dxSep = (u - uSep) * chord;
+                        // Shear layer peels off horizontally in world frame (which is slope -tan(aoa) in local frame)
+                        const shearSlope = -Math.tan(aoaRad * 0.65) - 0.08 * sepSeverity;
+                        const shearY = profSep.yUp + dxSep * shearSlope;
+
+                        if (ly > shearY && ly < prof.yUp) {
+                            // Inside the separated dead-water / vortex pocket between shearY and wing skin
+                            const pocketHeight = Math.max(6, prof.yUp - shearY);
+                            const normY = (ly - shearY) / pocketHeight; // 0 at shear layer, 1 at wing skin
+                            // Smooth travelling Kelvin-Helmholtz vortex wave (always convects forward smoothly)
+                            const wavePhase = (u - uSep) * 16.0 - this.time * 0.14;
+                            const swirlY = Math.sin(wavePhase) * 0.28 * sepSeverity * Math.sin(Math.PI * normY);
+                            const slowForward = 0.38 + 0.35 * (1 - normY);
+
+                            vxLocal = slowForward;
+                            vyLocal = shearSlope * slowForward + swirlY;
+                            turbLevel = sepSeverity * (0.55 + 0.45 * Math.sin(Math.PI * normY));
+                        } else {
+                            // Above the detached shear layer: flow follows the shear boundary smoothly
+                            const distShear = Math.max(0, shearY - ly);
+                            const shearDecay = Math.exp(-distShear / (0.30 * chord));
+                            const targetSlope = shearSlope * shearDecay + (-Math.sin(aoaRad)) * (1 - shearDecay);
+                            vxLocal = speedBoost * (1 - 0.15 * sepSeverity * shearDecay);
+                            vyLocal = vxLocal * targetSlope;
+                            turbLevel = 0.25 * sepSeverity * Math.exp(-distShear / (0.06 * chord));
+                        }
+                    } else {
+                        // Clean attached streamline following exact surface slope near the skin
+                        const freestreamSlope = -Math.tan(aoaRad);
+                        const blendedSlope = surfSlope * decay + freestreamSlope * (1 - decay);
+                        vxLocal = speedBoost;
+                        vyLocal = vxLocal * blendedSlope;
+                    }
+                }
+                // 3. DOWNSTREAM WAKE (u > 1.0)
+                else {
+                    const profTE = this.sampleWingProfile(1.0, chord, flapDeg);
+                    const dxWake = (u - 1.0) * chord;
+                    const wakeDecay = Math.exp(-dxWake / (0.65 * chord));
+
+                    // Smooth Kutta downwash behind trailing edge
+                    const teSlope = this.isMorphing
+                        ? profTE.dyc * 0.65
+                        : profTE.dyc * (1 - 0.55 * sepSeverity);
+                    const freestreamSlope = -Math.tan(aoaRad);
+                    const vertDist = Math.abs(ly - profTE.yc);
+                    const radialDecay = Math.exp(-vertDist / (0.35 * chord));
+
+                    const wakeSlope = (teSlope * wakeDecay + freestreamSlope * (1 - wakeDecay)) * radialDecay
+                                    + freestreamSlope * (1 - radialDecay);
+
+                    vxLocal = 1.0;
+                    vyLocal = wakeSlope;
+
+                    // If separated, convect the detached vortex wake smoothly downstream
+                    if (sepSeverity > 0.01) {
+                        const profSep = this.sampleWingProfile(uSep, chord, flapDeg);
+                        const shearSlope = -Math.tan(aoaRad * 0.65) - 0.08 * sepSeverity;
+                        const wakeCenterY = 0.5 * (profTE.yUp + (profSep.yUp + (1 - uSep) * chord * shearSlope))
+                                          + dxWake * freestreamSlope * 0.7;
+                        const wakeHalfWidth = Math.max(10, (0.08 + 0.14 * sepSeverity) * chord);
+                        const dWakeY = Math.abs(ly - wakeCenterY);
+
+                        if (dWakeY < wakeHalfWidth) {
+                            const wFactor = (1 - dWakeY / wakeHalfWidth) * Math.exp(-dxWake / (0.85 * chord));
+                            const karmanWave = Math.sin((u - uSep) * 14.0 - this.time * 0.14) * 0.26 * sepSeverity * wFactor;
+                            vxLocal = 1.0 - 0.35 * sepSeverity * wFactor;
+                            vyLocal += karmanWave;
+                            turbLevel = sepSeverity * wFactor;
+                        }
+                    }
+                }
+
+                // Transform local velocity (vxLocal, vyLocal) back to world canvas frame
+                let wxVel = vxLocal * cosA - vyLocal * sinA;
+                let wyVel = vxLocal * sinA + vyLocal * cosA;
+
+                // Soft Analytic Skin Repulsion (prevents any particle from ever clipping inside the airfoil)
+                if (u >= -0.01 && u <= 1.01) {
+                    const prof = this.sampleWingProfile(u, chord, flapDeg);
+                    const pad = 2.5;
+                    if (ly > prof.yUp - pad && ly < prof.yLow + pad) {
+                        const pushedLy = (ly < prof.yc) ? (prof.yUp - pad) : (prof.yLow + pad);
+                        const corrX = centerX + lx * cosA - pushedLy * sinA;
+                        const corrY = centerY + lx * sinA + pushedLy * cosA;
+                        return { vx: wxVel, vy: wyVel, turb: turbLevel, snapX: corrX, snapY: corrY };
+                    }
+                }
+
+                return { vx: wxVel, vy: wyVel, turb: turbLevel, snapX: null, snapY: null };
             }
 
             render() {
-                this.ctx.fillStyle = 'rgba(6, 10, 18, 0.28)';
+                this.time += 1;
+                // Smoothly interpolate AoA and Flap so dragging the slider bends the flow organically
+                this.smoothAoa += (simState.aoa - this.smoothAoa) * 0.18;
+                this.smoothFlap += (simState.flap - this.smoothFlap) * 0.18;
+
+                this.ctx.fillStyle = 'rgba(6, 10, 18, 0.26)';
                 this.ctx.fillRect(0, 0, this.width, this.height);
 
                 const scale = this.width < 550 ? 0.65 : 0.95;
                 const chord = 310 * scale;
                 const centerX = this.width * 0.42;
                 const centerY = this.height * 0.50;
+                const baseSpeed = (simState.speed / 450) * 7.5;
 
-                const aoa = simState.aoa;
-                const flap = simState.flap;
-                const baseSpeed = (simState.speed / 450) * 8.5;
-
-                // 1. Compute exact airfoil boundary arrays
-                const geom = this.computeAirfoilGeometry(chord, centerX, centerY, aoa, flap);
-                const upPts = geom.upper;
-                const lowPts = geom.lower;
-
-                // Leading Edge & Trailing Edge Extents
-                const leX = upPts[0].x;
-                const leY = upPts[0].y;
-                const teUpper = upPts[upPts.length - 1];
-                const teLower = lowPts[lowPts.length - 1];
-                const teX = (teUpper.x + teLower.x) * 0.5;
-                const teY = (teUpper.y + teLower.y) * 0.5;
-
-                // Stagnation streamline height at tunnel inlet
-                const aoaRad = (aoa * Math.PI) / 180;
-                const yStag = leY + Math.tan(aoaRad) * (centerX - leX) * 0.5;
-
-                // Stall separation triggers
-                const isSeparated = !this.isMorphing && (aoa > 13 || flap > 14);
-                // Separation point on upper surface (hinge at ~70% chord)
-                const sepIdx = Math.round(upPts.length * 0.70);
-                const sepPt = upPts[sepIdx];
-
-                // 2. Draw the exact Solid Airfoil Skin
-                this.ctx.save();
-                this.ctx.beginPath();
-                this.ctx.moveTo(upPts[0].x, upPts[0].y);
-                for (let i = 1; i < upPts.length; i++) this.ctx.lineTo(upPts[i].x, upPts[i].y);
-                for (let i = lowPts.length - 1; i >= 0; i--) this.ctx.lineTo(lowPts[i].x, lowPts[i].y);
-                this.ctx.closePath();
-
-                const grad = this.ctx.createLinearGradient(centerX - 0.28 * chord, 0, centerX + 0.72 * chord, 0);
-                if (this.isMorphing) {
-                    grad.addColorStop(0, '#0f172a');
-                    grad.addColorStop(0.65, '#1e293b');
-                    grad.addColorStop(1, '#064e3b');
-                    this.ctx.fillStyle = grad;
-                    this.ctx.strokeStyle = '#34d399';
-                    this.ctx.lineWidth = 2.2;
-                } else {
-                    grad.addColorStop(0, '#0f172a');
-                    grad.addColorStop(0.70, '#1e293b');
-                    grad.addColorStop(1, '#334155');
-                    this.ctx.fillStyle = grad;
-                    this.ctx.strokeStyle = '#64748b';
-                    this.ctx.lineWidth = 2.0;
-                }
-                this.ctx.fill();
-
-                // Draw Internal Honeycomb Core on Morphing Wing
-                if (this.isMorphing) {
-                    this.ctx.save();
-                    this.ctx.clip();
-                    this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
-                    this.ctx.lineWidth = 1.0;
-                    const cellSize = 7.5;
-                    for (let hx = centerX - 0.20 * chord; hx < centerX + 0.50 * chord; hx += cellSize * 2.3) {
-                        for (let hy = centerY - 0.30 * chord; hy < centerY + 0.30 * chord; hy += cellSize * 1.75) {
-                            this.ctx.beginPath();
-                            for (let a = 0; a < 6; a++) {
-                                const angle = (Math.PI / 3) * a;
-                                const px = hx + cellSize * Math.cos(angle);
-                                const py = hy + cellSize * Math.sin(angle);
-                                if (a === 0) this.ctx.moveTo(px, py);
-                                else this.ctx.lineTo(px, py);
-                            }
-                            this.ctx.closePath();
-                            this.ctx.stroke();
-                        }
-                    }
-                    this.ctx.restore();
-                } else {
-                    // Mechanical Hinge Pivot on Conventional Wing
-                    const hingePt = lowPts[sepIdx];
-                    if (hingePt) {
-                        this.ctx.beginPath();
-                        this.ctx.arc(hingePt.x, hingePt.y - 2, 4, 0, Math.PI * 2);
-                        this.ctx.fillStyle = flap > 0 ? '#f43f5e' : '#94a3b8';
-                        this.ctx.fill();
-                    }
-                }
-                this.ctx.stroke();
-                this.ctx.restore();
-
-                // 3. Helper to look up upper and lower wing boundaries at any world X
-                const getWingBounds = (x) => {
-                    if (x < leX || x > teX) return null;
-                    let yu = null, yl = null;
-                    // Upper surface search
-                    for (let i = 0; i < upPts.length - 1; i++) {
-                        const x1 = upPts[i].x, x2 = upPts[i + 1].x;
-                        if ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)) {
-                            const t = Math.abs(x2 - x1) < 1e-4 ? 0 : (x - x1) / (x2 - x1);
-                            yu = upPts[i].y + t * (upPts[i + 1].y - upPts[i].y);
-                            break;
-                        }
-                    }
-                    // Lower surface search
-                    for (let i = 0; i < lowPts.length - 1; i++) {
-                        const x1 = lowPts[i].x, x2 = lowPts[i + 1].x;
-                        if ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)) {
-                            const t = Math.abs(x2 - x1) < 1e-4 ? 0 : (x - x1) / (x2 - x1);
-                            yl = lowPts[i].y + t * (lowPts[i + 1].y - lowPts[i].y);
-                            break;
-                        }
-                    }
-                    if (yu !== null && yl !== null) {
-                        return { top: Math.min(yu, yl), bot: Math.max(yu, yl) };
-                    }
-                    return null;
-                };
-
-                // Downwash angle for trailing wake
-                const downwashRad = (aoa * 0.45 + flap * 0.40) * Math.PI / 180;
-
-                // 4. Update and Render Streamline Particles
-                this.particles.forEach(p => {
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
                     p.prevX = p.x;
                     p.prevY = p.y;
-                    p.x += baseSpeed * p.speedOffset;
 
-                    if (p.x > this.width) {
-                        p.x = 0;
-                        p.prevX = 0;
+                    // Midpoint (RK2) integration for silky-smooth streamline curvature
+                    const f1 = this.computeFlowVelocity(p.x, p.y, centerX, centerY, chord, this.smoothAoa, this.smoothFlap);
+                    const midX = p.x + 0.5 * baseSpeed * f1.vx;
+                    const midY = p.y + 0.5 * baseSpeed * f1.vy;
+                    const f2 = this.computeFlowVelocity(midX, midY, centerX, centerY, chord, this.smoothAoa, this.smoothFlap);
+
+                    p.x += baseSpeed * f2.vx;
+                    p.y += baseSpeed * f2.vy;
+
+                    if (f2.snapX !== null) {
+                        p.x = f2.snapX;
+                        p.y = f2.snapY;
+                    }
+
+                    // Smooth color transition between laminar (cyan/emerald) and separated eddy (amber/rose)
+                    p.turb += (f2.turb - p.turb) * 0.14;
+
+                    // Recycle particles at right/top/bottom tunnel walls back to left inlet smoke rake
+                    if (p.x > this.width + 10 || p.y < -20 || p.y > this.height + 20) {
+                        p.x = -5;
+                        p.y = p.baseY;
+                        p.prevX = p.x;
+                        p.prevY = p.y;
+                        p.turb = 0;
                         p.justReset = true;
                     }
 
-                    const isTopStream = p.seedY < yStag;
-                    let calculatedY = p.seedY;
-                    let isTurbulent = false;
-
-                    if (isTopStream) {
-                        // ============================================================
-                        // UPPER STREAMLINE: STRICTLY CONFINED TO SPACE ABOVE UPPER SKIN
-                        // ============================================================
-                        const eta = p.seedY / yStag; // 0 (ceiling) to 1.0 (wing skin)
-                        const bounds = getWingBounds(p.x);
-
-                        if (bounds !== null) {
-                            let skinBoundaryY = bounds.top;
-
-                            // When flow separates at the flap kink:
-                            if (isSeparated && p.x > sepPt.x) {
-                                // Air shoots off tangentially, leaving the sunken flap below
-                                const tangentSlope = -0.05 + Math.tan(aoaRad * 0.5);
-                                const detachedLayerY = sepPt.y + (p.x - sepPt.x) * tangentSlope;
-                                skinBoundaryY = Math.min(bounds.top, detachedLayerY);
-                                isTurbulent = true;
-                            }
-
-                            // Strictly bounded: Available channel is [5, skinBoundaryY - 2]
-                            const availableHeight = skinBoundaryY - 7;
-                            calculatedY = 5 + eta * availableHeight;
-
-                            // Add gentle turbulent oscillation if in separated wake
-                            if (isTurbulent && eta > 0.6) {
-                                calculatedY += Math.sin(p.x * 0.08 + Date.now() * 0.005) * (flap * 0.15 + 2);
-                            }
-                        } else if (p.x < leX) {
-                            // Approaching the nose: smooth upward compression
-                            const dx = leX - p.x;
-                            const blend = Math.exp(-dx / (0.35 * chord));
-                            calculatedY = p.seedY * (1 - blend) + (5 + eta * (leY - 7)) * blend;
-                        } else {
-                            // Downstream of trailing edge: downwash wake
-                            const dx = p.x - teX;
-                            const wakeCenterY = teY + Math.tan(downwashRad) * dx * 0.45;
-                            const relax = Math.min(1.0, dx / (0.6 * chord));
-                            const wakeY = 5 + eta * (wakeCenterY - 7);
-                            calculatedY = wakeY * (1 - relax * 0.3) + p.seedY * (relax * 0.3);
-
-                            if (isSeparated && eta > 0.6) {
-                                isTurbulent = true;
-                                calculatedY += Math.sin(p.x * 0.06 + Date.now() * 0.004) * (flap * 0.18 + 2.5);
-                            }
-                        }
-
-                    } else {
-                        // ============================================================
-                        // LOWER STREAMLINE: STRICTLY CONFINED TO SPACE BELOW LOWER SKIN
-                        // ============================================================
-                        const zeta = (p.seedY - yStag) / (this.height - yStag); // 0 (skin) to 1.0 (floor)
-                        const bounds = getWingBounds(p.x);
-
-                        if (bounds !== null) {
-                            const skinBoundaryY = bounds.bot + 2;
-                            const availableHeight = (this.height - 5) - skinBoundaryY;
-                            calculatedY = skinBoundaryY + zeta * availableHeight;
-                        } else if (p.x < leX) {
-                            // Approaching the nose: smooth downward deflection under nose
-                            const dx = leX - p.x;
-                            const blend = Math.exp(-dx / (0.35 * chord));
-                            calculatedY = p.seedY * (1 - blend) + ((leY + 3) + zeta * (this.height - leY - 8)) * blend;
-                        } else {
-                            // Downstream of trailing edge: follows wake underneath
-                            const dx = p.x - teX;
-                            const wakeCenterY = teY + Math.tan(downwashRad) * dx * 0.45;
-                            const relax = Math.min(1.0, dx / (0.6 * chord));
-                            const wakeY = (wakeCenterY + 4) + zeta * (this.height - wakeCenterY - 9);
-                            calculatedY = wakeY * (1 - relax * 0.3) + p.seedY * (relax * 0.3);
-                        }
-                    }
-
-                    p.y = calculatedY;
-
-                    // Draw streamline path
-                    if (!p.justReset && p.x >= p.prevX) {
+                    if (!p.justReset) {
                         this.ctx.beginPath();
                         this.ctx.moveTo(p.prevX, p.prevY);
                         this.ctx.lineTo(p.x, p.y);
 
-                        if (isTurbulent) {
-                            this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.72)';
-                            this.ctx.lineWidth = 1.4;
+                        if (p.turb > 0.08) {
+                            const t = Math.min(1, p.turb * 1.3);
+                            const r = Math.round(244);
+                            const g = Math.round(160 * (1 - t) + 63 * t);
+                            const b = Math.round(60 * (1 - t) + 94 * t);
+                            const alpha = (0.45 + 0.45 * t).toFixed(2);
+                            this.ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                            this.ctx.lineWidth = 1.35 + t * 0.65;
                         } else {
-                            this.ctx.strokeStyle = this.isMorphing ? 'rgba(52, 211, 153, 0.60)' : 'rgba(56, 189, 248, 0.50)';
-                            this.ctx.lineWidth = 1.25;
+                            this.ctx.strokeStyle = this.isMorphing
+                                ? 'rgba(52, 211, 153, 0.58)'
+                                : 'rgba(56, 189, 248, 0.50)';
+                            this.ctx.lineWidth = 1.3;
                         }
                         this.ctx.stroke();
                     }
-
                     p.justReset = false;
-                });
+                }
+
+                this.drawAirfoil(this.ctx, centerX, centerY, chord, this.smoothAoa, this.smoothFlap);
             }
         }
 
@@ -1342,7 +1522,7 @@
         updateTelemetry();
 
         // ==========================================
-        // FLEET FUEL & CARBON ROI ENGINE
+        // 2. FLEET FUEL & CARBON ROI ENGINE
         // ==========================================
         function runRoiCalculation() {
             const planeType = document.getElementById('calc-plane-type').value;
@@ -1355,8 +1535,11 @@
             document.getElementById('ui-calc-dragcut').innerText = `${dragCut.toFixed(1)}%`;
 
             let baseFuelPerYear = 3700000;
-            if (planeType === 'single-aisle') baseFuelPerYear = 1350000;
-            else if (planeType === 'regional') baseFuelPerYear = 620000;
+            if (planeType === 'single-aisle') {
+                baseFuelPerYear = 1350000;
+            } else if (planeType === 'regional') {
+                baseFuelPerYear = 620000;
+            }
 
             const fuelBurnFactor = (dragCut * 0.75) / 100;
             const annualGalSaved = baseFuelPerYear * fuelBurnFactor * fleetSize;
