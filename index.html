@@ -534,7 +534,7 @@
                 <!-- Strategic Summary Quote for Presentation Defense -->
                 <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-2xl">
                     <h4 class="font-space font-bold text-white text-sm mb-1 flex items-center gap-2">
-                        <i class="fa-solid fa-bullseye text-cyan-400"></i> Key Point
+                        <i class="fa-solid fa-bullseye text-cyan-400"></i> Key Defense Argument for NMIMS Evaluators
                     </h4>
                     <p class="text-xs text-slate-300 leading-relaxed">
                         "While retrofitting a commercial aircraft with compliant wings carries an estimated amortized engineering cost of ~$1.2M per airframe, the <strong><span id="res-payback">3.6</span>-year payback period</strong> and continuous compliance with ICAO Annex 16 noise quotas make seamless morphing a commercially mandatory investment for airlines targeting Net-Zero 2050."
@@ -706,11 +706,11 @@
     <main id="view-team" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="text-center max-w-2xl mx-auto mb-10">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-2">
-                <i class="fa-solid fa-graduation-cap"></i> PRESENTATION TEAM
+                <i class="fa-solid fa-graduation-cap"></i> PRESENTATION DEFENSE TEAM
             </div>
             <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">B.Tech First Year Project Group</h2>
             <p class="text-slate-400 text-sm mt-1">
-                Department of Basic Sciences and Humanities · Elements of Biology (EOB) Presentation Team.
+                Department of Basic Sciences and Humanities · Elements of Biology (EOB) 40-Minute Presentation Team.
             </p>
         </div>
 
@@ -815,7 +815,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <span class="px-3 py-1 rounded-full bg-navy-800 text-slate-300 font-mono text-xs border border-navy-700">Academic Year 2026-2027</span>
+                <span class="px-3 py-1 rounded-full bg-navy-800 text-slate-300 font-mono text-xs border border-navy-700">Academic Year 2024-25</span>
             </div>
         </div>
     </main>
@@ -1046,7 +1046,7 @@
                         prevX: startX,
                         prevY: startY,
                         baseY: startY,
-                        turbIntensity: 0, // Continuous turbulence scalar [0, 1]
+                        turbIntensity: 0,
                         age: Math.random() * 100,
                         justReset: true
                     });
@@ -1146,15 +1146,11 @@
                     ctx.fillStyle = '#38bdf8';
                     ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
 
-                    // ==========================================
-                    // INTERNAL HONEYCOMB AUXETIC CELLULAR LATTICE
-                    // ==========================================
+                    // Internal Honeycomb Auxetic Lattice
                     ctx.save();
-                    // Clip strictly inside the airfoil contour
                     ctx.clip();
                     const cellSize = 7.5;
                     const startX = -0.15 * chord;
-                    const endX = 0.65 * chord;
                     for (let col = 0; col < 9; col++) {
                         const hx = startX + col * (cellSize * 2.3);
                         const rowCount = col < 5 ? 3 : 2;
@@ -1212,7 +1208,7 @@
                     ctx.fillStyle = '#64748b';
                     ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
 
-                    // Rigid Fowler Flap (Rotated around hinge with step gap)
+                    // Rigid Fowler Flap
                     ctx.save();
                     ctx.translate(hingeX, 0);
                     ctx.rotate(flapDeltaRad);
@@ -1276,18 +1272,15 @@
                     p.x += baseSpeed;
 
                     const dx = p.x - centerX;
-                    const normX = (dx / chord) + 0.28; // Airfoil spans normX in [0, 1]
+                    const normX = (dx / chord) + 0.28;
 
                     let targetY = p.baseY;
                     let targetTurb = 0;
 
-                    // Aerodynamic upwash / downwash tilt across the entire tunnel
                     const globalAoAShift = Math.tan(aoaRad) * dx * 0.55;
                     targetY += globalAoAShift;
 
-                    // ----------------------------------------------------
-                    // EXACT SURFACE PROFILES & IMPERMEABLE BOUNDARY CHECK
-                    // ----------------------------------------------------
+                    // Impermeable Boundary Check
                     if (normX >= -0.05 && normX <= 1.05) {
                         const clampedNormX = Math.max(0, Math.min(1.0, normX));
                         const yt = nacaHalfThickness(clampedNormX, chord, 0.13);
@@ -1295,7 +1288,6 @@
                         let spineY = 0;
                         if (normX > 0.65) {
                             if (this.isMorphing) {
-                                // Compliant continuous arc drop
                                 const s = (normX - 0.65) * chord;
                                 const L_morph = 0.35 * chord;
                                 if (Math.abs(flapRad) > 1e-4) {
@@ -1307,7 +1299,6 @@
                                     targetTurb = Math.min(1.0, (simState.aoa - 17) * 0.25);
                                 }
                             } else {
-                                // Conventional rigid flap drop past hinge at 0.70c
                                 if (normX > 0.70) {
                                     const localFlapX = (normX - 0.70) * chord;
                                     spineY = localFlapX * Math.sin(flapRad);
@@ -1322,13 +1313,9 @@
                             }
                         }
 
-                        // Physical upper and lower airfoil surface coordinates in canvas space
                         const surfaceUpperY = centerY + spineY - yt;
                         const surfaceLowerY = centerY + spineY + yt;
 
-                        // Strict Solid Boundary Enforcement:
-                        // Upper particles are kept strictly above upper surface
-                        // Lower particles are kept strictly below lower surface
                         if (p.baseY < centerY) {
                             const offsetFromCenter = centerY - p.baseY;
                             const targetUpper = surfaceUpperY - (offsetFromCenter * 0.6);
@@ -1340,7 +1327,6 @@
                         }
 
                     } else if (normX > 1.05) {
-                        // WAKE REGION: Both streams leave trailing edge smoothly
                         const wakeDist = (normX - 1.05) * chord;
                         let teDrop = 0;
 
@@ -1354,12 +1340,10 @@
                             teDrop = (0.30 * chord) * Math.sin(flapRad);
                         }
 
-                        // Smooth wake relaxation towards freestream
                         const downwashSlope = Math.sin((flapDeg * 0.5 + simState.aoa * 0.4) * Math.PI / 180);
                         targetY += (teDrop * 0.85) + (downwashSlope * wakeDist * 0.35);
                     }
 
-                    // Apply continuous turbulence eddy dispersion
                     p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
                     if (p.turbIntensity > 0.05) {
                         const eddyAmp = p.turbIntensity * (flapDeg * 0.45 + simState.aoa * 1.1 + 2);
@@ -1367,10 +1351,8 @@
                         p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
                     }
 
-                    // Inertia integration: smoothly move toward targetY
                     p.y += (targetY - p.y) * 0.18;
 
-                    // Bound recycle
                     if (p.x > this.width) {
                         p.x = 0;
                         p.y = p.baseY;
@@ -1380,7 +1362,6 @@
                         p.justReset = true;
                     }
 
-                    // Draw clean streamline segments
                     if (!p.justReset && p.x >= p.prevX) {
                         this.ctx.beginPath();
                         this.ctx.moveTo(p.prevX, p.prevY);
@@ -1405,6 +1386,7 @@
 
                 this.drawAirfoil(this.ctx, centerX, centerY, chord, simState.aoa, simState.flap);
             }
+        }
 
         const convTunnel = new FlowSimulator('canvas-conv', false);
         const morphTunnel = new FlowSimulator('canvas-morph', true);
@@ -1430,21 +1412,19 @@
             document.getElementById('ui-calc-fuelprice').innerText = `$${fuelPrice.toFixed(2)} / gal`;
             document.getElementById('ui-calc-dragcut').innerText = `${dragCut.toFixed(1)}%`;
 
-            // Annual fuel burn baselines per aircraft category (Gallons/year)
-            let baseFuelPerYear = 3700000; // Default widebody (B787 / A350)
+            let baseFuelPerYear = 3700000;
             if (planeType === 'single-aisle') {
-                baseFuelPerYear = 1350000; // A320neo / B737 MAX
+                baseFuelPerYear = 1350000;
             } else if (planeType === 'regional') {
-                baseFuelPerYear = 620000;  // E195-E2 / ATR 72
+                baseFuelPerYear = 620000;
             }
 
-            // Aerodynamic fuel-to-drag correlation: ~0.75% fuel cut per 1.0% drag cut in cruise
             const fuelBurnFactor = (dragCut * 0.75) / 100;
             const annualGalSaved = baseFuelPerYear * fuelBurnFactor * fleetSize;
             const annualLitresSaved = annualGalSaved * 3.78541;
             const annualCostSavedUSD = annualGalSaved * fuelPrice;
-            const annualCostSavedINR = (annualCostSavedUSD * 83.5) / 10000000; // in Crores
-            const co2TonsMitigated = (annualGalSaved * 9.57) / 1000; // ~9.57 kg CO2 per gallon Jet A-1
+            const annualCostSavedINR = (annualCostSavedUSD * 83.5) / 10000000;
+            const co2TonsMitigated = (annualGalSaved * 9.57) / 1000;
 
             const retrofitCostPerPlane = planeType === 'wide-body' ? 1800000 : 950000;
             const totalFleetRetrofit = retrofitCostPerPlane * fleetSize;
@@ -1458,7 +1438,6 @@
             document.getElementById('res-payback').innerText = paybackYears;
         }
 
-        // Initialize ROI calculation on startup
         runRoiCalculation();
     </script>
 </body>
