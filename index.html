@@ -39,7 +39,7 @@
             }
         }
     </script>
-    <!-- MathJax for Aerodynamic Equations -->
+    <!-- MathJax for Textbook Quality Aerodynamic Equations -->
     <script>
         window.MathJax = {
             tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -118,9 +118,10 @@
 </head>
 <body class="bg-navy-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-navy-950">
 
-    <!-- Top Navigation Bar -->
+    <!-- Top Navigation Bar with View Switcher -->
     <header class="sticky top-0 z-50 bg-navy-900/95 backdrop-blur-md border-b border-navy-700/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+            <!-- Brand -->
             <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('simulator')">
                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-500 flex items-center justify-center text-navy-950 font-space font-bold text-xl shadow-lg shadow-cyan-500/20">
                     <i class="fa-solid fa-feather-pointed"></i>
@@ -195,18 +196,19 @@
 
     <!-- TAB 1: WIND TUNNEL SIMULATOR -->
     <main id="view-simulator" class="tab-view flex-grow flex flex-col">
+        <!-- Hero Header -->
         <section class="relative pt-6 pb-6 px-4 sm:px-6 lg:px-8 border-b border-navy-800/80 bg-gradient-to-b from-navy-900/40 to-navy-950">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        CONFORMAL STREAMLINE TUNNEL ENGINE · ZERO BOUNDARY PENETRATION
+                        STRICT BOUNDARY-CONFINED STREAMLINE ENGINE · ZERO AIRFOIL PENETRATION
                     </div>
                     <h1 class="font-space text-2xl sm:text-3xl font-bold text-white tracking-tight">
                         Dual Aeroacoustic Wind Tunnel Simulator
                     </h1>
                     <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                        Compare rigid Fowler flap step discontinuities against constant arc-length compliant camber morphing with zero-Poisson honeycomb cores.
+                        Observe natural streamline curvature over compliant morphing wings versus flow detachment and adverse pressure stalls over rigid hinged flaps.
                     </p>
                 </div>
                 <!-- Flight Presets -->
@@ -232,8 +234,10 @@
         <section class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-grow">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Left Column: Flight Controls & Telemetry -->
+                <!-- Left Column: Flight Controls & Real-Time Telemetry (4 Cols) -->
                 <div class="lg:col-span-4 flex flex-col gap-5">
+                    
+                    <!-- Controls Card -->
                     <div class="hud-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between pb-3 border-b border-navy-700/80 mb-4">
                             <h3 class="font-space font-bold text-white text-base flex items-center gap-2">
@@ -298,6 +302,7 @@
                                 </span>
                             </div>
 
+                            <!-- Metrics Comparison -->
                             <div class="space-y-4">
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
@@ -344,6 +349,7 @@
                             </div>
                         </div>
 
+                        <!-- Carbon & Fuel Impact Link -->
                         <div class="mt-4 pt-3 border-t border-navy-700/60 bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/20">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
@@ -353,14 +359,17 @@
                                 <span id="stat-fuel-saving" class="font-mono font-bold text-emerald-400 text-sm">+8.4% Net</span>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-1">
-                                Check the <button onclick="switchTab('calculator')" class="text-emerald-400 underline font-semibold">Fuel & Carbon ROI tab</button> for full fleet economics.
+                                Check the new <button onclick="switchTab('calculator')" class="text-emerald-400 underline font-semibold">Fuel & Carbon ROI tab</button> for full fleet economics.
                             </p>
                         </div>
+
                     </div>
+
                 </div>
 
-                <!-- Right Column: Dual Live Wind Tunnel Canvases -->
+                <!-- Right Column: Dual Live Wind Tunnel Canvases (8 Cols) -->
                 <div class="lg:col-span-8 flex flex-col gap-4">
+                    
                     <!-- Tunnel 1: Conventional Rigid Fowler Flap -->
                     <div class="tunnel-canvas-box p-3">
                         <div class="flex items-center justify-between pb-2 border-b border-navy-700/60 px-1 mb-2">
@@ -378,12 +387,12 @@
                         <div class="h-64 sm:h-72 w-full relative">
                             <canvas id="canvas-conv" class="w-full h-full block rounded-lg"></canvas>
                             <div class="absolute bottom-2 left-2 text-[10px] font-mono text-slate-400 bg-navy-950/80 px-2 py-1 rounded border border-navy-800">
-                                Flow: <span class="text-cyan-400">Attached Streamlines</span> · <span class="text-rose-400">Separated Wake</span>
+                                Flow: <span class="text-cyan-400">Attached Streamlines</span> · <span class="text-rose-400">Separated Wake Bubble</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tunnel 2: Bio-Inspired Seamless Morphing Wing -->
+                    <!-- Tunnel 2: Bio-Inspired Seamless Morphing Wing with Honeycomb -->
                     <div class="tunnel-canvas-box p-3 border border-emerald-500/20 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
                         <div class="flex items-center justify-between pb-2 border-b border-navy-700/60 px-1 mb-2">
                             <div class="flex items-center gap-2">
@@ -404,7 +413,9 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
+
             </div>
         </section>
     </main>
@@ -808,7 +819,7 @@
         </div>
     </footer>
 
-    <!-- CORE SIMULATION JS ENGINE (ROBUST CONFORMAL STREAMLINE TUNNEL) -->
+    <!-- CORE SIMULATION JS ENGINE -->
     <script>
         // Tab Switcher
         function switchTab(tabId) {
@@ -960,18 +971,18 @@
         function nacaHalfThickness(xNorm, chord, tRatio = 0.13) {
             if (xNorm < 0) xNorm = 0;
             if (xNorm > 1) xNorm = 1;
-            return 5 * tRatio * (
+            return 5 * tRatio * chord * (
                 0.2969 * Math.sqrt(xNorm) - 
                 0.1260 * xNorm - 
                 0.3516 * Math.pow(xNorm, 2) + 
                 0.2843 * Math.pow(xNorm, 3) - 
                 0.1015 * Math.pow(xNorm, 4)
-            ) * chord;
+            );
         }
 
-        // ==========================================
-        // ROBUST WIND-TUNNEL STREAMLINE FLOW SOLVER
-        // ==========================================
+        // ================================================================
+        // EXACT STREAMLINE FLOW SIMULATOR (ZERO-PENETRATION BOUNDARY ENGINE)
+        // ================================================================
         class FlowSimulator {
             constructor(canvasId, isMorphing) {
                 this.canvas = document.getElementById(canvasId);
@@ -998,298 +1009,86 @@
 
             initParticles() {
                 this.particles = [];
-                const count = 300;
-                for (let i = 0; i < count; i++) {
-                    const startX = Math.random() * this.width;
-                    // Seed evenly across tunnel height
-                    const seedY = 15 + (i / count) * (this.height - 30);
-                    this.particles.push({
-                        x: startX,
-                        y: seedY,
-                        prevX: startX,
-                        prevY: seedY,
-                        seedY: seedY,
-                        speedFactor: 0.9 + Math.random() * 0.2,
-                        justReset: true
-                    });
+                // 350 particles distributed across 32 smooth streamline lanes
+                const numLanes = 32;
+                const particlesPerLane = 11;
+                for (let lane = 0; lane < numLanes; lane++) {
+                    const seedY = 12 + (lane / (numLanes - 1)) * (this.height - 24);
+                    for (let p = 0; p < particlesPerLane; p++) {
+                        const startX = (p / particlesPerLane) * this.width + Math.random() * 15;
+                        this.particles.push({
+                            x: startX,
+                            y: seedY,
+                            prevX: startX,
+                            prevY: seedY,
+                            seedY: seedY,
+                            speedOffset: 0.96 + Math.random() * 0.08,
+                            justReset: true
+                        });
+                    }
                 }
             }
 
-            // Closed-form Joukowsky-like streamlined flow function
-            getStreamlineY(X, seedY, chord, centerX, centerY, aoaDeg, flapDeg) {
+            // Computes exact world-space upper and lower airfoil contours
+            computeAirfoilGeometry(chord, centerX, centerY, aoaDeg, flapDeg) {
                 const aoaRad = (aoaDeg * Math.PI) / 180;
                 const flapRad = (flapDeg * Math.PI) / 180;
+                const cosA = Math.cos(aoaRad);
+                const sinA = Math.sin(aoaRad);
 
-                // Relative normalized chord station xNorm in [0, 1]
-                const dx = X - centerX;
-                const chordNorm = (dx / chord) + 0.28;
-
-                const dSeed = seedY - centerY;
-                const isUpper = dSeed < 0;
-                const normDist = Math.min(1.0, Math.abs(dSeed) / (this.height * 0.45));
-
-                let yFlow = seedY;
-
-                // 1. Upwash & Downwash due to Angle of Attack
-                const globalAoATilt = Math.tan(aoaRad) * dx * 0.55;
-                yFlow += globalAoATilt;
-
-                // 2. Airfoil Displace Region (Flow Over Body)
-                if (chordNorm >= 0 && chordNorm <= 1.0) {
-                    const yt = nacaHalfThickness(chordNorm, chord, 0.13);
-
-                    let spineY = 0;
-                    if (this.isMorphing) {
-                        // Smooth elastica curvature drop
-                        if (chordNorm > 0.65) {
-                            const s = (chordNorm - 0.65) * chord;
-                            const Lm = 0.35 * chord;
-                            if (Math.abs(flapRad) > 1e-4) {
-                                const R = Lm / flapRad;
-                                const phi = flapRad * (s / Lm);
-                                spineY = R * (1.0 - Math.cos(phi));
-                            }
-                        }
-                    } else {
-                        // Conventional flap angle past hinge
-                        if (chordNorm > 0.70) {
-                            const s = (chordNorm - 0.70) * chord;
-                            spineY = s * Math.sin(flapRad);
-                        }
-                    }
-
-                    // Physical wing skin coordinate at station X
-                    const localSkinY = centerY + spineY + (isUpper ? -yt : yt);
-
-                    // Conformal Streamline: particles smoothly deflect around wing with zero lag
-                    const envelope = 1.0 - Math.pow(normDist, 2.2);
-                    if (isUpper) {
-                        // Stay strictly above upper surface
-                        const targetY = localSkinY - Math.abs(dSeed) * (0.85 + 0.15 * normDist);
-                        yFlow = Math.min(localSkinY - 3, targetY);
-                    } else {
-                        // Stay strictly below lower surface
-                        const targetY = localSkinY + Math.abs(dSeed) * (0.85 + 0.15 * normDist);
-                        yFlow = Math.max(localSkinY + 3, targetY);
-                    }
-                } 
-                else if (chordNorm > 1.0) {
-                    // 3. Wake Shedding Region (Behind Trailing Edge)
-                    const wakeDist = (chordNorm - 1.0) * chord;
-
-                    let teDrop = 0;
-                    if (this.isMorphing) {
-                        const Lm = 0.35 * chord;
-                        if (Math.abs(flapRad) > 1e-4) {
-                            const R = Lm / flapRad;
-                            teDrop = R * (1.0 - Math.cos(flapRad));
-                        }
-                    } else {
-                        teDrop = (0.30 * chord) * Math.sin(flapRad);
-                    }
-
-                    const downwashSlope = Math.sin((flapDeg * 0.5 + aoaDeg * 0.4) * Math.PI / 180);
-                    const wakeCenterline = centerY + teDrop + downwashSlope * wakeDist * 0.4;
-
-                    if (isUpper) {
-                        yFlow = wakeCenterline - Math.abs(dSeed) * 0.9;
-                    } else {
-                        yFlow = wakeCenterline + Math.abs(dSeed) * 0.9;
-                    }
-
-                    // Smooth blending to undisturbed freestream at tunnel exit
-                    const relaxFactor = Math.min(1.0, wakeDist / (this.width * 0.45));
-                    yFlow = yFlow * (1 - relaxFactor * 0.3) + seedY * (relaxFactor * 0.3);
-                }
-
-                return yFlow;
-            }
-
-            drawAirfoil(ctx, centerX, centerY, chord, aoaDeg, flapDeg) {
-                ctx.save();
-                ctx.translate(centerX, centerY);
-                ctx.rotate((aoaDeg * Math.PI) / 180);
-
-                const samples = 65;
+                const samples = 60;
                 const upperPoints = [];
                 const lowerPoints = [];
 
-                if (this.isMorphing) {
-                    const xMorphStartNorm = 0.65;
-                    const xStart = (xMorphStartNorm - 0.28) * chord;
-                    const L_morph = (1.0 - xMorphStartNorm) * chord;
-                    const thetaRad = (flapDeg * Math.PI) / 180;
+                for (let i = 0; i <= samples; i++) {
+                    const u = i / samples; // chordwise station 0 to 1
+                    const yt = nacaHalfThickness(u, chord, 0.13);
+                    let spineX = u * chord;
+                    let spineZ = 0;
+                    let phi = 0;
 
-                    const rigidSamples = 40;
-                    for (let i = 0; i <= rigidSamples; i++) {
-                        const xNorm = (i / rigidSamples) * xMorphStartNorm;
-                        const x = (xNorm - 0.28) * chord;
-                        const yt = nacaHalfThickness(xNorm, chord, 0.13);
-                        upperPoints.push({ x: x, y: -yt });
-                        lowerPoints.push({ x: x, y: yt });
-                    }
-
-                    const morphSamples = 30;
-                    for (let j = 1; j <= morphSamples; j++) {
-                        const s = (j / morphSamples) * L_morph;
-                        const currentNorm = xMorphStartNorm + (s / chord);
-
-                        let xc, yc, phi;
-                        if (Math.abs(thetaRad) < 1e-4) {
-                            xc = xStart + s;
-                            yc = 0;
-                            phi = 0;
-                        } else {
-                            const R = L_morph / thetaRad;
-                            phi = thetaRad * (s / L_morph);
-                            xc = xStart + R * Math.sin(phi);
-                            yc = R * (1.0 - Math.cos(phi));
-                        }
-
-                        const nx = Math.sin(phi);
-                        const ny = -Math.cos(phi);
-                        const yt = nacaHalfThickness(currentNorm, chord, 0.13);
-
-                        upperPoints.push({ x: xc + yt * nx, y: yc + yt * ny });
-                        lowerPoints.push({ x: xc - yt * nx, y: yc - yt * ny });
-                    }
-
-                    ctx.beginPath();
-                    ctx.moveTo(upperPoints[0].x, upperPoints[0].y);
-                    for (let p of upperPoints) ctx.lineTo(p.x, p.y);
-                    for (let k = lowerPoints.length - 1; k >= 0; k--) ctx.lineTo(lowerPoints[k].x, lowerPoints[k].y);
-                    ctx.closePath();
-
-                    const morphGrad = ctx.createLinearGradient(-0.28 * chord, 0, 0.72 * chord, 0);
-                    morphGrad.addColorStop(0, '#0f172a');
-                    morphGrad.addColorStop(0.65, '#1e293b');
-                    morphGrad.addColorStop(1, '#064e3b');
-                    ctx.fillStyle = morphGrad;
-                    ctx.fill();
-                    ctx.strokeStyle = '#34d399';
-                    ctx.lineWidth = 2.2;
-                    ctx.stroke();
-
-                    // Main Spar at 25% chord
-                    const sparX = (0.25 - 0.28) * chord;
-                    const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
-                    ctx.fillStyle = '#38bdf8';
-                    ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
-
-                    // Internal Honeycomb Auxetic Lattice
-                    ctx.save();
-                    ctx.clip();
-                    const cellSize = 7.5;
-                    const startX = -0.15 * chord;
-                    for (let col = 0; col < 9; col++) {
-                        const hx = startX + col * (cellSize * 2.3);
-                        const rowCount = col < 5 ? 3 : 2;
-                        for (let row = -rowCount; row <= rowCount; row++) {
-                            const offset = (col % 2 === 0) ? 0 : cellSize * 0.86;
-                            const hy = row * (cellSize * 1.75) + offset;
-                            ctx.beginPath();
-                            for (let a = 0; a < 6; a++) {
-                                const angle = (Math.PI / 3) * a;
-                                const px = hx + cellSize * Math.cos(angle);
-                                const py = hy + cellSize * Math.sin(angle);
-                                if (a === 0) ctx.moveTo(px, py);
-                                else ctx.lineTo(px, py);
+                    if (this.isMorphing) {
+                        if (u > 0.65) {
+                            const s = (u - 0.65) * chord;
+                            const Lm = 0.35 * chord;
+                            if (Math.abs(flapRad) > 1e-4) {
+                                const R = Lm / flapRad;
+                                phi = flapRad * (s / Lm);
+                                spineX = 0.65 * chord + R * Math.sin(phi);
+                                spineZ = R * (1.0 - Math.cos(phi));
                             }
-                            ctx.closePath();
-                            ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
-                            ctx.lineWidth = 1.0;
-                            ctx.stroke();
+                        }
+                    } else {
+                        if (u > 0.70) {
+                            const s = (u - 0.70) * chord;
+                            spineX = 0.70 * chord + s * Math.cos(flapRad);
+                            spineZ = s * Math.sin(flapRad);
+                            phi = flapRad;
                         }
                     }
-                    ctx.restore();
 
-                    // Internal FishBAC Tendons
-                    ctx.beginPath();
-                    for (let m = 1; m <= 5; m++) {
-                        const targetIdx = rigidSamples + Math.round((m / 6) * morphSamples);
-                        if (upperPoints[targetIdx] && lowerPoints[targetIdx]) {
-                            ctx.moveTo(upperPoints[targetIdx].x, upperPoints[targetIdx].y + 2);
-                            ctx.lineTo(lowerPoints[targetIdx].x, lowerPoints[targetIdx].y - 2);
-                        }
-                    }
-                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
-                    ctx.lineWidth = 1.4;
-                    ctx.stroke();
+                    // Local offsets perpendicular to local spine
+                    const uxLocal = spineX - yt * Math.sin(phi);
+                    const uzLocal = spineZ - yt * Math.cos(phi);
+                    const lxLocal = spineX + yt * Math.sin(phi);
+                    const lzLocal = spineZ + yt * Math.cos(phi);
 
-                } else {
-                    const xHingeNorm = 0.70;
-                    const hingeX = (xHingeNorm - 0.28) * chord;
-                    const flapDeltaRad = (flapDeg * Math.PI) / 180;
+                    // World transform rotated around quarter-chord (0.25c)
+                    const x0 = 0.25 * chord;
+                    const udx = uxLocal - x0;
+                    const ldx = lxLocal - x0;
 
-                    ctx.beginPath();
-                    for (let i = 0; i <= samples; i++) {
-                        const xNorm = (i / samples) * xHingeNorm;
-                        const x = (xNorm - 0.28) * chord;
-                        const yt = nacaHalfThickness(xNorm, chord, 0.13);
-                        upperPoints.push({ x: x, y: -yt });
-                        lowerPoints.push({ x: x, y: yt });
-                    }
-                    ctx.moveTo(upperPoints[0].x, upperPoints[0].y);
-                    for (let p of upperPoints) ctx.lineTo(p.x, p.y);
-                    for (let j = lowerPoints.length - 1; j >= 0; j--) ctx.lineTo(lowerPoints[j].x, lowerPoints[j].y);
-                    ctx.closePath();
-
-                    const convGrad = ctx.createLinearGradient(-0.28 * chord, 0, hingeX, 0);
-                    convGrad.addColorStop(0, '#0f172a');
-                    convGrad.addColorStop(1, '#1e293b');
-                    ctx.fillStyle = convGrad;
-                    ctx.fill();
-                    ctx.strokeStyle = '#64748b';
-                    ctx.lineWidth = 2.0;
-                    ctx.stroke();
-
-                    // Main Spar at 25% chord
-                    const sparX = (0.25 - 0.28) * chord;
-                    const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
-                    ctx.fillStyle = '#64748b';
-                    ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
-
-                    // Deflected Fowler Flap
-                    ctx.save();
-                    ctx.translate(hingeX, 0);
-                    ctx.rotate(flapDeltaRad);
-
-                    const flapSamples = 25;
-                    const flapUpper = [];
-                    const flapLower = [];
-                    const flapChord = (1.0 - xHingeNorm) * chord;
-
-                    for (let k = 0; k <= flapSamples; k++) {
-                        const localNorm = k / flapSamples;
-                        const globalNorm = xHingeNorm + localNorm * (1.0 - xHingeNorm);
-                        const xLoc = localNorm * flapChord;
-                        const yt = nacaHalfThickness(globalNorm, chord, 0.13);
-                        flapUpper.push({ x: xLoc, y: -yt });
-                        flapLower.push({ x: xLoc, y: yt });
-                    }
-
-                    ctx.beginPath();
-                    ctx.moveTo(flapUpper[0].x, flapUpper[0].y);
-                    for (let p of flapUpper) ctx.lineTo(p.x, p.y);
-                    for (let j = flapLower.length - 1; j >= 0; j--) ctx.lineTo(flapLower[j].x, flapLower[j].y);
-                    ctx.closePath();
-
-                    ctx.fillStyle = '#334155';
-                    ctx.fill();
-                    ctx.strokeStyle = '#94a3b8';
-                    ctx.lineWidth = 2.0;
-                    ctx.stroke();
-
-                    ctx.restore();
-
-                    // Mechanical Hinge Pivot Point
-                    ctx.beginPath();
-                    ctx.arc(hingeX, 0, 4.0, 0, Math.PI * 2);
-                    ctx.fillStyle = flapDeg > 0 ? '#f43f5e' : '#94a3b8';
-                    ctx.fill();
+                    upperPoints.push({
+                        x: centerX + udx * cosA - uzLocal * sinA,
+                        y: centerY + udx * sinA + uzLocal * cosA
+                    });
+                    lowerPoints.push({
+                        x: centerX + ldx * cosA - lzLocal * sinA,
+                        y: centerY + ldx * sinA + lzLocal * cosA
+                    });
                 }
 
-                ctx.restore();
+                return { upper: upperPoints, lower: lowerPoints };
             }
 
             render() {
@@ -1301,17 +1100,130 @@
                 const centerX = this.width * 0.42;
                 const centerY = this.height * 0.50;
 
-                const baseSpeed = (simState.speed / 450) * 8.5;
                 const aoa = simState.aoa;
                 const flap = simState.flap;
+                const baseSpeed = (simState.speed / 450) * 8.5;
 
-                // Stall separation condition
-                const isSeparated = !this.isMorphing && (aoa > 13 || flap > 15);
+                // 1. Compute exact airfoil boundary arrays
+                const geom = this.computeAirfoilGeometry(chord, centerX, centerY, aoa, flap);
+                const upPts = geom.upper;
+                const lowPts = geom.lower;
 
+                // Leading Edge & Trailing Edge Extents
+                const leX = upPts[0].x;
+                const leY = upPts[0].y;
+                const teUpper = upPts[upPts.length - 1];
+                const teLower = lowPts[lowPts.length - 1];
+                const teX = (teUpper.x + teLower.x) * 0.5;
+                const teY = (teUpper.y + teLower.y) * 0.5;
+
+                // Stagnation streamline height at tunnel inlet
+                const aoaRad = (aoa * Math.PI) / 180;
+                const yStag = leY + Math.tan(aoaRad) * (centerX - leX) * 0.5;
+
+                // Stall separation triggers
+                const isSeparated = !this.isMorphing && (aoa > 13 || flap > 14);
+                // Separation point on upper surface (hinge at ~70% chord)
+                const sepIdx = Math.round(upPts.length * 0.70);
+                const sepPt = upPts[sepIdx];
+
+                // 2. Draw the exact Solid Airfoil Skin
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.moveTo(upPts[0].x, upPts[0].y);
+                for (let i = 1; i < upPts.length; i++) this.ctx.lineTo(upPts[i].x, upPts[i].y);
+                for (let i = lowPts.length - 1; i >= 0; i--) this.ctx.lineTo(lowPts[i].x, lowPts[i].y);
+                this.ctx.closePath();
+
+                const grad = this.ctx.createLinearGradient(centerX - 0.28 * chord, 0, centerX + 0.72 * chord, 0);
+                if (this.isMorphing) {
+                    grad.addColorStop(0, '#0f172a');
+                    grad.addColorStop(0.65, '#1e293b');
+                    grad.addColorStop(1, '#064e3b');
+                    this.ctx.fillStyle = grad;
+                    this.ctx.strokeStyle = '#34d399';
+                    this.ctx.lineWidth = 2.2;
+                } else {
+                    grad.addColorStop(0, '#0f172a');
+                    grad.addColorStop(0.70, '#1e293b');
+                    grad.addColorStop(1, '#334155');
+                    this.ctx.fillStyle = grad;
+                    this.ctx.strokeStyle = '#64748b';
+                    this.ctx.lineWidth = 2.0;
+                }
+                this.ctx.fill();
+
+                // Draw Internal Honeycomb Core on Morphing Wing
+                if (this.isMorphing) {
+                    this.ctx.save();
+                    this.ctx.clip();
+                    this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
+                    this.ctx.lineWidth = 1.0;
+                    const cellSize = 7.5;
+                    for (let hx = centerX - 0.20 * chord; hx < centerX + 0.50 * chord; hx += cellSize * 2.3) {
+                        for (let hy = centerY - 0.30 * chord; hy < centerY + 0.30 * chord; hy += cellSize * 1.75) {
+                            this.ctx.beginPath();
+                            for (let a = 0; a < 6; a++) {
+                                const angle = (Math.PI / 3) * a;
+                                const px = hx + cellSize * Math.cos(angle);
+                                const py = hy + cellSize * Math.sin(angle);
+                                if (a === 0) this.ctx.moveTo(px, py);
+                                else this.ctx.lineTo(px, py);
+                            }
+                            this.ctx.closePath();
+                            this.ctx.stroke();
+                        }
+                    }
+                    this.ctx.restore();
+                } else {
+                    // Mechanical Hinge Pivot on Conventional Wing
+                    const hingePt = lowPts[sepIdx];
+                    if (hingePt) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(hingePt.x, hingePt.y - 2, 4, 0, Math.PI * 2);
+                        this.ctx.fillStyle = flap > 0 ? '#f43f5e' : '#94a3b8';
+                        this.ctx.fill();
+                    }
+                }
+                this.ctx.stroke();
+                this.ctx.restore();
+
+                // 3. Helper to look up upper and lower wing boundaries at any world X
+                const getWingBounds = (x) => {
+                    if (x < leX || x > teX) return null;
+                    let yu = null, yl = null;
+                    // Upper surface search
+                    for (let i = 0; i < upPts.length - 1; i++) {
+                        const x1 = upPts[i].x, x2 = upPts[i + 1].x;
+                        if ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)) {
+                            const t = Math.abs(x2 - x1) < 1e-4 ? 0 : (x - x1) / (x2 - x1);
+                            yu = upPts[i].y + t * (upPts[i + 1].y - upPts[i].y);
+                            break;
+                        }
+                    }
+                    // Lower surface search
+                    for (let i = 0; i < lowPts.length - 1; i++) {
+                        const x1 = lowPts[i].x, x2 = lowPts[i + 1].x;
+                        if ((x >= x1 && x <= x2) || (x >= x2 && x <= x1)) {
+                            const t = Math.abs(x2 - x1) < 1e-4 ? 0 : (x - x1) / (x2 - x1);
+                            yl = lowPts[i].y + t * (lowPts[i + 1].y - lowPts[i].y);
+                            break;
+                        }
+                    }
+                    if (yu !== null && yl !== null) {
+                        return { top: Math.min(yu, yl), bot: Math.max(yu, yl) };
+                    }
+                    return null;
+                };
+
+                // Downwash angle for trailing wake
+                const downwashRad = (aoa * 0.45 + flap * 0.40) * Math.PI / 180;
+
+                // 4. Update and Render Streamline Particles
                 this.particles.forEach(p => {
                     p.prevX = p.x;
                     p.prevY = p.y;
-                    p.x += baseSpeed * p.speedFactor;
+                    p.x += baseSpeed * p.speedOffset;
 
                     if (p.x > this.width) {
                         p.x = 0;
@@ -1319,27 +1231,92 @@
                         p.justReset = true;
                     }
 
-                    // Directly evaluate deterministic streamline coordinate
-                    p.y = this.getStreamlineY(p.x, p.seedY, chord, centerX, centerY, aoa, flap);
+                    const isTopStream = p.seedY < yStag;
+                    let calculatedY = p.seedY;
+                    let isTurbulent = false;
 
-                    // Add gentle wake turbulence wave if flow separated
-                    let turbColor = false;
-                    if (isSeparated) {
-                        const normX = (p.x - centerX) / chord + 0.28;
-                        if (normX > 0.68 && p.seedY < centerY) {
-                            turbColor = true;
-                            const tFactor = Math.min(1.0, (aoa - 12) * 0.12 + flap * 0.02);
-                            p.y += Math.sin(p.x * 0.05 + Date.now() * 0.005) * (tFactor * 4);
+                    if (isTopStream) {
+                        // ============================================================
+                        // UPPER STREAMLINE: STRICTLY CONFINED TO SPACE ABOVE UPPER SKIN
+                        // ============================================================
+                        const eta = p.seedY / yStag; // 0 (ceiling) to 1.0 (wing skin)
+                        const bounds = getWingBounds(p.x);
+
+                        if (bounds !== null) {
+                            let skinBoundaryY = bounds.top;
+
+                            // When flow separates at the flap kink:
+                            if (isSeparated && p.x > sepPt.x) {
+                                // Air shoots off tangentially, leaving the sunken flap below
+                                const tangentSlope = -0.05 + Math.tan(aoaRad * 0.5);
+                                const detachedLayerY = sepPt.y + (p.x - sepPt.x) * tangentSlope;
+                                skinBoundaryY = Math.min(bounds.top, detachedLayerY);
+                                isTurbulent = true;
+                            }
+
+                            // Strictly bounded: Available channel is [5, skinBoundaryY - 2]
+                            const availableHeight = skinBoundaryY - 7;
+                            calculatedY = 5 + eta * availableHeight;
+
+                            // Add gentle turbulent oscillation if in separated wake
+                            if (isTurbulent && eta > 0.6) {
+                                calculatedY += Math.sin(p.x * 0.08 + Date.now() * 0.005) * (flap * 0.15 + 2);
+                            }
+                        } else if (p.x < leX) {
+                            // Approaching the nose: smooth upward compression
+                            const dx = leX - p.x;
+                            const blend = Math.exp(-dx / (0.35 * chord));
+                            calculatedY = p.seedY * (1 - blend) + (5 + eta * (leY - 7)) * blend;
+                        } else {
+                            // Downstream of trailing edge: downwash wake
+                            const dx = p.x - teX;
+                            const wakeCenterY = teY + Math.tan(downwashRad) * dx * 0.45;
+                            const relax = Math.min(1.0, dx / (0.6 * chord));
+                            const wakeY = 5 + eta * (wakeCenterY - 7);
+                            calculatedY = wakeY * (1 - relax * 0.3) + p.seedY * (relax * 0.3);
+
+                            if (isSeparated && eta > 0.6) {
+                                isTurbulent = true;
+                                calculatedY += Math.sin(p.x * 0.06 + Date.now() * 0.004) * (flap * 0.18 + 2.5);
+                            }
+                        }
+
+                    } else {
+                        // ============================================================
+                        // LOWER STREAMLINE: STRICTLY CONFINED TO SPACE BELOW LOWER SKIN
+                        // ============================================================
+                        const zeta = (p.seedY - yStag) / (this.height - yStag); // 0 (skin) to 1.0 (floor)
+                        const bounds = getWingBounds(p.x);
+
+                        if (bounds !== null) {
+                            const skinBoundaryY = bounds.bot + 2;
+                            const availableHeight = (this.height - 5) - skinBoundaryY;
+                            calculatedY = skinBoundaryY + zeta * availableHeight;
+                        } else if (p.x < leX) {
+                            // Approaching the nose: smooth downward deflection under nose
+                            const dx = leX - p.x;
+                            const blend = Math.exp(-dx / (0.35 * chord));
+                            calculatedY = p.seedY * (1 - blend) + ((leY + 3) + zeta * (this.height - leY - 8)) * blend;
+                        } else {
+                            // Downstream of trailing edge: follows wake underneath
+                            const dx = p.x - teX;
+                            const wakeCenterY = teY + Math.tan(downwashRad) * dx * 0.45;
+                            const relax = Math.min(1.0, dx / (0.6 * chord));
+                            const wakeY = (wakeCenterY + 4) + zeta * (this.height - wakeCenterY - 9);
+                            calculatedY = wakeY * (1 - relax * 0.3) + p.seedY * (relax * 0.3);
                         }
                     }
 
+                    p.y = calculatedY;
+
+                    // Draw streamline path
                     if (!p.justReset && p.x >= p.prevX) {
                         this.ctx.beginPath();
                         this.ctx.moveTo(p.prevX, p.prevY);
                         this.ctx.lineTo(p.x, p.y);
 
-                        if (turbColor) {
-                            this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.70)';
+                        if (isTurbulent) {
+                            this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.72)';
                             this.ctx.lineWidth = 1.4;
                         } else {
                             this.ctx.strokeStyle = this.isMorphing ? 'rgba(52, 211, 153, 0.60)' : 'rgba(56, 189, 248, 0.50)';
@@ -1350,8 +1327,6 @@
 
                     p.justReset = false;
                 });
-
-                this.drawAirfoil(this.ctx, centerX, centerY, chord, aoa, flap);
             }
         }
 
