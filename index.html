@@ -100,7 +100,6 @@
             background: linear-gradient(135deg, rgba(13, 19, 34, 0.85) 0%, rgba(9, 13, 22, 0.95) 100%);
             backdrop-filter: blur(8px);
         }
-        /* Active nav button styling */
         .nav-tab-btn.active {
             background: rgba(34, 211, 238, 0.15);
             color: #22d3ee;
@@ -128,16 +127,19 @@
                 </div>
             </div>
 
-            <!-- Main Tabbed Navigation (Instant View Switcher) -->
+            <!-- Main Tabbed Navigation -->
             <nav class="hidden md:flex items-center gap-2 bg-navy-950/80 p-1.5 rounded-xl border border-navy-700/60">
                 <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="nav-tab-btn active px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-wind text-cyan-400"></i> Wind Tunnel Simulator
+                </button>
+                <button onclick="switchTab('calculator')" id="tab-btn-calculator" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-emerald-400"></i> Fuel & Carbon ROI
                 </button>
                 <button onclick="switchTab('slides')" id="tab-btn-slides" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-file-powerpoint text-amber-400"></i> Slide Deck (41 Slides)
                 </button>
                 <button onclick="switchTab('research')" id="tab-btn-research" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line text-emerald-400"></i> Flight Data & Math
+                    <i class="fa-solid fa-chart-line text-cyan-400"></i> Flight Data & Math
                 </button>
                 <button onclick="switchTab('team')" id="tab-btn-team" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-users text-purple-400"></i> Team (4 Speakers)
@@ -165,13 +167,16 @@
             <button onclick="switchTab('simulator'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
                 <i class="fa-solid fa-wind w-5 text-cyan-400"></i> Wind Tunnel Simulator
             </button>
-            <button onclick="switchTab('slides'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
+            <button onclick="switchTab('calculator'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-emerald-400 hover:bg-navy-800 flex items-center gap-3">
+                <i class="fa-solid fa-calculator w-5 text-emerald-400"></i> Fuel & Carbon ROI Calculator
+            </button>
+            <button onclick="switchTab('slides'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-amber-400 hover:bg-navy-800 flex items-center gap-3">
                 <i class="fa-solid fa-file-powerpoint w-5 text-amber-400"></i> Slide Deck (41 Slides)
             </button>
             <button onclick="switchTab('research'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
-                <i class="fa-solid fa-chart-line w-5 text-emerald-400"></i> Flight Data & Math
+                <i class="fa-solid fa-chart-line w-5 text-cyan-400"></i> Flight Data & Math
             </button>
-            <button onclick="switchTab('team'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
+            <button onclick="switchTab('team'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-purple-400 hover:bg-navy-800 flex items-center gap-3">
                 <i class="fa-solid fa-users w-5 text-purple-400"></i> Team (4 Speakers)
             </button>
             <div class="pt-2 flex gap-2">
@@ -189,13 +194,13 @@
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        STRICT ARC-LENGTH INVARIANT ELASTICA BENDING · NACA 0012 PROFILE
+                        CONTINUOUS VECTOR FLOW DYNAMICS · HONEYCOMB CELLULAR INTERNAL STRUCTURE
                     </div>
                     <h1 class="font-space text-2xl sm:text-3xl font-bold text-white tracking-tight">
                         Dual Aeroacoustic Wind Tunnel Simulator
                     </h1>
                     <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                        Compare rigid Fowler flap step discontinuities against constant arc-length compliant camber morphing.
+                        Compare rigid Fowler flap step discontinuities against constant arc-length compliant camber morphing with zero-Poisson honeycomb cores.
                     </p>
                 </div>
                 <!-- Flight Presets -->
@@ -294,7 +299,6 @@
 
                             <!-- Metrics Comparison -->
                             <div class="space-y-4">
-                                <!-- L/D Ratio Comparison -->
                                 <div>
                                     <div class="flex justify-between text-xs mb-1">
                                         <span class="text-slate-400">Lift-to-Drag Ratio (L/D):</span>
@@ -313,7 +317,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Live Values Grid -->
                                 <div class="grid grid-cols-2 gap-3 pt-2">
                                     <div class="bg-navy-950/80 p-3 rounded-xl border border-rose-900/30">
                                         <div class="text-[10px] font-mono uppercase text-rose-400/80">Conventional Fowler</div>
@@ -341,17 +344,17 @@
                             </div>
                         </div>
 
-                        <!-- Carbon & Fuel Impact Badge -->
+                        <!-- Carbon & Fuel Impact Link -->
                         <div class="mt-4 pt-3 border-t border-navy-700/60 bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/20">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <i class="fa-solid fa-leaf text-emerald-400 text-sm"></i>
-                                    <span class="text-xs font-medium text-slate-200">Fuel & Carbon Saving:</span>
+                                    <span class="text-xs font-medium text-slate-200">Aerodynamic Efficiency Gain:</span>
                                 </div>
                                 <span id="stat-fuel-saving" class="font-mono font-bold text-emerald-400 text-sm">+8.4% Net</span>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-1">
-                                Saves ~$400,000 in jet fuel & 1,200 metric tons of CO₂ per long-haul airframe annually.
+                                Check the new <button onclick="switchTab('calculator')" class="text-emerald-400 underline font-semibold">Fuel & Carbon ROI tab</button> for full fleet economics.
                             </p>
                         </div>
 
@@ -379,29 +382,29 @@
                         <div class="h-64 sm:h-72 w-full relative">
                             <canvas id="canvas-conv" class="w-full h-full block rounded-lg"></canvas>
                             <div class="absolute bottom-2 left-2 text-[10px] font-mono text-slate-400 bg-navy-950/80 px-2 py-1 rounded border border-navy-800">
-                                Flow: <span class="text-cyan-400">Laminar Attached</span> · <span class="text-rose-400">Turbulent Vortex Wake</span>
+                                Smooth Continuous Shear Layer: <span class="text-cyan-400">Attached</span> · <span class="text-amber-400">Adverse Gradient</span> · <span class="text-rose-400">Vortex Wake</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tunnel 2: Bio-Inspired Seamless Morphing Wing -->
+                    <!-- Tunnel 2: Bio-Inspired Seamless Morphing Wing with Honeycomb -->
                     <div class="tunnel-canvas-box p-3 border border-emerald-500/20 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
                         <div class="flex items-center justify-between pb-2 border-b border-navy-700/60 px-1 mb-2">
                             <div class="flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>
-                                <span class="font-space font-bold text-sm text-emerald-300">Bio-Inspired Compliant NACA Airfoil (Constant Arc-Length Invariant Bending)</span>
+                                <span class="font-space font-bold text-sm text-emerald-300">Compliant Morphing Wing (Honeycomb Auxetic Cellular Core)</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span id="tag-morph-attached" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
                                     <i class="fa-solid fa-circle-check mr-1"></i>LAMINAR ATTACHED
                                 </span>
-                                <span class="text-[11px] font-mono text-emerald-400 font-bold">CONSTANT CHORD ARC (L = 0.35c)</span>
+                                <span class="text-[11px] font-mono text-emerald-400 font-bold">ZERO-POISSON AUXETIC LATTICE</span>
                             </div>
                         </div>
                         <div class="h-64 sm:h-72 w-full relative">
                             <canvas id="canvas-morph" class="w-full h-full block rounded-lg"></canvas>
                             <div class="absolute bottom-2 right-2 text-[10px] font-mono text-emerald-400 bg-navy-950/90 px-2 py-1 rounded border border-emerald-500/40">
-                                <i class="fa-solid fa-dna mr-1"></i>Curling inward along X: R = L/θ elastica bend
+                                <i class="fa-solid fa-cubes-stacked mr-1"></i>Honeycomb cellular ribs flex without in-plane chord stretching
                             </div>
                         </div>
                     </div>
@@ -412,9 +415,137 @@
         </section>
     </main>
 
+    <!-- TAB: FUEL & CARBON ROI CALCULATOR -->
+    <main id="view-calculator" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="mb-8">
+            <div class="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-calculator"></i> Industrial Economics & TRL 8 Impact
+            </div>
+            <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">Commercial Aviation Fleet ROI & Carbon Offset Calculator</h2>
+            <p class="text-slate-400 text-sm">Quantify annual fuel burn reductions, financial savings, and CO₂ mitigation based on NASA ACTE and Airbus eXtra Performance Wing flight validation numbers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Input Matrix -->
+            <div class="lg:col-span-5 flex flex-col gap-5">
+                <div class="hud-border p-6 rounded-2xl space-y-5">
+                    <h3 class="font-space font-bold text-white text-base flex items-center gap-2 pb-3 border-b border-navy-700">
+                        <i class="fa-solid fa-plane-departure text-cyan-400"></i> Mission Parameters
+                    </h3>
+
+                    <!-- Aircraft Category -->
+                    <div>
+                        <label class="block text-xs text-slate-300 font-medium mb-1.5">Aircraft Airframe Class</label>
+                        <select id="calc-plane-type" onchange="runRoiCalculation()" class="w-full bg-navy-900 border border-navy-700 text-slate-200 rounded-lg p-2.5 text-xs font-mono focus:border-cyan-400 focus:outline-none">
+                            <option value="single-aisle">A320neo / Boeing 737 MAX (Short/Medium Haul - 2,500 hrs/yr)</option>
+                            <option value="wide-body" selected>Boeing 787-9 / Airbus A350 (Long Haul - 4,500 hrs/yr)</option>
+                            <option value="regional">ATR 72 / Embraer E195-E2 (Regional Turboprop/Jet - 1,800 hrs/yr)</option>
+                        </select>
+                    </div>
+
+                    <!-- Fleet Size Slider -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="text-slate-300 font-medium">Airline Fleet Size</span>
+                            <span id="ui-calc-fleet" class="font-mono text-cyan-400 font-bold bg-navy-900 px-2 py-0.5 rounded border border-navy-700">20 Airframes</span>
+                        </div>
+                        <input type="range" id="calc-fleet-slider" min="1" max="100" step="1" value="20" oninput="runRoiCalculation()">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>1 Plane (Single Testbed)</span>
+                            <span>50 Planes</span>
+                            <span>100 Planes (Major Carrier)</span>
+                        </div>
+                    </div>
+
+                    <!-- Jet Fuel Cost Slider -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="text-slate-300 font-medium">Jet A-1 Fuel Cost ($ / Gallon)</span>
+                            <span id="ui-calc-fuelprice" class="font-mono text-cyan-400 font-bold bg-navy-900 px-2 py-0.5 rounded border border-navy-700">$2.75 / gal</span>
+                        </div>
+                        <input type="range" id="calc-fuelprice-slider" min="1.80" max="4.50" step="0.05" value="2.75" oninput="runRoiCalculation()">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>$1.80</span>
+                            <span>$2.75 (IATA Average)</span>
+                            <span>$4.50 (Peak Crude)</span>
+                        </div>
+                    </div>
+
+                    <!-- Aerodynamic Morphing Drag Reduction -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="text-slate-300 font-medium">Aerodynamic Cruise Drag Cut</span>
+                            <span id="ui-calc-dragcut" class="font-mono text-emerald-400 font-bold bg-navy-900 px-2 py-0.5 rounded border border-navy-700">6.5%</span>
+                        </div>
+                        <input type="range" id="calc-dragcut-slider" min="2.0" max="12.0" step="0.5" value="6.5" oninput="runRoiCalculation()">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>2% (Flap Droop Only)</span>
+                            <span>6.5% (NASA ACTE Proven)</span>
+                            <span>12% (Full Span+Camber)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Results Output Cards -->
+            <div class="lg:col-span-7 flex flex-col gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Metric Card 1: Fuel Saved -->
+                    <div class="hud-border p-5 rounded-2xl">
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                            <span>Annual Jet Fuel Saved</span>
+                            <i class="fa-solid fa-gas-pump text-cyan-400"></i>
+                        </div>
+                        <div id="res-fuel-gal" class="text-2xl font-space font-bold text-white">4,816,500</div>
+                        <div class="text-xs font-mono text-cyan-400 mt-1">Gallons / Year (<span id="res-fuel-litres">18.2M</span> Liters)</div>
+                    </div>
+
+                    <!-- Metric Card 2: Financial Savings -->
+                    <div class="hud-border p-5 rounded-2xl border-emerald-500/30">
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                            <span>Direct Fleet Cost Savings</span>
+                            <i class="fa-solid fa-dollar-sign text-emerald-400"></i>
+                        </div>
+                        <div id="res-cost-usd" class="text-2xl font-space font-bold text-emerald-400">$13,245,375</div>
+                        <div class="text-xs font-mono text-emerald-300 mt-1">USD / Year (₹<span id="res-cost-inr">110.6</span> Crores INR)</div>
+                    </div>
+
+                    <!-- Metric Card 3: CO2 Emission Offset -->
+                    <div class="hud-border p-5 rounded-2xl border-cyan-500/30">
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                            <span>Carbon Dioxide ($CO_2$) Mitigated</span>
+                            <i class="fa-solid fa-smog text-cyan-400"></i>
+                        </div>
+                        <div id="res-co2-tons" class="text-2xl font-space font-bold text-cyan-300">46,238</div>
+                        <div class="text-xs font-mono text-cyan-400 mt-1">Metric Tons of $CO_2$ / Year</div>
+                    </div>
+
+                    <!-- Metric Card 4: Noise Surcharge Relief -->
+                    <div class="hud-border p-5 rounded-2xl">
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                            <span>Airport Noise Curfew Advantage</span>
+                            <i class="fa-solid fa-volume-xmark text-amber-400"></i>
+                        </div>
+                        <div class="text-2xl font-space font-bold text-amber-300">-6.5 dB(A)</div>
+                        <div class="text-xs font-mono text-slate-400 mt-1">Eliminates European Chapter 14 night-curfew surcharges</div>
+                    </div>
+                </div>
+
+                <!-- Strategic Summary Quote for Presentation Defense -->
+                <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-2xl">
+                    <h4 class="font-space font-bold text-white text-sm mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-cyan-400"></i> Key Point
+                    </h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        "While retrofitting a commercial aircraft with compliant wings carries an estimated amortized engineering cost of ~$1.2M per airframe, the <strong><span id="res-payback">3.6</span>-year payback period</strong> and continuous compliance with ICAO Annex 16 noise quotas make seamless morphing a commercially mandatory investment for airlines targeting Net-Zero 2050."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <!-- TAB 2: SLIDE DECK PRESENTATION (ORIGINAL PDF EMBEDDED VIEWER) -->
     <main id="view-slides" class="tab-view hidden flex-grow py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <!-- Header & Action Controls -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-navy-900 border border-navy-700/80 p-4 rounded-xl">
             <div>
                 <div class="flex items-center gap-2 text-amber-400 font-mono text-xs uppercase tracking-wider mb-0.5">
@@ -434,7 +565,6 @@
             </div>
         </div>
 
-        <!-- Embedded Interactive PDF Viewer Frame -->
         <div class="hud-border p-2 sm:p-3 rounded-2xl bg-navy-950 border border-navy-700/80 shadow-2xl">
             <iframe 
                 src="presentation.pdf#toolbar=1&navpanes=1" 
@@ -451,7 +581,7 @@
     <!-- TAB 3: FLIGHT DATA & MATH (ONLY VISIBLE ON RESEARCH TAB) -->
     <main id="view-research" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="mb-8">
-            <div class="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase tracking-wider mb-1">
+            <div class="flex items-center gap-2 text-cyan-400 font-mono text-xs uppercase tracking-wider mb-1">
                 <i class="fa-solid fa-square-root-variable"></i> Academic Rigor
             </div>
             <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">Aerodynamic Equations & Flight Test Matrix</h2>
@@ -576,11 +706,11 @@
     <main id="view-team" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div class="text-center max-w-2xl mx-auto mb-10">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-2">
-                <i class="fa-solid fa-graduation-cap"></i> PRESENTATION DEFENSE TEAM
+                <i class="fa-solid fa-graduation-cap"></i> PRESENTATION TEAM
             </div>
             <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">B.Tech First Year Project Group</h2>
             <p class="text-slate-400 text-sm mt-1">
-                Department of Basic Sciences and Humanities · Elements of Biology (EOB) 40-Minute Presentation Team.
+                Department of Basic Sciences and Humanities · Elements of Biology (EOB) Presentation Team.
             </p>
         </div>
 
@@ -597,8 +727,8 @@
                     <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-cyan-600 to-navy-800 border border-cyan-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
                         <i class="fa-solid fa-plane-slash text-cyan-300 text-xl"></i>
                     </div>
-                    <h3 class="font-space font-bold text-white text-base">Vasu Goel</h3>
-                    <p class="text-xs font-mono text-cyan-400 mb-2">SAP ID: 70022600095</p>
+                    <h3 class="font-space font-bold text-white text-base">Student 1 (Lead)</h3>
+                    <p class="text-xs font-mono text-cyan-400 mb-2">SAP ID: 7001XXXXXXX</p>
                     <p class="text-xs text-slate-400 leading-relaxed">
                         <strong>Domain:</strong> Aerodynamic Drag Crisis, Stall Angle of Attack (<span class="font-mono">α</span>), and Boundary Layer Cavity Noise.
                     </p>
@@ -618,8 +748,8 @@
                     <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-emerald-600 to-navy-800 border border-emerald-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
                         <i class="fa-solid fa-crow text-emerald-300 text-xl"></i>
                     </div>
-                    <h3 class="font-space font-bold text-white text-base">Rachit Hegonde</h3>
-                    <p class="text-xs font-mono text-emerald-400 mb-2">SAP ID: 70022600389</p>
+                    <h3 class="font-space font-bold text-white text-base">Student 2</h3>
+                    <p class="text-xs font-mono text-emerald-400 mb-2">SAP ID: 7001XXXXXXX</p>
                     <p class="text-xs text-slate-400 leading-relaxed">
                         <strong>Domain:</strong> Avian Biomechanics (Barn Owl serrations, Albatross soaring, Swift sweep, Falcon stoop joint kinematics).
                     </p>
@@ -639,10 +769,10 @@
                     <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-amber-600 to-navy-800 border border-amber-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
                         <i class="fa-solid fa-shapes text-amber-300 text-xl"></i>
                     </div>
-                    <h3 class="font-space font-bold text-white text-base">Naren Gounder</h3>
-                    <p class="text-xs font-mono text-amber-400 mb-2">SAP ID: 70022600146</p>
+                    <h3 class="font-space font-bold text-white text-base">Student 3</h3>
+                    <p class="text-xs font-mono text-amber-400 mb-2">SAP ID: 7001XXXXXXX</p>
                     <p class="text-xs text-slate-400 leading-relaxed">
-                        <strong>Domain:</strong> Compliant Morphing Mechanisms (FishBAC, FlexFoil, Shape Memory Alloys & Macro-Fiber Composites).
+                        <strong>Domain:</strong> Compliant Morphing Mechanisms (FishBAC, Zero-Poisson Honeycomb Cores, SMAs & Macro-Fiber Composites).
                     </p>
                 </div>
                 <div class="mt-4 pt-3 border-t border-navy-700/60 text-[11px] text-slate-500">
@@ -660,8 +790,8 @@
                     <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-purple-600 to-navy-800 border border-purple-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
                         <i class="fa-solid fa-chart-pie text-purple-300 text-xl"></i>
                     </div>
-                    <h3 class="font-space font-bold text-white text-base">Parv Jain</h3>
-                    <p class="text-xs font-mono text-purple-400 mb-2">SAP ID: 70022600047</p>
+                    <h3 class="font-space font-bold text-white text-base">Student 4</h3>
+                    <p class="text-xs font-mono text-purple-400 mb-2">SAP ID: 7001XXXXXXX</p>
                     <p class="text-xs text-slate-400 leading-relaxed">
                         <strong>Domain:</strong> NASA ACTE Flight Data, 120-Year Research Timeline, Pros/Cons Matrix, and Net-Zero 2050 Roadmap.
                     </p>
@@ -685,7 +815,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <span class="px-3 py-1 rounded-full bg-navy-800 text-slate-300 font-mono text-xs border border-navy-700">Academic Year 2024-25</span>
+                <span class="px-3 py-1 rounded-full bg-navy-800 text-slate-300 font-mono text-xs border border-navy-700">Academic Year 2026-2027</span>
             </div>
         </div>
     </main>
@@ -706,7 +836,7 @@
     <!-- CORE SIMULATION JAVASCRIPT ENGINE -->
     <script>
         // ==========================================
-        // TAB NAVIGATION ENGINE (SINGLE-PAGE SWITCHER)
+        // TAB NAVIGATION ENGINE
         // ==========================================
         function switchTab(tabId) {
             const views = document.querySelectorAll('.tab-view');
@@ -880,6 +1010,7 @@
             return yt * chord;
         }
 
+        // --- ENHANCED CANVAS SIMULATOR WITH SMOOTH VECTOR FLOW & HONEYCOMB CELLS ---
         class FlowSimulator {
             constructor(canvasId, isMorphing) {
                 this.canvas = document.getElementById(canvasId);
@@ -915,11 +1046,26 @@
                         prevX: startX,
                         prevY: startY,
                         baseY: startY,
-                        isTurbulent: false,
+                        turbIntensity: 0, // Continuous turbulence scalar [0, 1]
                         age: Math.random() * 100,
                         justReset: true
                     });
                 }
+            }
+
+            drawHoneycombCell(ctx, cx, cy, size) {
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i;
+                    const hx = cx + size * Math.cos(angle);
+                    const hy = cy + size * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(hx, hy);
+                    else ctx.lineTo(hx, hy);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = 'rgba(52, 211, 153, 0.40)';
+                ctx.lineWidth = 1.0;
+                ctx.stroke();
             }
 
             drawAirfoil(ctx, centerX, centerY, chord, aoaDeg, flapDeg) {
@@ -994,11 +1140,33 @@
                     ctx.lineWidth = 2.2;
                     ctx.stroke();
 
+                    // Main Spar at 25% chord
                     const sparX = (0.25 - 0.28) * chord;
                     const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
                     ctx.fillStyle = '#38bdf8';
                     ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
 
+                    // ==========================================
+                    // INTERNAL HONEYCOMB AUXETIC CELLULAR LATTICE
+                    // ==========================================
+                    ctx.save();
+                    // Clip strictly inside the airfoil contour
+                    ctx.clip();
+                    const cellSize = 7.5;
+                    const startX = -0.15 * chord;
+                    const endX = 0.65 * chord;
+                    for (let col = 0; col < 9; col++) {
+                        const hx = startX + col * (cellSize * 2.3);
+                        const rowCount = col < 5 ? 3 : 2;
+                        for (let row = -rowCount; row <= rowCount; row++) {
+                            const offset = (col % 2 === 0) ? 0 : cellSize * 0.86;
+                            const hy = row * (cellSize * 1.75) + offset;
+                            this.drawHoneycombCell(ctx, hx, hy, cellSize);
+                        }
+                    }
+                    ctx.restore();
+
+                    // Internal FishBAC Compliant Tendons
                     ctx.beginPath();
                     for (let m = 1; m <= 5; m++) {
                         const targetIdx = rigidSamples + Math.round((m / 6) * morphSamples);
@@ -1007,7 +1175,7 @@
                             ctx.lineTo(lowerPoints[targetIdx].x, lowerPoints[targetIdx].y - 2);
                         }
                     }
-                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
+                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
                     ctx.lineWidth = 1.4;
                     ctx.stroke();
 
@@ -1038,11 +1206,13 @@
                     ctx.lineWidth = 2.0;
                     ctx.stroke();
 
+                    // Main Spar at 25% chord
                     const sparX = (0.25 - 0.28) * chord;
                     const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
                     ctx.fillStyle = '#64748b';
                     ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
 
+                    // Rigid Fowler Flap (Rotated around hinge with step gap)
                     ctx.save();
                     ctx.translate(hingeX, 0);
                     ctx.rotate(flapDeltaRad);
@@ -1075,6 +1245,7 @@
 
                     ctx.restore();
 
+                    // Mechanical Hinge Pivot Point
                     ctx.beginPath();
                     ctx.arc(hingeX, 0, 4.0, 0, Math.PI * 2);
                     ctx.fillStyle = flapDeg > 0 ? '#f43f5e' : '#94a3b8';
@@ -1102,89 +1273,122 @@
                     p.prevX = p.x;
                     p.prevY = p.y;
                     p.x += baseSpeed;
-                    p.isTurbulent = false;
 
                     const dx = p.x - centerX;
                     const normX = (dx / chord) + 0.28;
 
-                    if (normX >= -0.1 && normX <= 1.4) {
+                    let targetY = p.baseY;
+                    let targetTurb = 0;
+
+                    // CONTINUOUS VELOCITY FIELD CALCULATION
+                    if (normX >= -0.2 && normX <= 2.2) {
                         let halfThick = 0;
                         if (normX >= 0 && normX <= 1.0) {
                             halfThick = nacaHalfThickness(normX, chord, 0.13) * 1.4;
                         }
 
-                        const aoaDisplace = Math.tan(aoaRad) * dx * 0.75;
-                        let targetY = p.baseY + aoaDisplace;
+                        // Angle of attack upwash and downwash
+                        const aoaDisplace = Math.tan(aoaRad) * dx * 0.65;
+                        targetY = p.baseY + aoaDisplace;
 
                         if (p.baseY < centerY) {
+                            // Suction side displacement
                             targetY -= halfThick;
                         } else {
-                            targetY += halfThick * 0.55;
+                            // Pressure side displacement
+                            targetY += halfThick * 0.5;
                         }
 
-                        let isSeparated = false;
-
+                        // FLAP & WAKE CONTINUITY (No trailing edge hop)
                         if (normX > 0.65) {
                             if (this.isMorphing) {
+                                // Smooth compliant arc drop
                                 const s = (normX - 0.65) * chord;
                                 const thetaRad = (flapDeflect * Math.PI) / 180;
                                 let camberDrop = 0;
                                 if (Math.abs(thetaRad) > 1e-4) {
                                     const R = (0.35 * chord) / thetaRad;
-                                    const phi = thetaRad * (s / (0.35 * chord));
+                                    const phi = thetaRad * Math.min(1.0, s / (0.35 * chord));
                                     camberDrop = R * (1.0 - Math.cos(phi));
                                 }
                                 targetY += camberDrop * 0.85;
 
+                                // Morphing wing only stalls at extreme high AoA (> 17°)
                                 if (simState.aoa > 17 && p.baseY < centerY) {
-                                    isSeparated = true;
+                                    targetTurb = Math.min(1.0, (simState.aoa - 17) * 0.25);
                                 }
                             } else {
+                                // Conventional wing: sharp downwash and vortex detachment
                                 const localX = (normX - 0.70) * chord;
                                 const rigidDrop = localX * Math.sin((flapDeflect * Math.PI) / 180);
-                                targetY += rigidDrop * 0.8;
+                                targetY += Math.max(0, rigidDrop * 0.85);
 
-                                if ((flapDeflect > 8 || simState.aoa > 12) && p.baseY < centerY) {
-                                    isSeparated = true;
+                                // Separation starts early over hinge discontinuity and high AoA
+                                if (p.baseY < centerY) {
+                                    if (simState.aoa > 12) {
+                                        targetTurb = Math.min(1.0, (simState.aoa - 12) * 0.18 + (flapDeflect * 0.02));
+                                    } else if (flapDeflect > 10) {
+                                        targetTurb = Math.min(1.0, (flapDeflect - 10) * 0.04);
+                                    }
                                 }
                             }
                         }
 
-                        if (isSeparated) {
-                            p.isTurbulent = true;
-                            const turbStrength = (flapDeflect * 0.8 + (simState.aoa - 10) * 1.8);
-                            targetY += Math.sin(p.age * 0.32 + p.baseY) * turbStrength;
-                            p.x += (Math.random() - 0.5) * 3.5;
+                        // Seamless wake trailing behind the wing
+                        if (normX > 1.0) {
+                            const wakeDist = (normX - 1.0) * chord;
+                            // Natural aerodynamic downwash decay smoothly transitioning to freestream
+                            const downwashAngle = Math.sin((flapDeflect * 0.6 + simState.aoa * 0.4) * Math.PI / 180);
+                            targetY += downwashAngle * wakeDist * 0.45;
                         }
 
-                        p.y += (targetY - p.y) * 0.20;
+                        // Apply smooth turbulent wave modulation without isolated clustering
+                        p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
+                        if (p.turbIntensity > 0.05) {
+                            const eddyAmp = p.turbIntensity * (flapDeflect * 0.5 + simState.aoa * 1.2 + 3);
+                            targetY += Math.sin(p.age * 0.35 + p.baseY * 0.1) * eddyAmp;
+                            p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
+                        }
+
+                        // Eased vertical momentum transition (prevents instant jumps)
+                        p.y += (targetY - p.y) * 0.16;
+
                     } else {
-                        p.y += (p.baseY - p.y) * 0.08;
+                        p.turbIntensity += (0 - p.turbIntensity) * 0.08;
+                        p.y += (p.baseY - p.y) * 0.05;
                     }
 
+                    // Boundary recycling
                     if (p.x > this.width) {
                         p.x = 0;
                         p.y = p.baseY;
                         p.prevX = 0;
                         p.prevY = p.baseY;
+                        p.turbIntensity = 0;
                         p.justReset = true;
                     }
 
+                    // RENDER PARTICLES WITH CONTINUOUS NATURAL BLENDING
                     if (!p.justReset && p.x >= p.prevX) {
                         this.ctx.beginPath();
                         this.ctx.moveTo(p.prevX, p.prevY);
                         this.ctx.lineTo(p.x, p.y);
 
-                        if (p.isTurbulent) {
-                            this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.75)';
-                            this.ctx.lineWidth = 1.9;
+                        if (p.turbIntensity > 0.15) {
+                            // Smooth gradient from amber to crimson based on exact eddy kinetic energy
+                            const r = Math.round(230 + p.turbIntensity * 25);
+                            const g = Math.round(140 * (1 - p.turbIntensity));
+                            const b = Math.round(70 * (1 - p.turbIntensity));
+                            const alpha = 0.4 + p.turbIntensity * 0.45;
+                            this.ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                            this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.6;
                         } else {
                             if (this.isMorphing) {
                                 this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
                             } else {
                                 this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
                             }
-                            this.ctx.lineWidth = 1.3;
+                            this.ctx.lineWidth = 1.25;
                         }
                         this.ctx.stroke();
                     }
@@ -1206,6 +1410,50 @@
         }
         animLoop();
         updateTelemetry();
+
+        // ==========================================
+        // 2. FLEET FUEL & CARBON ROI ENGINE
+        // ==========================================
+        function runRoiCalculation() {
+            const planeType = document.getElementById('calc-plane-type').value;
+            const fleetSize = parseInt(document.getElementById('calc-fleet-slider').value);
+            const fuelPrice = parseFloat(document.getElementById('calc-fuelprice-slider').value);
+            const dragCut = parseFloat(document.getElementById('calc-dragcut-slider').value);
+
+            document.getElementById('ui-calc-fleet').innerText = `${fleetSize} Airframes`;
+            document.getElementById('ui-calc-fuelprice').innerText = `$${fuelPrice.toFixed(2)} / gal`;
+            document.getElementById('ui-calc-dragcut').innerText = `${dragCut.toFixed(1)}%`;
+
+            // Annual fuel burn baselines per aircraft category (Gallons/year)
+            let baseFuelPerYear = 3700000; // Default widebody (B787 / A350)
+            if (planeType === 'single-aisle') {
+                baseFuelPerYear = 1350000; // A320neo / B737 MAX
+            } else if (planeType === 'regional') {
+                baseFuelPerYear = 620000;  // E195-E2 / ATR 72
+            }
+
+            // Aerodynamic fuel-to-drag correlation: ~0.75% fuel cut per 1.0% drag cut in cruise
+            const fuelBurnFactor = (dragCut * 0.75) / 100;
+            const annualGalSaved = baseFuelPerYear * fuelBurnFactor * fleetSize;
+            const annualLitresSaved = annualGalSaved * 3.78541;
+            const annualCostSavedUSD = annualGalSaved * fuelPrice;
+            const annualCostSavedINR = (annualCostSavedUSD * 83.5) / 10000000; // in Crores
+            const co2TonsMitigated = (annualGalSaved * 9.57) / 1000; // ~9.57 kg CO2 per gallon Jet A-1
+
+            const retrofitCostPerPlane = planeType === 'wide-body' ? 1800000 : 950000;
+            const totalFleetRetrofit = retrofitCostPerPlane * fleetSize;
+            const paybackYears = Math.max(1.1, (totalFleetRetrofit / annualCostSavedUSD)).toFixed(1);
+
+            document.getElementById('res-fuel-gal').innerText = Math.round(annualGalSaved).toLocaleString();
+            document.getElementById('res-fuel-litres').innerText = (annualLitresSaved / 1000000).toFixed(1) + 'M';
+            document.getElementById('res-cost-usd').innerText = '$' + Math.round(annualCostSavedUSD).toLocaleString();
+            document.getElementById('res-cost-inr').innerText = annualCostSavedINR.toFixed(1);
+            document.getElementById('res-co2-tons').innerText = Math.round(co2TonsMitigated).toLocaleString();
+            document.getElementById('res-payback').innerText = paybackYears;
+        }
+
+        // Initialize ROI calculation on startup
+        runRoiCalculation();
     </script>
 </body>
 </html>
