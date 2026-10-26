@@ -1256,7 +1256,7 @@
             }
 
             render() {
-                this.ctx.fillStyle = 'rgba(6, 10, 18, 0.28)';
+                this.ctx.fillStyle = 'rgba(6, 10, 18, 0.32)';
                 this.ctx.fillRect(0, 0, this.width, this.height);
 
                 const scale = this.width < 550 ? 0.65 : 0.95;
@@ -1266,7 +1266,8 @@
 
                 const baseSpeed = (simState.speed / 450) * 8.5;
                 const aoaRad = (simState.aoa * Math.PI) / 180;
-                const flapDeflect = simState.flap;
+                const flapDeg = simState.flap;
+                const flapRad = (flapDeg * Math.PI) / 180;
 
                 this.particles.forEach(p => {
                     p.age += 1;
@@ -1275,90 +1276,101 @@
                     p.x += baseSpeed;
 
                     const dx = p.x - centerX;
-                    const normX = (dx / chord) + 0.28;
+                    const normX = (dx / chord) + 0.28; // Airfoil spans normX in [0, 1]
 
                     let targetY = p.baseY;
                     let targetTurb = 0;
 
-                    // CONTINUOUS VELOCITY FIELD CALCULATION
-                    if (normX >= -0.2 && normX <= 2.2) {
-                        let halfThick = 0;
-                        if (normX >= 0 && normX <= 1.0) {
-                            halfThick = nacaHalfThickness(normX, chord, 0.13) * 1.4;
-                        }
+                    // Aerodynamic upwash / downwash tilt across the entire tunnel
+                    const globalAoAShift = Math.tan(aoaRad) * dx * 0.55;
+                    targetY += globalAoAShift;
 
-                        // Angle of attack upwash and downwash
-                        const aoaDisplace = Math.tan(aoaRad) * dx * 0.65;
-                        targetY = p.baseY + aoaDisplace;
+                    // ----------------------------------------------------
+                    // EXACT SURFACE PROFILES & IMPERMEABLE BOUNDARY CHECK
+                    // ----------------------------------------------------
+                    if (normX >= -0.05 && normX <= 1.05) {
+                        const clampedNormX = Math.max(0, Math.min(1.0, normX));
+                        const yt = nacaHalfThickness(clampedNormX, chord, 0.13);
 
-                        if (p.baseY < centerY) {
-                            // Suction side displacement
-                            targetY -= halfThick;
-                        } else {
-                            // Pressure side displacement
-                            targetY += halfThick * 0.5;
-                        }
-
-                        // FLAP & WAKE CONTINUITY (No trailing edge hop)
+                        let spineY = 0;
                         if (normX > 0.65) {
                             if (this.isMorphing) {
-                                // Smooth compliant arc drop
+                                // Compliant continuous arc drop
                                 const s = (normX - 0.65) * chord;
-                                const thetaRad = (flapDeflect * Math.PI) / 180;
-                                let camberDrop = 0;
-                                if (Math.abs(thetaRad) > 1e-4) {
-                                    const R = (0.35 * chord) / thetaRad;
-                                    const phi = thetaRad * Math.min(1.0, s / (0.35 * chord));
-                                    camberDrop = R * (1.0 - Math.cos(phi));
+                                const L_morph = 0.35 * chord;
+                                if (Math.abs(flapRad) > 1e-4) {
+                                    const R = L_morph / flapRad;
+                                    const phi = flapRad * Math.min(1.0, s / L_morph);
+                                    spineY = R * (1.0 - Math.cos(phi));
                                 }
-                                targetY += camberDrop * 0.85;
-
-                                // Morphing wing only stalls at extreme high AoA (> 17°)
                                 if (simState.aoa > 17 && p.baseY < centerY) {
                                     targetTurb = Math.min(1.0, (simState.aoa - 17) * 0.25);
                                 }
                             } else {
-                                // Conventional wing: sharp downwash and vortex detachment
-                                const localX = (normX - 0.70) * chord;
-                                const rigidDrop = localX * Math.sin((flapDeflect * Math.PI) / 180);
-                                targetY += Math.max(0, rigidDrop * 0.85);
-
-                                // Separation starts early over hinge discontinuity and high AoA
+                                // Conventional rigid flap drop past hinge at 0.70c
+                                if (normX > 0.70) {
+                                    const localFlapX = (normX - 0.70) * chord;
+                                    spineY = localFlapX * Math.sin(flapRad);
+                                }
                                 if (p.baseY < centerY) {
                                     if (simState.aoa > 12) {
-                                        targetTurb = Math.min(1.0, (simState.aoa - 12) * 0.18 + (flapDeflect * 0.02));
-                                    } else if (flapDeflect > 10) {
-                                        targetTurb = Math.min(1.0, (flapDeflect - 10) * 0.04);
+                                        targetTurb = Math.min(1.0, (simState.aoa - 12) * 0.18 + (flapDeg * 0.02));
+                                    } else if (flapDeg > 10) {
+                                        targetTurb = Math.min(1.0, (flapDeg - 10) * 0.04);
                                     }
                                 }
                             }
                         }
 
-                        // Seamless wake trailing behind the wing
-                        if (normX > 1.0) {
-                            const wakeDist = (normX - 1.0) * chord;
-                            // Natural aerodynamic downwash decay smoothly transitioning to freestream
-                            const downwashAngle = Math.sin((flapDeflect * 0.6 + simState.aoa * 0.4) * Math.PI / 180);
-                            targetY += downwashAngle * wakeDist * 0.45;
+                        // Physical upper and lower airfoil surface coordinates in canvas space
+                        const surfaceUpperY = centerY + spineY - yt;
+                        const surfaceLowerY = centerY + spineY + yt;
+
+                        // Strict Solid Boundary Enforcement:
+                        // Upper particles are kept strictly above upper surface
+                        // Lower particles are kept strictly below lower surface
+                        if (p.baseY < centerY) {
+                            const offsetFromCenter = centerY - p.baseY;
+                            const targetUpper = surfaceUpperY - (offsetFromCenter * 0.6);
+                            targetY = Math.min(surfaceUpperY - 3, targetUpper);
+                        } else {
+                            const offsetFromCenter = p.baseY - centerY;
+                            const targetLower = surfaceLowerY + (offsetFromCenter * 0.6);
+                            targetY = Math.max(surfaceLowerY + 3, targetLower);
                         }
 
-                        // Apply smooth turbulent wave modulation without isolated clustering
-                        p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
-                        if (p.turbIntensity > 0.05) {
-                            const eddyAmp = p.turbIntensity * (flapDeflect * 0.5 + simState.aoa * 1.2 + 3);
-                            targetY += Math.sin(p.age * 0.35 + p.baseY * 0.1) * eddyAmp;
-                            p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
+                    } else if (normX > 1.05) {
+                        // WAKE REGION: Both streams leave trailing edge smoothly
+                        const wakeDist = (normX - 1.05) * chord;
+                        let teDrop = 0;
+
+                        if (this.isMorphing) {
+                            const L_morph = 0.35 * chord;
+                            if (Math.abs(flapRad) > 1e-4) {
+                                const R = L_morph / flapRad;
+                                teDrop = R * (1.0 - Math.cos(flapRad));
+                            }
+                        } else {
+                            teDrop = (0.30 * chord) * Math.sin(flapRad);
                         }
 
-                        // Eased vertical momentum transition (prevents instant jumps)
-                        p.y += (targetY - p.y) * 0.16;
-
-                    } else {
-                        p.turbIntensity += (0 - p.turbIntensity) * 0.08;
-                        p.y += (p.baseY - p.y) * 0.05;
+                        // Smooth wake relaxation towards freestream
+                        const downwashSlope = Math.sin((flapDeg * 0.5 + simState.aoa * 0.4) * Math.PI / 180);
+                        targetY += (teDrop * 0.85) + (downwashSlope * wakeDist * 0.35);
                     }
 
-                    // Boundary recycling
+                    // Apply continuous turbulence eddy dispersion
+                    p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
+                    if (p.turbIntensity > 0.05) {
+                        const eddyAmp = p.turbIntensity * (flapDeg * 0.45 + simState.aoa * 1.1 + 2);
+                        targetY += Math.sin(p.age * 0.38 + p.baseY * 0.1) * eddyAmp;
+                        p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
+                    }
+
+                    // Inertia integration: smoothly move toward targetY
+                    p.y += (targetY - p.y) * 0.18;
+
+                    // Bound recycle
                     if (p.x > this.width) {
                         p.x = 0;
                         p.y = p.baseY;
@@ -1368,14 +1380,13 @@
                         p.justReset = true;
                     }
 
-                    // RENDER PARTICLES WITH CONTINUOUS NATURAL BLENDING
+                    // Draw clean streamline segments
                     if (!p.justReset && p.x >= p.prevX) {
                         this.ctx.beginPath();
                         this.ctx.moveTo(p.prevX, p.prevY);
                         this.ctx.lineTo(p.x, p.y);
 
                         if (p.turbIntensity > 0.15) {
-                            // Smooth gradient from amber to crimson based on exact eddy kinetic energy
                             const r = Math.round(230 + p.turbIntensity * 25);
                             const g = Math.round(140 * (1 - p.turbIntensity));
                             const b = Math.round(70 * (1 - p.turbIntensity));
@@ -1383,11 +1394,7 @@
                             this.ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                             this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.6;
                         } else {
-                            if (this.isMorphing) {
-                                this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
-                            } else {
-                                this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
-                            }
+                            this.ctx.strokeStyle = this.isMorphing ? 'rgba(52, 211, 153, 0.55)' : 'rgba(56, 189, 248, 0.45)';
                             this.ctx.lineWidth = 1.25;
                         }
                         this.ctx.stroke();
@@ -1398,7 +1405,6 @@
 
                 this.drawAirfoil(this.ctx, centerX, centerY, chord, simState.aoa, simState.flap);
             }
-        }
 
         const convTunnel = new FlowSimulator('canvas-conv', false);
         const morphTunnel = new FlowSimulator('canvas-morph', true);
