@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroMorph | Avian Flight Biomechanics & Compliant Morphing Wings</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#060a12',
+                            900: '#090d16',
+                            850: '#0d1322',
+                            800: '#131b2e',
+                            700: '#1e2942'
+                        },
+                        cyan: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            glow: 'rgba(34, 211, 238, 0.35)'
+                        },
+                        emerald: {
+                            400: '#34d399',
+                            500: '#10b981',
+                            glow: 'rgba(52, 211, 153, 0.35)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        space: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e2942;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #22d3ee;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+            border: 2px solid #090d16;
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #1e2942;
+            border-radius: 3px;
+        }
+        .tunnel-canvas-box {
+            position: relative;
+            background: radial-gradient(circle at 45% 50%, #0d172b 0%, #060a12 100%);
+            border: 1px solid #1e2942;
+            border-radius: 0.85rem;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85);
+        }
+        .hud-border {
+            border: 1px solid rgba(34, 211, 238, 0.18);
+            background: linear-gradient(135deg, rgba(13, 19, 34, 0.85) 0%, rgba(9, 13, 22, 0.95) 100%);
+            backdrop-filter: blur(8px);
+        }
+        /* Active nav button styling */
+        .nav-tab-btn.active {
+            background: rgba(34, 211, 238, 0.15);
+            color: #22d3ee;
+            border-color: rgba(34, 211, 238, 0.4);
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-navy-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-navy-950">
+
+    <!-- Top Navigation Bar with View Switcher -->
+    <header class="sticky top-0 z-50 bg-navy-900/95 backdrop-blur-md border-b border-navy-700/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+            <!-- Brand -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('simulator')">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-emerald-500 flex items-center justify-center text-navy-950 font-space font-bold text-xl shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-feather-pointed"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-space font-bold text-lg tracking-tight text-white">AeroMorph</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono">B.TECH SEM 1</span>
+                    </div>
+                    <p class="text-xs text-slate-400 hidden sm:block">NMIMS MPSTME · Elements of Biology (EOB)</p>
+                </div>
+            </div>
+
+            <!-- Main Tabbed Navigation (Instant View Switcher) -->
+            <nav class="hidden md:flex items-center gap-2 bg-navy-950/80 p-1.5 rounded-xl border border-navy-700/60">
+                <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="nav-tab-btn active px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-wind text-cyan-400"></i> Wind Tunnel Simulator
+                </button>
+                <button onclick="switchTab('slides')" id="tab-btn-slides" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-file-powerpoint text-amber-400"></i> Slide Deck (41 Slides)
+                </button>
+                <button onclick="switchTab('research')" id="tab-btn-research" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line text-emerald-400"></i> Flight Data & Math
+                </button>
+                <button onclick="switchTab('team')" id="tab-btn-team" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-users text-purple-400"></i> Team (4 Speakers)
+                </button>
+            </nav>
+
+            <!-- Quick Action Buttons -->
+            <div class="hidden sm:flex items-center gap-3">
+                <button onclick="switchTab('simulator'); setFlightPreset('takeoff');" class="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-navy-950 font-space font-semibold text-xs px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-play"></i> Test Flight
+                </button>
+                <button onclick="downloadPPTNotice()" class="bg-navy-800 hover:bg-navy-700 text-slate-200 text-xs px-3.5 py-2 rounded-lg border border-navy-600 transition flex items-center gap-2">
+                    <i class="fa-solid fa-download"></i> PPT PDF
+                </button>
+            </div>
+
+            <!-- Mobile Hamburger Toggle -->
+            <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg focus:outline-none">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-navy-900 border-b border-navy-700 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('simulator'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
+                <i class="fa-solid fa-wind w-5 text-cyan-400"></i> Wind Tunnel Simulator
+            </button>
+            <button onclick="switchTab('slides'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
+                <i class="fa-solid fa-file-powerpoint w-5 text-amber-400"></i> Slide Deck (41 Slides)
+            </button>
+            <button onclick="switchTab('research'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
+                <i class="fa-solid fa-chart-line w-5 text-emerald-400"></i> Flight Data & Math
+            </button>
+            <button onclick="switchTab('team'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
+                <i class="fa-solid fa-users w-5 text-purple-400"></i> Team (4 Speakers)
+            </button>
+            <div class="pt-2 flex gap-2">
+                <button onclick="switchTab('simulator'); toggleMobileMenu();" class="flex-1 text-center bg-cyan-500 text-navy-950 font-bold text-xs py-2 rounded-lg">Run Sim</button>
+                <button onclick="downloadPPTNotice(); toggleMobileMenu();" class="flex-1 bg-navy-800 text-slate-300 text-xs py-2 rounded-lg border border-navy-700">Get PPT</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- TAB 1: WIND TUNNEL SIMULATOR (ONLY VISIBLE ON SIMULATOR TAB) -->
+    <main id="view-simulator" class="tab-view flex-grow flex flex-col">
+        <!-- Hero Header -->
+        <section class="relative pt-6 pb-6 px-4 sm:px-6 lg:px-8 border-b border-navy-800/80 bg-gradient-to-b from-navy-900/40 to-navy-950">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-mono mb-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        STRICT ARC-LENGTH INVARIANT ELASTICA BENDING · NACA 0012 PROFILE
+                    </div>
+                    <h1 class="font-space text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                        Dual Aeroacoustic Wind Tunnel Simulator
+                    </h1>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">
+                        Compare rigid Fowler flap step discontinuities against constant arc-length compliant camber morphing.
+                    </p>
+                </div>
+                <!-- Flight Presets -->
+                <div class="flex items-center flex-wrap gap-2">
+                    <span class="text-xs font-mono text-slate-400 mr-1">PRESETS:</span>
+                    <button onclick="setFlightPreset('takeoff')" class="px-2.5 py-1 text-xs bg-navy-800 hover:bg-cyan-500/20 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-300 rounded border border-navy-700 transition">
+                        Takeoff High-Lift (15°)
+                    </button>
+                    <button onclick="setFlightPreset('cruise')" class="px-2.5 py-1 text-xs bg-navy-800 hover:bg-emerald-500/20 hover:border-emerald-500/50 text-slate-300 hover:text-emerald-300 rounded border border-navy-700 transition">
+                        Clean Cruise (Mach 0.82)
+                    </button>
+                    <button onclick="setFlightPreset('landing')" class="px-2.5 py-1 text-xs bg-navy-800 hover:bg-amber-500/20 hover:border-amber-500/50 text-slate-300 hover:text-amber-300 rounded border border-navy-700 transition">
+                        Landing (30° Deflection)
+                    </button>
+                    <button onclick="setFlightPreset('stall')" class="px-2.5 py-1 text-xs bg-rose-950/60 hover:bg-rose-900/80 text-rose-300 rounded border border-rose-800 transition">
+                        Critical Stall (AoA 19°)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulator Grid -->
+        <section class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex-grow">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left Column: Flight Controls & Real-Time Telemetry (4 Cols) -->
+                <div class="lg:col-span-4 flex flex-col gap-5">
+                    
+                    <!-- Controls Card -->
+                    <div class="hud-border p-5 rounded-2xl">
+                        <div class="flex items-center justify-between pb-3 border-b border-navy-700/80 mb-4">
+                            <h3 class="font-space font-bold text-white text-base flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-cyan-400"></i> Flight Control Console
+                            </h3>
+                            <button onclick="resetFlightParams()" class="text-[11px] font-mono text-slate-400 hover:text-cyan-400 transition">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Reset
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Trailing Edge Flap / Camber Slider -->
+                            <div>
+                                <div class="flex justify-between items-center text-xs mb-1.5">
+                                    <label class="text-slate-300 font-medium">Trailing Edge Deflection (δ)</label>
+                                    <span id="ui-flap-val" class="font-mono text-cyan-400 font-bold bg-navy-800 px-2 py-0.5 rounded border border-navy-700">0°</span>
+                                </div>
+                                <input type="range" id="slider-flap" min="0" max="35" step="1" value="0">
+                                <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                                    <span>0° (Clean Wing)</span>
+                                    <span>15° (Takeoff)</span>
+                                    <span>35° (Max Landing)</span>
+                                </div>
+                            </div>
+
+                            <!-- Angle of Attack (AoA) Slider -->
+                            <div>
+                                <div class="flex justify-between items-center text-xs mb-1.5">
+                                    <label class="text-slate-300 font-medium">Angle of Attack (α)</label>
+                                    <span id="ui-aoa-val" class="font-mono text-cyan-400 font-bold bg-navy-800 px-2 py-0.5 rounded border border-navy-700">2°</span>
+                                </div>
+                                <input type="range" id="slider-aoa" min="-2" max="22" step="1" value="2">
+                                <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                                    <span>-2° (Descent)</span>
+                                    <span>8° (Climb)</span>
+                                    <span>22° (Critical Stall)</span>
+                                </div>
+                            </div>
+
+                            <!-- Airspeed Slider -->
+                            <div>
+                                <div class="flex justify-between items-center text-xs mb-1.5">
+                                    <label class="text-slate-300 font-medium">Airspeed (Velocity)</label>
+                                    <span id="ui-speed-val" class="font-mono text-cyan-400 font-bold bg-navy-800 px-2 py-0.5 rounded border border-navy-700">450 km/h (M 0.37)</span>
+                                </div>
+                                <input type="range" id="slider-speed" min="150" max="850" step="25" value="450">
+                                <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                                    <span>150 (Approach)</span>
+                                    <span>500 km/h</span>
+                                    <span>850 (Transonic)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Telemetry Comparison Card -->
+                    <div class="hud-border p-5 rounded-2xl flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-3 border-b border-navy-700/80 mb-4">
+                                <h3 class="font-space font-bold text-white text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-gauge-high text-emerald-400"></i> Aerodynamic Telemetry
+                                </h3>
+                                <span id="ui-flight-status" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                    OPTIMAL CRUISE
+                                </span>
+                            </div>
+
+                            <!-- Metrics Comparison -->
+                            <div class="space-y-4">
+                                <!-- L/D Ratio Comparison -->
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="text-slate-400">Lift-to-Drag Ratio (L/D):</span>
+                                        <span class="font-mono text-xs">
+                                            <span class="text-rose-400" id="stat-conv-ld">14.2</span> vs 
+                                            <span class="text-emerald-400 font-bold" id="stat-morph-ld">19.8</span>
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 h-2.5 rounded overflow-hidden bg-navy-800">
+                                        <div class="h-full bg-rose-500 rounded transition-all duration-300" id="bar-conv-ld" style="width: 60%;"></div>
+                                        <div class="h-full bg-emerald-400 rounded transition-all duration-300" id="bar-morph-ld" style="width: 85%;"></div>
+                                    </div>
+                                    <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-0.5">
+                                        <span>Conventional Fowler</span>
+                                        <span>Compliant Morphing</span>
+                                    </div>
+                                </div>
+
+                                <!-- Live Values Grid -->
+                                <div class="grid grid-cols-2 gap-3 pt-2">
+                                    <div class="bg-navy-950/80 p-3 rounded-xl border border-rose-900/30">
+                                        <div class="text-[10px] font-mono uppercase text-rose-400/80">Conventional Fowler</div>
+                                        <div class="mt-1 flex items-baseline justify-between">
+                                            <span class="text-xs text-slate-400">Drag (Cd):</span>
+                                            <span id="stat-conv-cd" class="font-mono text-sm font-bold text-rose-400">0.024</span>
+                                        </div>
+                                        <div class="mt-1 flex items-baseline justify-between">
+                                            <span class="text-xs text-slate-400">Noise:</span>
+                                            <span id="stat-conv-noise" class="font-mono text-sm font-bold text-rose-400">78 dB</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-navy-950/80 p-3 rounded-xl border border-emerald-900/30">
+                                        <div class="text-[10px] font-mono uppercase text-emerald-400/80">Morphing Wing</div>
+                                        <div class="mt-1 flex items-baseline justify-between">
+                                            <span class="text-xs text-slate-400">Drag (Cd):</span>
+                                            <span id="stat-morph-cd" class="font-mono text-sm font-bold text-emerald-400">0.018</span>
+                                        </div>
+                                        <div class="mt-1 flex items-baseline justify-between">
+                                            <span class="text-xs text-slate-400">Noise:</span>
+                                            <span id="stat-morph-noise" class="font-mono text-sm font-bold text-emerald-400">62 dB</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Carbon & Fuel Impact Badge -->
+                        <div class="mt-4 pt-3 border-t border-navy-700/60 bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/20">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-leaf text-emerald-400 text-sm"></i>
+                                    <span class="text-xs font-medium text-slate-200">Fuel & Carbon Saving:</span>
+                                </div>
+                                <span id="stat-fuel-saving" class="font-mono font-bold text-emerald-400 text-sm">+8.4% Net</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-1">
+                                Saves ~$400,000 in jet fuel & 1,200 metric tons of CO₂ per long-haul airframe annually.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Dual Live Wind Tunnel Canvases (8 Cols) -->
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    
+                    <!-- Tunnel 1: Conventional Rigid Fowler Flap -->
+                    <div class="tunnel-canvas-box p-3">
+                        <div class="flex items-center justify-between pb-2 border-b border-navy-700/60 px-1 mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                <span class="font-space font-bold text-sm text-slate-200">Conventional NACA Wing (Hinged Fowler Flap with Step Gap)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="tag-conv-stall" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse">
+                                    <i class="fa-solid fa-triangle-exclamation mr-1"></i>BOUNDARY LAYER SEPARATION
+                                </span>
+                                <span class="text-[11px] font-mono text-slate-400">RIGID KINK AT x = 0.70c</span>
+                            </div>
+                        </div>
+                        <div class="h-64 sm:h-72 w-full relative">
+                            <canvas id="canvas-conv" class="w-full h-full block rounded-lg"></canvas>
+                            <div class="absolute bottom-2 left-2 text-[10px] font-mono text-slate-400 bg-navy-950/80 px-2 py-1 rounded border border-navy-800">
+                                Flow: <span class="text-cyan-400">Laminar Attached</span> · <span class="text-rose-400">Turbulent Vortex Wake</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tunnel 2: Bio-Inspired Seamless Morphing Wing -->
+                    <div class="tunnel-canvas-box p-3 border border-emerald-500/20 shadow-[0_0_15px_rgba(52,211,153,0.1)]">
+                        <div class="flex items-center justify-between pb-2 border-b border-navy-700/60 px-1 mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>
+                                <span class="font-space font-bold text-sm text-emerald-300">Bio-Inspired Compliant NACA Airfoil (Constant Arc-Length Invariant Bending)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="tag-morph-attached" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                    <i class="fa-solid fa-circle-check mr-1"></i>LAMINAR ATTACHED
+                                </span>
+                                <span class="text-[11px] font-mono text-emerald-400 font-bold">CONSTANT CHORD ARC (L = 0.35c)</span>
+                            </div>
+                        </div>
+                        <div class="h-64 sm:h-72 w-full relative">
+                            <canvas id="canvas-morph" class="w-full h-full block rounded-lg"></canvas>
+                            <div class="absolute bottom-2 right-2 text-[10px] font-mono text-emerald-400 bg-navy-950/90 px-2 py-1 rounded border border-emerald-500/40">
+                                <i class="fa-solid fa-dna mr-1"></i>Curling inward along X: R = L/θ elastica bend
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- TAB 2: SLIDE DECK PRESENTATION (ONLY VISIBLE ON SLIDES TAB) -->
+    <main id="view-slides" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+            <div>
+                <div class="flex items-center gap-2 text-amber-400 font-mono text-xs uppercase tracking-wider mb-1">
+                    <i class="fa-solid fa-book-open"></i> Full Seminar Deck Integration
+                </div>
+                <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">41-Slide Presentation Interactive Viewer</h2>
+                <p class="text-slate-400 text-sm">Review the complete technical presentation delivered at NMIMS MPSTME, categorized into five core learning modules.</p>
+            </div>
+            <!-- Slide Controls -->
+            <div class="flex items-center gap-3">
+                <span id="slide-indicator" class="font-mono text-xs text-slate-300 bg-navy-900 px-3 py-1.5 rounded-lg border border-navy-700">
+                    Slide <strong class="text-amber-400">1</strong> of 20 Key Topics
+                </span>
+                <button onclick="prevSlide()" class="w-9 h-9 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 flex items-center justify-center text-slate-200 transition">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <button onclick="nextSlide()" class="w-9 h-9 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 flex items-center justify-center text-slate-200 transition">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chapter Navigation Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
+            <button onclick="jumpToCategory(0)" class="cat-pill active px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-amber-500/20 border-amber-500 text-amber-300 transition whitespace-nowrap">
+                1. Conventional Bottlenecks
+            </button>
+            <button onclick="jumpToCategory(4)" class="cat-pill px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-navy-800/80 border-navy-700 text-slate-400 hover:text-white transition whitespace-nowrap">
+                2. Biological Models (Owl, Falcon, Swift, Albatross)
+            </button>
+            <button onclick="jumpToCategory(9)" class="cat-pill px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-navy-800/80 border-navy-700 text-slate-400 hover:text-white transition whitespace-nowrap">
+                3. 4 Morphing Modes & FishBAC
+            </button>
+            <button onclick="jumpToCategory(13)" class="cat-pill px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-navy-800/80 border-navy-700 text-slate-400 hover:text-white transition whitespace-nowrap">
+                4. Flight Demonstrators (NASA ACTE, Airbus)
+            </button>
+            <button onclick="jumpToCategory(17)" class="cat-pill px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-navy-800/80 border-navy-700 text-slate-400 hover:text-white transition whitespace-nowrap">
+                5. Trade-offs, Timeline & Net-Zero 2050
+            </button>
+        </div>
+
+        <!-- Slide Display Card Container -->
+        <div id="slide-card-container" class="hud-border p-6 sm:p-8 rounded-2xl min-h-[440px] flex flex-col justify-between transition-all duration-300">
+            <!-- Dynamically Rendered via JS -->
+        </div>
+
+        <!-- Slide Thumbnails / Quick Jump Grid -->
+        <div class="mt-6 flex items-center justify-between text-xs text-slate-400">
+            <span>Use on-screen buttons or Left / Right keyboard arrow keys to navigate slides.</span>
+            <button onclick="openFullDeckModal()" class="text-cyan-400 hover:underline flex items-center gap-1 font-mono">
+                <i class="fa-solid fa-expand"></i> View All Slide Summaries
+            </button>
+        </div>
+    </main>
+
+    <!-- TAB 3: FLIGHT DATA & MATH (ONLY VISIBLE ON RESEARCH TAB) -->
+    <main id="view-research" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="mb-8">
+            <div class="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-square-root-variable"></i> Academic Rigor
+            </div>
+            <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">Aerodynamic Equations & Flight Test Matrix</h2>
+            <p class="text-slate-400 text-sm">Quantitative physics and peer-reviewed flight data from NASA Armstrong, AIAA, and AFRL.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Mathematical Formulations (5 Cols) -->
+            <div class="lg:col-span-5 flex flex-col gap-4">
+                <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-mono text-cyan-400 font-bold">1. NACA THIN-AIRFOIL CAMBER THEORY</span>
+                        <span class="text-[10px] bg-navy-800 px-2 py-0.5 rounded text-slate-400 font-mono">GLAUERT / KUTTA</span>
+                    </div>
+                    <div class="bg-navy-950 p-3 rounded-lg font-mono text-sm text-cyan-300 mb-2 border border-navy-800">
+                        C_L = 2π(α - α₀) + 2 ∫₀^π (dy_c/dx)(cos θ - 1) dθ
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Conventional hinged flaps induce an abrupt slope discontinuity (<span class="font-mono text-rose-400">d²y_c/dx² → ∞</span>) creating severe adverse pressure gradients that precipitate boundary layer separation. The compliant wing dynamically increases the mean camber line smoothly (<span class="font-mono text-emerald-400">y_c(x) ∝ x²</span>), maintaining <span class="font-mono text-emerald-400">attached laminar boundary layer flow</span>.
+                    </p>
+                </div>
+
+                <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-xl">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-mono text-emerald-400 font-bold">2. PARASITIC & FORM DRAG EQUATION</span>
+                        <span class="text-[10px] bg-navy-800 px-2 py-0.5 rounded text-slate-400 font-mono">PRANDTL FORMULATION</span>
+                    </div>
+                    <div class="bg-navy-950 p-3 rounded-lg font-mono text-sm text-emerald-300 mb-2 border border-navy-800">
+                        F_D = ½ · ρ · V² · C_D · A
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Parasitic drag scales with <span class="font-mono text-amber-400">V²</span>. Eliminating flap cavities, tracks, and roller fairings removes cavity vortex acoustic dipole noise, directly lowering airframe approach sound by <span class="font-mono text-emerald-400">30% to 50%</span>.
+                    </p>
+                </div>
+
+                <div class="bg-navy-900 border border-navy-700/80 p-5 rounded-xl">
+                    <span class="text-xs font-mono text-purple-400 font-bold block mb-2">3. CLOSED-LOOP BIO-MECHATRONICS LOOP</span>
+                    <div class="grid grid-cols-3 gap-2 text-center text-[11px] font-mono">
+                        <div class="bg-navy-950 p-2 rounded border border-cyan-500/30 text-cyan-300">
+                            <strong>SENSE</strong><br>Fiber-optic FBG & Pitot Probes
+                        </div>
+                        <div class="bg-navy-950 p-2 rounded border border-amber-500/30 text-amber-300">
+                            <strong>DECIDE</strong><br>PID / Adaptive Flight Controller
+                        </div>
+                        <div class="bg-navy-950 p-2 rounded border border-emerald-500/30 text-emerald-300">
+                            <strong>ACTUATE</strong><br>Shape Memory Alloy / Piezo
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flight Demonstrator Table (7 Cols) -->
+            <div class="lg:col-span-7 bg-navy-900 border border-navy-700/80 p-5 rounded-xl overflow-x-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-space font-bold text-white text-base">Validated Flight Test Programs Comparison</h3>
+                    <span class="text-[10px] font-mono text-slate-400">TRL 6 - TRL 9 STATUS</span>
+                </div>
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                        <tr class="border-b border-navy-700 text-slate-400 font-mono">
+                            <th class="pb-2.5">Program / Airframe</th>
+                            <th class="pb-2.5">Key Mechanism</th>
+                            <th class="pb-2.5">Flight Envelope</th>
+                            <th class="pb-2.5">Verified Result</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-navy-800 text-slate-300">
+                        <tr>
+                            <td class="py-3 font-medium text-white">
+                                NASA ACTE<br>
+                                <span class="text-[10px] text-slate-500">Gulfstream III</span>
+                            </td>
+                            <td class="py-3">FlexFoil 19ft seamless compliant trailing edge</td>
+                            <td class="py-3 font-mono">Mach 0.85<br>40,000 ft</td>
+                            <td class="py-3 text-emerald-400 font-medium">-25.7% drag<br>-50% approach noise</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-medium text-white">
+                                Airbus AlbatrossONE<br>
+                                <span class="text-[10px] text-slate-500">Scaled RPV / XPW</span>
+                            </td>
+                            <td class="py-3">Freely-hinged wingtips with flare angle</td>
+                            <td class="py-3 font-mono">Dynamic gust shedding</td>
+                            <td class="py-3 text-emerald-400 font-medium">5-10% fuel gain<br>Gust load alleviation</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-medium text-white">
+                                NASA X-53 AAW<br>
+                                <span class="text-[10px] text-slate-500">Modified F/A-18</span>
+                            </td>
+                            <td class="py-3">Active aeroelastic wing twist up to 5°</td>
+                            <td class="py-3 font-mono">Transonic & Supersonic</td>
+                            <td class="py-3 text-emerald-400 font-medium">Roll control without heavy ailerons</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-medium text-white">
+                                FishBAC Wind Tunnel<br>
+                                <span class="text-[10px] text-slate-500">City Univ London / Bristol</span>
+                            </td>
+                            <td class="py-3">Fish Bone Active Camber flexible chord spine</td>
+                            <td class="py-3 font-mono">Re = 1.2 × 10⁶</td>
+                            <td class="py-3 text-emerald-400 font-medium">+25% lift coef<br>+50% L/D ratio</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 font-medium text-white">
+                                Commercial Airliners<br>
+                                <span class="text-[10px] text-slate-500">Airbus A350 & B787</span>
+                            </td>
+                            <td class="py-3">Differential flap droop in cruise</td>
+                            <td class="py-3 font-mono">Daily commercial service</td>
+                            <td class="py-3 text-emerald-400 font-medium">1-3% cruise drag reduction</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- TAB 4: TEAM & NMIMS MPSTME (ONLY VISIBLE ON TEAM TAB) -->
+    <main id="view-team" class="tab-view hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-mono mb-2">
+                <i class="fa-solid fa-graduation-cap"></i> PRESENTATION DEFENSE TEAM
+            </div>
+            <h2 class="font-space text-2xl sm:text-3xl font-bold text-white">B.Tech First Year Project Group</h2>
+            <p class="text-slate-400 text-sm mt-1">
+                Department of Basic Sciences and Humanities · Elements of Biology (EOB) 40-Minute Presentation Team.
+            </p>
+        </div>
+
+        <!-- 4 Speaker Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            
+            <!-- Speaker 1 -->
+            <div class="hud-border p-5 rounded-2xl flex flex-col justify-between hover:border-cyan-400/50 transition-all duration-300">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">SPEAKER 1</span>
+                        <span class="text-xs text-slate-500 font-mono">00:00 - 10:00</span>
+                    </div>
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-cyan-600 to-navy-800 border border-cyan-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
+                        <i class="fa-solid fa-plane-slash text-cyan-300 text-xl"></i>
+                    </div>
+                    <h3 class="font-space font-bold text-white text-base">Student 1 (Lead)</h3>
+                    <p class="text-xs font-mono text-cyan-400 mb-2">SAP ID: 7001XXXXXXX</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        <strong>Domain:</strong> Aerodynamic Drag Crisis, Stall Angle of Attack (<span class="font-mono">α</span>), and Boundary Layer Cavity Noise.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-navy-700/60 text-[11px] text-slate-500">
+                    Presented Slides 1 to 10
+                </div>
+            </div>
+
+            <!-- Speaker 2 -->
+            <div class="hud-border p-5 rounded-2xl flex flex-col justify-between hover:border-emerald-400/50 transition-all duration-300">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">SPEAKER 2</span>
+                        <span class="text-xs text-slate-500 font-mono">10:00 - 20:00</span>
+                    </div>
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-emerald-600 to-navy-800 border border-emerald-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
+                        <i class="fa-solid fa-crow text-emerald-300 text-xl"></i>
+                    </div>
+                    <h3 class="font-space font-bold text-white text-base">Student 2</h3>
+                    <p class="text-xs font-mono text-emerald-400 mb-2">SAP ID: 7001XXXXXXX</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        <strong>Domain:</strong> Avian Biomechanics (Barn Owl serrations, Albatross soaring, Swift sweep, Falcon stoop joint kinematics).
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-navy-700/60 text-[11px] text-slate-500">
+                    Presented Slides 11 to 20
+                </div>
+            </div>
+
+            <!-- Speaker 3 -->
+            <div class="hud-border p-5 rounded-2xl flex flex-col justify-between hover:border-amber-400/50 transition-all duration-300">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">SPEAKER 3</span>
+                        <span class="text-xs text-slate-500 font-mono">20:00 - 30:00</span>
+                    </div>
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-amber-600 to-navy-800 border border-amber-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
+                        <i class="fa-solid fa-shapes text-amber-300 text-xl"></i>
+                    </div>
+                    <h3 class="font-space font-bold text-white text-base">Student 3</h3>
+                    <p class="text-xs font-mono text-amber-400 mb-2">SAP ID: 7001XXXXXXX</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        <strong>Domain:</strong> Compliant Morphing Mechanisms (FishBAC, FlexFoil, Shape Memory Alloys & Macro-Fiber Composites).
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-navy-700/60 text-[11px] text-slate-500">
+                    Presented Slides 21 to 30
+                </div>
+            </div>
+
+            <!-- Speaker 4 -->
+            <div class="hud-border p-5 rounded-2xl flex flex-col justify-between hover:border-purple-400/50 transition-all duration-300">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30">SPEAKER 4</span>
+                        <span class="text-xs text-slate-500 font-mono">30:00 - 40:00</span>
+                    </div>
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-purple-600 to-navy-800 border border-purple-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
+                        <i class="fa-solid fa-chart-pie text-purple-300 text-xl"></i>
+                    </div>
+                    <h3 class="font-space font-bold text-white text-base">Student 4</h3>
+                    <p class="text-xs font-mono text-purple-400 mb-2">SAP ID: 7001XXXXXXX</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        <strong>Domain:</strong> NASA ACTE Flight Data, 120-Year Research Timeline, Pros/Cons Matrix, and Net-Zero 2050 Roadmap.
+                    </p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-navy-700/60 text-[11px] text-slate-500">
+                    Presented Slides 31 to 41 & Q&A
+                </div>
+            </div>
+
+        </div>
+
+        <!-- College Institutional Affiliation Banner -->
+        <div class="mt-8 bg-navy-950 p-5 rounded-2xl border border-navy-700/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white text-2xl">
+                    <i class="fa-solid fa-building-columns text-cyan-400"></i>
+                </div>
+                <div>
+                    <h4 class="font-space font-bold text-white text-sm sm:text-base">SVKM's NMIMS MPSTME, Vile Parle (West), Mumbai</h4>
+                    <p class="text-xs text-slate-400">Mukesh Patel School of Technology Management & Engineering · Elements of Biology (EOB) Coursework</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-full bg-navy-800 text-slate-300 font-mono text-xs border border-navy-700">Academic Year 2024-25</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy-950 border-t border-navy-800/80 py-6 px-4 text-center text-xs text-slate-500 font-mono">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2024 AeroMorph · Built for NMIMS MPSTME EOB Seminar Presentation</p>
+            <div class="flex items-center gap-4">
+                <span>NASA Armstrong</span>
+                <span>Airbus UpNext</span>
+                <span>AFRL FlexSys</span>
+                <span>IATA Net-Zero</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Slide Deck Modal (Full Catalog) -->
+    <div id="fullDeckModal" class="fixed inset-0 z-50 bg-navy-950/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-navy-900 border border-navy-700 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-navy-800 flex items-center justify-between">
+                <h3 class="font-space font-bold text-lg text-white">Complete Presentation Slide Catalog</h3>
+                <button onclick="closeFullDeckModal()" class="text-slate-400 hover:text-white p-2 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-3" id="modal-slide-list">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification for Download -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-navy-900 border border-cyan-500/50 text-white px-4 py-3 rounded-xl shadow-2xl hidden flex items-center gap-3 font-mono text-xs">
+        <i class="fa-solid fa-circle-info text-cyan-400 text-base"></i>
+        <span>Presentation PDF Ready: Place your exported 'Bioppt finall.pdf' into the project public root.</span>
+    </div>
+
+    <!-- CORE SIMULATION & PRESENTATION JAVASCRIPT ENGINE -->
+    <script>
+        // ==========================================
+        // TAB NAVIGATION ENGINE (SINGLE-PAGE SWITCHER)
+        // ==========================================
+        function switchTab(tabId) {
+            // Hide all views
+            const views = document.querySelectorAll('.tab-view');
+            views.forEach(v => v.classList.add('hidden'));
+
+            // Show active view
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            // Update top nav button styling
+            const navButtons = document.querySelectorAll('.nav-tab-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // If switching to simulator, trigger resize to ensure clean canvas sizing
+            if (tabId === 'simulator') {
+                setTimeout(() => {
+                    if (convTunnel) convTunnel.resize();
+                    if (morphTunnel) morphTunnel.resize();
+                }, 50);
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        function downloadPPTNotice() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 5000);
+        }
+
+        // ==========================================
+        // 1. WIND TUNNEL FLUID PARTICLE ENGINE
+        // ==========================================
+        let simState = {
+            flap: 0,
+            aoa: 2,
+            speed: 450 // km/h
+        };
+
+        const sliderFlap = document.getElementById('slider-flap');
+        const sliderAoa = document.getElementById('slider-aoa');
+        const sliderSpeed = document.getElementById('slider-speed');
+
+        const uiFlapVal = document.getElementById('ui-flap-val');
+        const uiAoaVal = document.getElementById('ui-aoa-val');
+        const uiSpeedVal = document.getElementById('ui-speed-val');
+
+        const statConvCd = document.getElementById('stat-conv-cd');
+        const statMorphCd = document.getElementById('stat-morph-cd');
+        const statConvNoise = document.getElementById('stat-conv-noise');
+        const statMorphNoise = document.getElementById('stat-morph-noise');
+        const statConvLd = document.getElementById('stat-conv-ld');
+        const statMorphLd = document.getElementById('stat-morph-ld');
+        const barConvLd = document.getElementById('bar-conv-ld');
+        const barMorphLd = document.getElementById('bar-morph-ld');
+        const statFuelSaving = document.getElementById('stat-fuel-saving');
+        const uiFlightStatus = document.getElementById('ui-flight-status');
+        const tagConvStall = document.getElementById('tag-conv-stall');
+
+        function updateTelemetry() {
+            simState.flap = parseFloat(sliderFlap.value);
+            simState.aoa = parseFloat(sliderAoa.value);
+            simState.speed = parseFloat(sliderSpeed.value);
+
+            const mach = (simState.speed / 1225).toFixed(2);
+            uiFlapVal.innerText = `${simState.flap}°`;
+            uiAoaVal.innerText = `${simState.aoa}°`;
+            uiSpeedVal.innerText = `${simState.speed} km/h (M ${mach})`;
+
+            // Conventional wing calculations
+            let c_cl = 0.25 + (simState.aoa * 0.09) + (simState.flap * 0.038);
+            let c_cd = 0.02 + Math.pow(simState.aoa * 0.016, 2) + Math.pow(simState.flap * 0.022, 2);
+            
+            if (simState.flap > 12) {
+                c_cd += (simState.flap - 12) * 0.012;
+            }
+            let isStalled = false;
+            if (simState.aoa > 14) {
+                isStalled = true;
+                c_cl -= (simState.aoa - 14) * 0.06;
+                c_cd += (simState.aoa - 14) * 0.04;
+            }
+
+            let c_noise = 65 + (mach * 25) + (simState.flap * 1.3);
+            if (simState.flap > 5) c_noise += 10;
+
+            // Morphing wing calculations (Constant arc-length continuous camber benefits)
+            let m_cl = 0.28 + (simState.aoa * 0.095) + (simState.flap * 0.052);
+            let m_cd = 0.018 + Math.pow(simState.aoa * 0.013, 2) + Math.pow(simState.flap * 0.009, 2);
+            if (simState.aoa > 18) {
+                m_cl -= (simState.aoa - 18) * 0.04;
+                m_cd += 0.03;
+            }
+            let m_noise = 64 + (mach * 22) + (simState.flap * 0.35);
+
+            const convLD = Math.max(1, (c_cl / Math.max(0.01, c_cd))).toFixed(1);
+            const morphLD = Math.max(1, (m_cl / Math.max(0.01, m_cd))).toFixed(1);
+
+            statConvCd.innerText = c_cd.toFixed(3);
+            statMorphCd.innerText = m_cd.toFixed(3);
+            statConvNoise.innerText = `${Math.round(c_noise)} dB`;
+            statMorphNoise.innerText = `${Math.round(m_noise)} dB`;
+
+            statConvLd.innerText = convLD;
+            statMorphLd.innerText = morphLD;
+
+            const maxLD = 25;
+            barConvLd.style.width = `${Math.min(100, (convLD / maxLD) * 100)}%`;
+            barMorphLd.style.width = `${Math.min(100, (morphLD / maxLD) * 100)}%`;
+
+            const fuelDiff = Math.max(2.1, ((c_cd - m_cd) / c_cd * 28)).toFixed(1);
+            statFuelSaving.innerText = `+${fuelDiff}% Net`;
+
+            if (isStalled) {
+                tagConvStall.classList.remove('hidden');
+                uiFlightStatus.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse";
+                uiFlightStatus.innerText = "CRITICAL STALL DETECTED";
+            } else if (simState.flap > 18) {
+                tagConvStall.classList.remove('hidden');
+                uiFlightStatus.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40";
+                uiFlightStatus.innerText = "HIGH-DRAG LANDING REGIME";
+            } else {
+                tagConvStall.classList.add('hidden');
+                uiFlightStatus.className = "text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30";
+                uiFlightStatus.innerText = "OPTIMAL LAMINAR FLOW";
+            }
+        }
+
+        sliderFlap.addEventListener('input', updateTelemetry);
+        sliderAoa.addEventListener('input', updateTelemetry);
+        sliderSpeed.addEventListener('input', updateTelemetry);
+
+        function resetFlightParams() {
+            sliderFlap.value = 0;
+            sliderAoa.value = 2;
+            sliderSpeed.value = 450;
+            updateTelemetry();
+        }
+
+        function setFlightPreset(preset) {
+            if (preset === 'takeoff') {
+                sliderFlap.value = 15;
+                sliderAoa.value = 8;
+                sliderSpeed.value = 320;
+            } else if (preset === 'cruise') {
+                sliderFlap.value = 2;
+                sliderAoa.value = 2;
+                sliderSpeed.value = 820;
+            } else if (preset === 'landing') {
+                sliderFlap.value = 30;
+                sliderAoa.value = 10;
+                sliderSpeed.value = 220;
+            } else if (preset === 'stall') {
+                sliderFlap.value = 20;
+                sliderAoa.value = 19;
+                sliderSpeed.value = 260;
+            }
+            updateTelemetry();
+        }
+
+        // NACA 0012 Thickness distribution:
+        function nacaHalfThickness(xNorm, chord, tRatio = 0.13) {
+            if (xNorm < 0) xNorm = 0;
+            if (xNorm > 1) xNorm = 1;
+            const yt = 5 * tRatio * (
+                0.2969 * Math.sqrt(xNorm) - 
+                0.1260 * xNorm - 
+                0.3516 * Math.pow(xNorm, 2) + 
+                0.2843 * Math.pow(xNorm, 3) - 
+                0.1015 * Math.pow(xNorm, 4)
+            );
+            return yt * chord;
+        }
+
+        // --- CANVAS SIMULATION CLASS ---
+        class FlowSimulator {
+            constructor(canvasId, isMorphing) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.isMorphing = isMorphing;
+                this.particles = [];
+                this.width = 0;
+                this.height = 0;
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                this.initParticles();
+            }
+
+            resize() {
+                const rect = this.canvas.parentElement.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    this.canvas.width = rect.width;
+                    this.canvas.height = rect.height;
+                    this.width = rect.width;
+                    this.height = rect.height;
+                }
+            }
+
+            initParticles() {
+                this.particles = [];
+                const count = 300;
+                for (let i = 0; i < count; i++) {
+                    const startX = Math.random() * this.width;
+                    const startY = Math.random() * this.height;
+                    this.particles.push({
+                        x: startX,
+                        y: startY,
+                        prevX: startX,
+                        prevY: startY,
+                        baseY: startY,
+                        isTurbulent: false,
+                        age: Math.random() * 100,
+                        justReset: true
+                    });
+                }
+            }
+
+            // Draw Airfoil with Strict Arc-Length Preservation
+            drawAirfoil(ctx, centerX, centerY, chord, aoaDeg, flapDeg) {
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate((aoaDeg * Math.PI) / 180);
+
+                const samples = 65;
+                const upperPoints = [];
+                const lowerPoints = [];
+
+                if (this.isMorphing) {
+                    // ========================================================
+                    // STRICT ARC-LENGTH INVARIANT ELASTICA BENDING (NO STRETCH)
+                    // ========================================================
+                    // Rigid portion: 0 to 0.65c
+                    // Compliant trailing edge: s in [0, L_morph] where L_morph = 0.35c
+                    const xMorphStartNorm = 0.65;
+                    const xStart = (xMorphStartNorm - 0.28) * chord;
+                    const L_morph = (1.0 - xMorphStartNorm) * chord; // Exact fixed arc length of compliant section
+                    const thetaRad = (flapDeg * Math.PI) / 180; // Total bend angle
+
+                    // 1. Rigid forward section (0 to 0.65c)
+                    const rigidSamples = 40;
+                    for (let i = 0; i <= rigidSamples; i++) {
+                        const xNorm = (i / rigidSamples) * xMorphStartNorm;
+                        const x = (xNorm - 0.28) * chord;
+                        const yt = nacaHalfThickness(xNorm, chord, 0.13);
+                        upperPoints.push({ x: x, y: -yt });
+                        lowerPoints.push({ x: x, y: yt });
+                    }
+
+                    // 2. Arc-length preserved bending (s from 0 to L_morph)
+                    const morphSamples = 30;
+                    for (let j = 1; j <= morphSamples; j++) {
+                        const s = (j / morphSamples) * L_morph; // Arc length along the spine
+                        const currentNorm = xMorphStartNorm + (s / chord); // Exactly in [0.65, 1.0]
+
+                        let xc, yc, phi;
+
+                        if (Math.abs(thetaRad) < 1e-4) {
+                            // Unbent straight wing
+                            xc = xStart + s;
+                            yc = 0;
+                            phi = 0;
+                        } else {
+                            // Constant curvature elastica arc: R = L / theta
+                            const R = L_morph / thetaRad;
+                            // Local angle along spine
+                            phi = thetaRad * (s / L_morph);
+                            // As theta increases, xc moves INWARD (xStart + R*sin(phi) < xStart + s)
+                            xc = xStart + R * Math.sin(phi);
+                            yc = R * (1.0 - Math.cos(phi));
+                        }
+
+                        // Local normal vector pointing upwards (suction side)
+                        // Local tangent is (cos(phi), sin(phi))
+                        // Upward normal: (sin(phi), -cos(phi))
+                        const nx = Math.sin(phi);
+                        const ny = -Math.cos(phi);
+
+                        // Thickness along preserved arc length
+                        const yt = nacaHalfThickness(currentNorm, chord, 0.13);
+
+                        // Symmetrically offset perpendicular to spine
+                        upperPoints.push({
+                            x: xc + yt * nx,
+                            y: yc + yt * ny
+                        });
+                        lowerPoints.push({
+                            x: xc - yt * nx,
+                            y: yc - yt * ny
+                        });
+                    }
+
+                    // Render Continuous Morphing Airfoil
+                    ctx.beginPath();
+                    ctx.moveTo(upperPoints[0].x, upperPoints[0].y);
+                    for (let p of upperPoints) ctx.lineTo(p.x, p.y);
+                    for (let k = lowerPoints.length - 1; k >= 0; k--) ctx.lineTo(lowerPoints[k].x, lowerPoints[k].y);
+                    ctx.closePath();
+
+                    const morphGrad = ctx.createLinearGradient(-0.28 * chord, 0, 0.72 * chord, 0);
+                    morphGrad.addColorStop(0, '#0f172a');
+                    morphGrad.addColorStop(0.65, '#1e293b');
+                    morphGrad.addColorStop(1, '#064e3b');
+                    ctx.fillStyle = morphGrad;
+                    ctx.fill();
+                    ctx.strokeStyle = '#34d399';
+                    ctx.lineWidth = 2.2;
+                    ctx.stroke();
+
+                    // Main Spar at 25% chord
+                    const sparX = (0.25 - 0.28) * chord;
+                    const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
+
+                    // Internal FishBAC Compliant Tendons along curled spine
+                    ctx.beginPath();
+                    for (let m = 1; m <= 5; m++) {
+                        const targetIdx = rigidSamples + Math.round((m / 6) * morphSamples);
+                        if (upperPoints[targetIdx] && lowerPoints[targetIdx]) {
+                            ctx.moveTo(upperPoints[targetIdx].x, upperPoints[targetIdx].y + 2);
+                            ctx.lineTo(lowerPoints[targetIdx].x, lowerPoints[targetIdx].y - 2);
+                        }
+                    }
+                    ctx.strokeStyle = 'rgba(52, 211, 153, 0.45)';
+                    ctx.lineWidth = 1.4;
+                    ctx.stroke();
+
+                } else {
+                    // ========================================================
+                    // CONVENTIONAL RIGID FOWLER FLAP (HINGED DISCONTINUITY)
+                    // ========================================================
+                    const xHingeNorm = 0.70;
+                    const hingeX = (xHingeNorm - 0.28) * chord;
+                    const flapDeltaRad = (flapDeg * Math.PI) / 180;
+
+                    // 1. Rigid Main Body (0 to 0.70c)
+                    ctx.beginPath();
+                    for (let i = 0; i <= samples; i++) {
+                        const xNorm = (i / samples) * xHingeNorm;
+                        const x = (xNorm - 0.28) * chord;
+                        const yt = nacaHalfThickness(xNorm, chord, 0.13);
+                        upperPoints.push({ x: x, y: -yt });
+                        lowerPoints.push({ x: x, y: yt });
+                    }
+                    ctx.moveTo(upperPoints[0].x, upperPoints[0].y);
+                    for (let p of upperPoints) ctx.lineTo(p.x, p.y);
+                    for (let j = lowerPoints.length - 1; j >= 0; j--) ctx.lineTo(lowerPoints[j].x, lowerPoints[j].y);
+                    ctx.closePath();
+
+                    const convGrad = ctx.createLinearGradient(-0.28 * chord, 0, hingeX, 0);
+                    convGrad.addColorStop(0, '#0f172a');
+                    convGrad.addColorStop(1, '#1e293b');
+                    ctx.fillStyle = convGrad;
+                    ctx.fill();
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 2.0;
+                    ctx.stroke();
+
+                    // Main Spar at 25% chord
+                    const sparX = (0.25 - 0.28) * chord;
+                    const sparH = nacaHalfThickness(0.25, chord, 0.13) * 1.7;
+                    ctx.fillStyle = '#64748b';
+                    ctx.fillRect(sparX - 3, -sparH / 2, 6, sparH);
+
+                    // 2. Rigid Fowler Flap (Rotated around hinge with step gap)
+                    ctx.save();
+                    ctx.translate(hingeX, 0);
+                    ctx.rotate(flapDeltaRad);
+
+                    const flapSamples = 25;
+                    const flapUpper = [];
+                    const flapLower = [];
+                    const flapChord = (1.0 - xHingeNorm) * chord; // Constant length
+
+                    for (let k = 0; k <= flapSamples; k++) {
+                        const localNorm = k / flapSamples;
+                        const globalNorm = xHingeNorm + localNorm * (1.0 - xHingeNorm);
+                        const xLoc = localNorm * flapChord;
+                        const yt = nacaHalfThickness(globalNorm, chord, 0.13);
+                        flapUpper.push({ x: xLoc, y: -yt });
+                        flapLower.push({ x: xLoc, y: yt });
+                    }
+
+                    ctx.beginPath();
+                    ctx.moveTo(flapUpper[0].x, flapUpper[0].y);
+                    for (let p of flapUpper) ctx.lineTo(p.x, p.y);
+                    for (let j = flapLower.length - 1; j >= 0; j--) ctx.lineTo(flapLower[j].x, flapLower[j].y);
+                    ctx.closePath();
+
+                    ctx.fillStyle = '#334155';
+                    ctx.fill();
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 2.0;
+                    ctx.stroke();
+
+                    ctx.restore();
+
+                    // Mechanical Hinge Pivot Point
+                    ctx.beginPath();
+                    ctx.arc(hingeX, 0, 4.0, 0, Math.PI * 2);
+                    ctx.fillStyle = flapDeg > 0 ? '#f43f5e' : '#94a3b8';
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+
+            render() {
+                this.ctx.fillStyle = 'rgba(6, 10, 18, 0.28)';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                const scale = this.width < 550 ? 0.65 : 0.95;
+                const chord = 310 * scale;
+                const centerX = this.width * 0.42;
+                const centerY = this.height * 0.50;
+
+                const baseSpeed = (simState.speed / 450) * 8.5;
+                const aoaRad = (simState.aoa * Math.PI) / 180;
+                const flapDeflect = simState.flap;
+
+                this.particles.forEach(p => {
+                    p.age += 1;
+                    p.prevX = p.x;
+                    p.prevY = p.y;
+                    p.x += baseSpeed;
+                    p.isTurbulent = false;
+
+                    const dx = p.x - centerX;
+                    const normX = (dx / chord) + 0.28;
+
+                    if (normX >= -0.1 && normX <= 1.4) {
+                        let halfThick = 0;
+                        if (normX >= 0 && normX <= 1.0) {
+                            halfThick = nacaHalfThickness(normX, chord, 0.13) * 1.4;
+                        }
+
+                        const aoaDisplace = Math.tan(aoaRad) * dx * 0.75;
+                        let targetY = p.baseY + aoaDisplace;
+
+                        if (p.baseY < centerY) {
+                            targetY -= halfThick; // Suction side
+                        } else {
+                            targetY += halfThick * 0.55; // Pressure side
+                        }
+
+                        let isSeparated = false;
+
+                        if (normX > 0.65) {
+                            if (this.isMorphing) {
+                                // Smooth constant arc-length drop
+                                const s = (normX - 0.65) * chord;
+                                const thetaRad = (flapDeflect * Math.PI) / 180;
+                                let camberDrop = 0;
+                                if (Math.abs(thetaRad) > 1e-4) {
+                                    const R = (0.35 * chord) / thetaRad;
+                                    const phi = thetaRad * (s / (0.35 * chord));
+                                    camberDrop = R * (1.0 - Math.cos(phi));
+                                }
+                                targetY += camberDrop * 0.85;
+
+                                if (simState.aoa > 17 && p.baseY < centerY) {
+                                    isSeparated = true;
+                                }
+                            } else {
+                                const localX = (normX - 0.70) * chord;
+                                const rigidDrop = localX * Math.sin((flapDeflect * Math.PI) / 180);
+                                targetY += rigidDrop * 0.8;
+
+                                if ((flapDeflect > 8 || simState.aoa > 12) && p.baseY < centerY) {
+                                    isSeparated = true;
+                                }
+                            }
+                        }
+
+                        if (isSeparated) {
+                            p.isTurbulent = true;
+                            const turbStrength = (flapDeflect * 0.8 + (simState.aoa - 10) * 1.8);
+                            targetY += Math.sin(p.age * 0.32 + p.baseY) * turbStrength;
+                            p.x += (Math.random() - 0.5) * 3.5;
+                        }
+
+                        p.y += (targetY - p.y) * 0.20;
+                    } else {
+                        p.y += (p.baseY - p.y) * 0.08;
+                    }
+
+                    if (p.x > this.width) {
+                        p.x = 0;
+                        p.y = p.baseY;
+                        p.prevX = 0;
+                        p.prevY = p.baseY;
+                        p.justReset = true;
+                    }
+
+                    if (!p.justReset && p.x >= p.prevX) {
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(p.prevX, p.prevY);
+                        this.ctx.lineTo(p.x, p.y);
+
+                        if (p.isTurbulent) {
+                            this.ctx.strokeStyle = 'rgba(244, 63, 94, 0.75)';
+                            this.ctx.lineWidth = 1.9;
+                        } else {
+                            if (this.isMorphing) {
+                                this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
+                            } else {
+                                this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+                            }
+                            this.ctx.lineWidth = 1.3;
+                        }
+                        this.ctx.stroke();
+                    }
+
+                    p.justReset = false;
+                });
+
+                this.drawAirfoil(this.ctx, centerX, centerY, chord, simState.aoa, simState.flap);
+            }
+        }
+
+        const convTunnel = new FlowSimulator('canvas-conv', false);
+        const morphTunnel = new FlowSimulator('canvas-morph', true);
+
+        function animLoop() {
+            convTunnel.render();
+            morphTunnel.render();
+            requestAnimationFrame(animLoop);
+        }
+        animLoop();
+        updateTelemetry();
+
+        // ==========================================
+        // 2. SLIDE DECK ENGINE (41 PPT SLIDES)
+        // ==========================================
+        const slidesData = [
+            {
+                slideNum: 1,
+                chapter: "1. Conventional Bottlenecks",
+                categoryIdx: 0,
+                title: "Conventional Aircraft: Fixed-Wing Limitations",
+                subtitle: "Architecture of Rigid Structures, Hinges & Mechanical Control Gaps",
+                points: [
+                    "<strong>Separation of Functions:</strong> Wings solely produce lift while engines generate thrust; systems act independently.",
+                    "<strong>Fixed Planform:</strong> Optimized for a singular cruise condition; performance is compromised during climb, descent, and maneuvers.",
+                    "<strong>Mechanical Gaps:</strong> Fowler flaps, slats, and ailerons attach via tracks, brackets, and hinges, leaving open surface cavities."
+                ],
+                statBadge: "Parasitic Drag = 50% Cruise Total",
+                takeaway: "Conventional aircraft rely on heavy mechanical compromises developed nearly a century ago."
+            },
+            {
+                slideNum: 2,
+                chapter: "1. Conventional Bottlenecks",
+                categoryIdx: 0,
+                title: "Aircraft Stalling: The Critical Boundary Layer",
+                subtitle: "Aerodynamic Breakdown at High Angle of Attack (AoA)",
+                points: [
+                    "<strong>Lift Formula:</strong> L = ½ · ρ · V² · S · C_L. As angle of attack increases, lift rises linearly until reaching the critical stall angle.",
+                    "<strong>Flow Separation:</strong> Beyond the critical angle, adverse pressure gradients force air to detach from the upper camber.",
+                    "<strong>Total Lift Collapse:</strong> Massive turbulent recirculation forms over the wing, causing rapid altitude drop and control loss."
+                ],
+                statBadge: "Critical Stall Angle ≈ 12° - 15°",
+                takeaway: "Stall occurs when air cannot follow rigid geometry; engines cannot compensate for separated boundary layer flow."
+            },
+            {
+                slideNum: 3,
+                chapter: "1. Conventional Bottlenecks",
+                categoryIdx: 0,
+                title: "Airframe Noise: Cavities, Flap Gaps & Edges",
+                subtitle: "Acoustic Disruption in Modern Aviation Infrastructure",
+                points: [
+                    "<strong>Cavity Resonance:</strong> High-velocity air shears over the open gap between wing and deployed flap, generating violent pressure pulses.",
+                    "<strong>Flap Side-Edge Vortices:</strong> Air rolling around rectangular flap edges creates high-frequency acoustic dipole roar.",
+                    "<strong>Approach Noise Dominance:</strong> During airport landing approaches with throttled-back engines, flap and landing-gear cavity noise accounts for >50% of total sound."
+                ],
+                statBadge: "Acoustic Roar: 85 - 92 dB(A)",
+                takeaway: "Gaps and mechanical steps are the primary source of airport community noise penalties."
+            },
+            {
+                slideNum: 4,
+                chapter: "1. Conventional Bottlenecks",
+                categoryIdx: 0,
+                title: "Parasitic Drag & High-Cycle Maintenance",
+                subtitle: "The Economic Cost of Hinges, Tracks & Motors",
+                points: [
+                    "<strong>Parasitic Drag Growth:</strong> F_D = ½ · ρ · v² · C_D · A. Scales with the square of velocity, heavily penalizing high-speed travel.",
+                    "<strong>Wear & Fatigue:</strong> Heavy tracks, rollers, and hydraulic actuators suffer high-cycle wear, requiring frequent lubrication and NDT inspection.",
+                    "<strong>Jamming & Asymmetry Risk:</strong> In mechanical flaps, mechanical binding or icing on one wing can induce uncontrollable asymmetric roll."
+                ],
+                statBadge: "Actuator Mass: ~3,200 kg per Jet",
+                takeaway: "Traditional mechanical flap systems carry severe weight, drag, and inspection overhead."
+            },
+            {
+                slideNum: 5,
+                chapter: "2. Biological Models",
+                categoryIdx: 4,
+                title: "Biological Inspiration: Avian Flight Biomechanics",
+                subtitle: "How Nature Replaces Hinges with Distributed Elastic Compliance",
+                points: [
+                    "<strong>Seamless Geometry:</strong> Birds do not possess discrete mechanical hinges or open slots; wings continuously deform through muscle actuation.",
+                    "<strong>Multi-Axis Adaptation:</strong> Birds adjust camber, span, sweep, and twist simultaneously to match dynamic atmospheric shifts.",
+                    "<strong>Distributed Mechanics:</strong> Elastic tendons, interlocking feather barbules, and flexible skeleton form an integrated aeroelastic system."
+                ],
+                statBadge: "Evolutionary History: 3.8 Billion Years",
+                takeaway: "Avian wings operate as intelligent aeroelastic systems rather than collections of independent rigid flaps."
+            },
+            {
+                slideNum: 6,
+                chapter: "2. Biological Models",
+                categoryIdx: 4,
+                title: "Model 1: Barn Owl (Tyto alba) Silent Flight",
+                subtitle: "Serrated Combs, Velvet Coat & Fringed Trailing Edges",
+                points: [
+                    "<strong>Leading-Edge Comb:</strong> Micro-serrations break up incoming large coherent eddies into harmless miniature vortex streams.",
+                    "<strong>Velvety Porous Surface:</strong> Downy upper feather coating absorbs high-frequency acoustic pressure waves.",
+                    "<strong>Trailing-Edge Fringe:</strong> Flexible, porous fringes allow upper and lower surface air streams to blend gently without acoustic shock."
+                ],
+                statBadge: "Acoustic Suppression: >2,000 Hz",
+                takeaway: "The Barn Owl dampens aerodynamic noise below the auditory threshold of rodents."
+            },
+            {
+                slideNum: 7,
+                chapter: "2. Biological Models",
+                categoryIdx: 4,
+                title: "Model 2: Wandering Albatross (Diomedea exulans)",
+                subtitle: "Dynamic Soaring & High Aspect Ratio Wingtips",
+                points: [
+                    "<strong>Dynamic Soaring:</strong> Glides across oceans for thousands of kilometers without flapping, harvesting wind gradient differentials.",
+                    "<strong>Extreme Aspect Ratio (AR ~18):</strong> Long, slender wings suppress induced drag from wingtip vortices.",
+                    "<strong>Shoulder Locking Tendons:</strong> Mechanically lock wings in gliding posture, expending near-zero muscular energy."
+                ],
+                statBadge: "Aspect Ratio: 18:1 (Glide: 22:1)",
+                takeaway: "Inspires Airbus folding wingtips to achieve ultra-high aspect ratios within airport gate limits."
+            },
+            {
+                slideNum: 8,
+                chapter: "2. Biological Models",
+                categoryIdx: 4,
+                title: "Model 3: Common Swift (Apus apus) Variable Sweep",
+                subtitle: "Real-Time Wing Morphing for High Agility & Efficiency",
+                points: [
+                    "<strong>Dynamic Sweep Modulation:</strong> Swifts extend wings straight for high-lift gliding and sweep them back into sickle shapes for high-speed turns.",
+                    "<strong>Optimal L/D Envelope:</strong> Adjusts planform surface area and sweep angle to match exact flight velocities.",
+                    "<strong>Vortex Lift Exploitation:</strong> Sharp leading-edge hand-wing generates stable leading-edge vortices at steep bank angles."
+                ],
+                statBadge: "Flight Speed: 30 to 112 km/h",
+                takeaway: "Variable wing sweep balances high-speed low-drag dashes with low-speed loiter endurance."
+            },
+            {
+                slideNum: 9,
+                chapter: "2. Biological Models",
+                categoryIdx: 4,
+                title: "Model 4: Peregrine Falcon (Falco peregrinus) High-Speed Stoop",
+                subtitle: "Aeroelastic Camber Morphing during 320 km/h Dives",
+                points: [
+                    "<strong>High-Speed Diving Stoop:</strong> Tucks wings tightly against the fuselage to minimize frontal area and skin friction.",
+                    "<strong>Feather Camber Tuning:</strong> Adjusts trailing edge feathers to maintain attached boundary layer flow at extreme Reynolds numbers.",
+                    "<strong>Micro-Covert Pop-Up:</strong> Dorsal covert feathers pop up passively during pull-up maneuvers, arresting airflow separation."
+                ],
+                statBadge: "Terminal Velocity: >320 km/h",
+                takeaway: "Direct inspiration for seamless trailing-edge camber control in transonic flight."
+            },
+            {
+                slideNum: 10,
+                chapter: "3. 4 Morphing Modes & FishBAC",
+                categoryIdx: 9,
+                title: "What is a Morphing Wing? Definition & Principle",
+                subtitle: "Continuous Distributed Deformation vs. Local Rotation",
+                points: [
+                    "<strong>Continuous Surface Contour:</strong> Eliminates the sharp hinge kink, keeping the boundary layer profile smooth.",
+                    "<strong>Multi-Mission Optimization:</strong> Single airframe dynamically adopts optimal shapes for takeoff, high-speed cruise, and descent.",
+                    "<strong>Distributed Elasticity:</strong> Load is distributed across compliant structural members rather than concentrated on hinge pins."
+                ],
+                statBadge: "Efficiency Gain: +15% to +35%",
+                takeaway: "Compliance means controlled elastic deformation rather than unrestricted structural softness."
+            },
+            {
+                slideNum: 11,
+                chapter: "3. 4 Morphing Modes & FishBAC",
+                categoryIdx: 9,
+                title: "The Four Fundamental Morphing Modes",
+                subtitle: "Camber, Span, Twist, and Sweep Kinematics",
+                points: [
+                    "<strong>1. Camber Morphing:</strong> Alters airfoil cross-section curvature to control lift coefficient (FishBAC / FlexFoil).",
+                    "<strong>2. Span Morphing:</strong> Extends or retracts wingtip span to optimize wing loading and reduce induced drag.",
+                    "<strong>3. Twist Morphing:</strong> Dynamically alters spanwise angle of incidence for roll control without traditional ailerons (NASA X-53).",
+                    "<strong>4. Sweep Morphing:</strong> Changes backward angle of the wing planform for high-speed transonic flight matching."
+                ],
+                statBadge: "4 Distinct Geometric Degrees",
+                takeaway: "Practical aircraft often combine two or more morphing modes for complete 3D flight control."
+            },
+            {
+                slideNum: 12,
+                chapter: "3. 4 Morphing Modes & FishBAC",
+                categoryIdx: 9,
+                title: "Variable Camber: The FishBAC Mechanism",
+                subtitle: "Fish Bone Active Camber Developed by Univ of Bristol / Swansea",
+                points: [
+                    "<strong>Biomimetic Spine Backbone:</strong> 3D compliant spine mimics fish vertebra with radiating flexible tendons.",
+                    "<strong>Pre-Stressed Elastomer Skin:</strong> Silicone/polyurethane skin preserves smooth aerodynamic contour under aerodynamic pressure.",
+                    "<strong>Wind Tunnel Validation:</strong> Demonstrated up to 25% lift coefficient increase and 37% drag reduction over traditional flapped airfoils."
+                ],
+                statBadge: "Lift Gain: +25% | Drag Drop: -37%",
+                takeaway: "FishBAC proves flexible internal spines can bear extreme aerodynamic pressure without buckling."
+            },
+            {
+                slideNum: 13,
+                chapter: "3. 4 Morphing Modes & FishBAC",
+                categoryIdx: 9,
+                title: "The Structural Challenge: Flexibility vs. Stiff Load Bearing",
+                subtitle: "The Fundamental Engineering Paradox of Compliant Aircraft",
+                points: [
+                    "<strong>The Paradox:</strong> Structure must be flexible enough to morph with low actuator energy, yet stiff enough to withstand aerodynamic lift forces.",
+                    "<strong>Aeroelastic Flutter:</strong> Flexible skins risk aeroelastic instability and flutter if not actively dampened.",
+                    "<strong>Actuation Hysteresis:</strong> Materials like Shape Memory Alloys display thermal delay between input and mechanical recovery."
+                ],
+                statBadge: "Load Capacity: >11,500 lbs Aeroload",
+                takeaway: "Morphing succeeds only when structural compliance is matched with high out-of-plane stiffness."
+            },
+            {
+                slideNum: 14,
+                chapter: "4. Flight Demonstrators",
+                categoryIdx: 13,
+                title: "NASA ACTE: Flight Demonstration on a Gulfstream III",
+                subtitle: "Joint Research by NASA Armstrong, AFRL & FlexSys Inc.",
+                points: [
+                    "<strong>Full-Scale Flight Campaign:</strong> Replaced 19-foot aluminum Fowler flaps with jointless FlexFoil compliant surfaces.",
+                    "<strong>Extreme Flight Envelope:</strong> Completed 23 research flights at Mach 0.85 and 40,000 feet with 5,800 embedded sensors.",
+                    "<strong>Deflection Range:</strong> Trailing edge flexed seamlessly from -2° to +30° without surface gaps."
+                ],
+                statBadge: "Top Speed: Mach 0.85 (40,000 ft)",
+                takeaway: "NASA ACTE proved compliant morphing flaps survive commercial flight envelopes with zero gaps."
+            },
+            {
+                slideNum: 15,
+                chapter: "4. Flight Demonstrators",
+                categoryIdx: 13,
+                title: "Airbus: AlbatrossONE & The eXtra Performance Wing",
+                subtitle: "Semi-Aeroelastic Freely-Flapping Wingtips in Flight",
+                points: [
+                    "<strong>AlbatrossONE Demonstrator (2019-20):</strong> Flight-tested freely-hinged wingtips that unlock in flight to shed turbulence loads.",
+                    "<strong>eXtra Performance Wing (2023-26):</strong> Scaled Citation VII testbed exploring real-time gust-reactive tabs and long aspect ratio wings.",
+                    "<strong>Targeted Impact:</strong> Slashing 5% to 10% fuel burn while enabling wider wingspans within standard 36m airport gate limits."
+                ],
+                statBadge: "Fuel Burn Gain: 5% to 10%",
+                takeaway: "Airbus is preparing bio-inspired flexible folding wingtips for the single-aisle A320 replacement in the 2030s."
+            },
+            {
+                slideNum: 16,
+                chapter: "4. Flight Demonstrators",
+                categoryIdx: 13,
+                title: "Military Testbeds: NASA X-53 & DARPA MFX",
+                subtitle: "Active Aeroelastic Wing Twisting & Reconfigurable UAVs",
+                points: [
+                    "<strong>NASA X-53 AAW:</strong> Twisted modified F/A-18 wings up to 5° using leading and trailing surfaces, providing transonic roll authority.",
+                    "<strong>Structure Weight Reduction:</strong> Eliminated heavy aileron actuators, trimming 10% to 20% of wing structural mass.",
+                    "<strong>DARPA MFX Programs:</strong> In-flight span variation (+73%) and aspect ratio shifts (+177%) on autonomous tactical UAVs."
+                ],
+                statBadge: "Span Morphing: +73% in Flight",
+                takeaway: "Proves wing morphing can completely replace conventional hinged ailerons on high-performance aircraft."
+            },
+            {
+                slideNum: 17,
+                chapter: "4. Flight Demonstrators",
+                categoryIdx: 13,
+                title: "Commercial Aviation Today: Variable Camber in Service",
+                subtitle: "Airbus A350 XWB, Boeing 787 & 777X Implementations",
+                points: [
+                    "<strong>Airbus A350 Flap Droop:</strong> In cruise, flaps and spoilers dynamically trim 1-2° up or down to optimize camber and shift center of lift.",
+                    "<strong>Boeing 777X Folding Wingtips:</strong> 3.5m wingtips fold vertically on the taxiway to meet ICAO Code E gate dimensions.",
+                    "<strong>Stepping Stone:</strong> While still using hinges, these production airliners prove airlines will invest heavily in geometric adaptability."
+                ],
+                statBadge: "In Daily Commercial Service",
+                takeaway: "Aviation has entered the era of active geometric adjustment; seamless skins are the immediate next step."
+            },
+            {
+                slideNum: 18,
+                chapter: "5. Trade-offs, Timeline & Net-Zero 2050",
+                categoryIdx: 17,
+                title: "Quantitative Trade-Off Analysis: Pros vs. Cons",
+                subtitle: "Life-Cycle Assessment & Industrial Feasibility Matrix",
+                points: [
+                    "<strong>Key Advantages:</strong> 4-12% fuel burn reduction, 50% approach airframe noise drop, extended fatigue life from gust alleviation.",
+                    "<strong>Engineering Hurdles:</strong> Compliant skins must withstand extreme thermal cycling (-55°C to +70°C), elastomeric creep, and de-icing fluid chemical erosion.",
+                    "<strong>Certification Bottleneck:</strong> FAA/EASA airworthiness standards currently mandate rigid inspection methods for flight control surfaces."
+                ],
+                statBadge: "Net ROI: 4-6 Year Fuel Payback",
+                takeaway: "The benefits heavily outweigh costs for high-utilization commercial airlines and cargo carriers."
+            },
+            {
+                slideNum: 19,
+                chapter: "5. Trade-offs, Timeline & Net-Zero 2050",
+                categoryIdx: 17,
+                title: "120-Year Research Timeline: From Wright Glider to 2026+",
+                subtitle: "Wings Began Flexible, Turned Rigid, and Are Learning to Bend Again",
+                points: [
+                    "<strong>1902: Wright Brothers:</strong> Twisted flexible muslin wings via hip cradles for roll control (wing warping).",
+                    "<strong>1930s-1970s: The Rigid Era:</strong> Metal skinning, Douglas DC-3, and Boeing 707 standardized rigid wings with hinged flaps.",
+                    "<strong>1980s-2010s: Smart Materials:</strong> DARPA, AFRL, and NASA ACTE validated compliant skins, SMAs, and seamless flaps in flight.",
+                    "<strong>2020s-2030s: Autonomous Digital Wings:</strong> Airbus Wing of Tomorrow and NASA MADCAT cellular metamaterial wings."
+                ],
+                statBadge: "120+ Years of Aviation Evolution",
+                takeaway: "Aviation is completing a full historical circle back to nature's continuous, flexing aeroelastic structures."
+            },
+            {
+                slideNum: 20,
+                chapter: "5. Trade-offs, Timeline & Net-Zero 2050",
+                categoryIdx: 17,
+                title: "Future Horizons: The Path to Net-Zero 2050",
+                subtitle: "Sustainable Aviation Fuel, eVTOL Air Taxis & Beyond",
+                points: [
+                    "<strong>IATA Net-Zero 2050 Mandate:</strong> New aerodynamic airframe technology must provide 13% of all global aviation carbon reductions.",
+                    "<strong>Enabling Hydrogen & Batteries:</strong> Heavy cryogenic hydrogen tanks require ultra-low-drag morphing wings to maintain viable flight ranges.",
+                    "<strong>Urban Air Mobility (eVTOL):</strong> Silent morphing rotors allow electric air-taxis to operate under 60 dB in city centers."
+                ],
+                statBadge: "IATA Net-Zero Target: 2050",
+                takeaway: "Nature shows the target; aerospace engineering is building the load-bearing compliant reality."
+            }
+        ];
+
+        let currentSlideIdx = 0;
+
+        function renderSlide(idx) {
+            currentSlideIdx = idx;
+            const slide = slidesData[idx];
+            const container = document.getElementById('slide-card-container');
+            const indicator = document.getElementById('slide-indicator');
+
+            indicator.innerHTML = `Slide <strong class="text-amber-400">${slide.slideNum}</strong> of ${slidesData.length} Key Topics`;
+
+            const pills = document.querySelectorAll('.cat-pill');
+            pills.forEach((p, pIdx) => {
+                if (pIdx === getPillIndex(slide.categoryIdx)) {
+                    p.className = "cat-pill active px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-amber-500/20 border-amber-500 text-amber-300 transition whitespace-nowrap";
+                } else {
+                    p.className = "cat-pill px-3.5 py-1.5 rounded-lg text-xs font-medium border bg-navy-800/80 border-navy-700 text-slate-400 hover:text-white transition whitespace-nowrap";
+                }
+            });
+
+            container.innerHTML = `
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-navy-700/80 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold">
+                                ${slide.chapter}
+                            </span>
+                            <span class="text-xs text-slate-400 font-mono hidden sm:inline">NMIMS MPSTME EOB Deck</span>
+                        </div>
+                        <span class="text-xs font-mono px-3 py-1 rounded bg-navy-800 text-cyan-300 border border-navy-700 font-bold">
+                            <i class="fa-solid fa-chart-line mr-1"></i>${slide.statBadge}
+                        </span>
+                    </div>
+
+                    <h3 class="font-space text-xl sm:text-2xl font-bold text-white mb-1.5">${slide.title}</h3>
+                    <p class="text-xs sm:text-sm text-cyan-400 font-mono mb-6">${slide.subtitle}</p>
+
+                    <ul class="space-y-3.5 text-slate-300 text-xs sm:text-sm">
+                        ${slide.points.map(pt => `
+                            <li class="flex items-start gap-3">
+                                <i class="fa-solid fa-angle-right text-amber-400 mt-1 text-xs"></i>
+                                <div>${pt}</div>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-navy-700/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-navy-950/40 -mx-6 -mb-6 p-6 rounded-b-2xl">
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-lightbulb text-amber-400"></i>
+                        <span><strong>Key Takeaway:</strong> ${slide.takeaway}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="prevSlide()" class="text-xs px-3 py-1.5 rounded bg-navy-800 hover:bg-navy-700 text-slate-300 transition">Prev</button>
+                        <button onclick="nextSlide()" class="text-xs px-3 py-1.5 rounded bg-amber-500 hover:bg-amber-400 text-navy-950 font-bold transition">Next Slide</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPillIndex(catIdx) {
+            if (catIdx >= 17) return 4;
+            if (catIdx >= 13) return 3;
+            if (catIdx >= 9) return 2;
+            if (catIdx >= 4) return 1;
+            return 0;
+        }
+
+        function jumpToCategory(idx) {
+            renderSlide(idx);
+        }
+
+        function prevSlide() {
+            if (currentSlideIdx > 0) {
+                renderSlide(currentSlideIdx - 1);
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlideIdx < slidesData.length - 1) {
+                renderSlide(currentSlideIdx + 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const slidesView = document.getElementById('view-slides');
+            if (slidesView && !slidesView.classList.contains('hidden')) {
+                if (e.key === "ArrowLeft") prevSlide();
+                if (e.key === "ArrowRight") nextSlide();
+            }
+        });
+
+        function openFullDeckModal() {
+            const modal = document.getElementById('fullDeckModal');
+            const list = document.getElementById('modal-slide-list');
+            list.innerHTML = slidesData.map((s, i) => `
+                <div onclick="renderSlide(${i}); closeFullDeckModal();" class="p-3 bg-navy-950 hover:bg-navy-800 rounded-xl border border-navy-700 cursor-pointer flex items-center justify-between transition">
+                    <div>
+                        <div class="text-[10px] font-mono text-amber-400">${s.chapter} · Slide ${s.slideNum}</div>
+                        <h4 class="text-xs font-bold text-white">${s.title}</h4>
+                        <p class="text-[11px] text-slate-400">${s.subtitle}</p>
+                    </div>
+                    <span class="text-xs font-mono text-cyan-400 font-bold bg-navy-900 px-2.5 py-1 rounded border border-navy-700 whitespace-nowrap">
+                        ${s.statBadge}
+                    </span>
+                </div>
+            `).join('');
+            modal.classList.remove('hidden');
+        }
+
+        function closeFullDeckModal() {
+            document.getElementById('fullDeckModal').classList.add('hidden');
+        }
+
+        renderSlide(0);
+    </script>
+</body>
+</html>
