@@ -239,13 +239,14 @@
                     
                     <!-- Controls Card -->
                     <div class="hud-border p-5 rounded-2xl">
-                        <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                            <span>Airport Noise Curfew Advantage</span>
-                            <i class="fa-solid fa-volume-xmark text-amber-400"></i>
+                        <div class="flex items-center justify-between pb-3 border-b border-navy-700/80 mb-4">
+                            <h3 class="font-space font-bold text-white text-base flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-cyan-400"></i> Flight Control Console
+                            </h3>
+                            <button onclick="resetFlightParams()" class="text-[11px] font-mono text-slate-400 hover:text-cyan-400 transition">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Reset
+                            </button>
                         </div>
-                        <div id="res-noise-cut" class="text-2xl font-space font-bold text-amber-300">-6.5 dB(A)</div>
-                        <div id="res-noise-desc" class="text-xs font-mono text-slate-400 mt-1">Saves ~$180k/yr in ICAO Chapter 14 airport noise fees</div>
-                    </div>
 
                         <div class="space-y-4">
                             <div>
@@ -520,8 +521,8 @@
                             <span>Airport Noise Curfew Advantage</span>
                             <i class="fa-solid fa-volume-xmark text-amber-400"></i>
                         </div>
-                        <div class="text-2xl font-space font-bold text-amber-300">-6.5 dB(A)</div>
-                        <div class="text-xs font-mono text-slate-400 mt-1">Eliminates European Chapter 14 night-curfew surcharges</div>
+                        <div id="res-noise-cut" class="text-2xl font-space font-bold text-amber-300">-6.5 dB(A)</div>
+                        <div id="res-noise-desc" class="text-xs font-mono text-slate-400 mt-1">Saves ~$180k/yr in ICAO Chapter 14 airport noise fees</div>
                     </div>
                 </div>
 
@@ -847,7 +848,6 @@
                 }, 50);
             }
 
-            // Trigger MathJax re-render when switching to the research tab
             if (tabId === 'research' && window.MathJax) {
                 window.MathJax.typesetPromise();
             }
@@ -995,14 +995,13 @@
         function nacaHalfThickness(xNorm, chord, tRatio = 0.13) {
             if (xNorm < 0) xNorm = 0;
             if (xNorm > 1) xNorm = 1;
-            const yt = 5 * tRatio * (
+            return 5 * tRatio * (
                 0.2969 * Math.sqrt(xNorm) - 
                 0.1260 * xNorm - 
                 0.3516 * Math.pow(xNorm, 2) + 
                 0.2843 * Math.pow(xNorm, 3) - 
                 0.1015 * Math.pow(xNorm, 4)
-            );
-            return yt * chord;
+            ) * chord;
         }
 
         class FlowSimulator {
@@ -1029,10 +1028,6 @@
             }
 
             initParticles() {
-                // Particles are now seeded with a lane (baseY) and an unassigned side.
-                // The side (upper / lower of the stagnation streamline) is decided in render()
-                // and any particle that lands inside the airfoil is pushed out by the
-                // collision constraint on the very first frame (it is not drawn on that frame).
                 this.particles = [];
                 const count = 300;
                 for (let i = 0; i < count; i++) {
@@ -1097,7 +1092,6 @@
                         const currentNorm = xMorphStartNorm + (s / chord);
 
                         let xc, yc, phi;
-
                         if (Math.abs(thetaRad) < 1e-4) {
                             xc = xStart + s;
                             yc = 0;
@@ -1113,14 +1107,8 @@
                         const ny = -Math.cos(phi);
                         const yt = nacaHalfThickness(currentNorm, chord, 0.13);
 
-                        upperPoints.push({
-                            x: xc + yt * nx,
-                            y: yc + yt * ny
-                        });
-                        lowerPoints.push({
-                            x: xc - yt * nx,
-                            y: yc - yt * ny
-                        });
+                        upperPoints.push({ x: xc + yt * nx, y: yc + yt * ny });
+                        lowerPoints.push({ x: xc - yt * nx, y: yc - yt * ny });
                     }
 
                     ctx.beginPath();
@@ -1244,17 +1232,8 @@
                 ctx.restore();
             }
 
-            // ------------------------------------------------------------------
-            // FLOW-FIELD GEOMETRY (shares the exact same surface definitions as
-            // drawAirfoil, so the wing you see and the wing the flow "feels" match).
-            // Builds, in WORLD canvas coordinates, a per-column envelope:
-            //   envTop[i] = highest (smallest y) point of the body / wake in that column
-            //   envBot[i] = lowest  (largest  y) point of the body / wake in that column
-            // Beyond the trailing edge the envelope continues as a thin downwash
-            // wake sheet so upper and lower streamlines can never swap sides.
-            // ------------------------------------------------------------------
             buildEnvelope(chord, centerX, centerY, aoaDeg, flapDeg) {
-                const bs = 2; // bin width in px
+                const bs = 2;
                 const n = Math.ceil(this.width / bs) + 2;
                 if (!this.envTop || this.envTop.length !== n) {
                     this.envTop = new Float32Array(n);
@@ -1333,7 +1312,6 @@
                         const globalNorm = xHingeNorm + localNorm * (1.0 - xHingeNorm);
                         const xLoc = localNorm * flapChord;
                         const yt = nacaHalfThickness(globalNorm, chord, 0.13);
-                        // flap local frame is rotated by delta about the hinge
                         addPt(upW, hingeX + xLoc * cd + yt * sd, xLoc * sd - yt * cd);
                         addPt(lowW, hingeX + xLoc * cd - yt * sd, xLoc * sd + yt * cd);
                     }
@@ -1369,7 +1347,6 @@
                 addSeg(upW[0], lowW[0]);
                 addSeg(upW[upW.length - 1], lowW[lowW.length - 1]);
 
-                // Leading edge world position
                 this.leX = centerX + (-0.28 * chord) * ca;
                 this.leY = centerY + (-0.28 * chord) * sa;
 
@@ -1379,7 +1356,6 @@
                 while (iTE > 0 && !isFinite(top[iTE])) iTE--;
                 this.iLE = Math.min(iLE, n - 1);
 
-                // Downwash wake sheet continuing from the trailing edge
                 const teU = upW[upW.length - 1];
                 const teL = lowW[lowW.length - 1];
                 const teX = (teU.x + teL.x) / 2;
@@ -1407,24 +1383,20 @@
                 const centerY = this.height * 0.50;
 
                 const baseSpeed = (simState.speed / 450) * 8.5;
-                const aoaRad = (simState.aoa * Math.PI) / 180;
                 const flapDeflect = simState.flap;
 
-                // Shared geometry for flow + drawing
                 this.buildEnvelope(chord, centerX, centerY, simState.aoa, flapDeflect);
                 const top = this.envTop;
                 const bot = this.envBot;
                 const nBins = top.length;
                 const bs = 2;
 
-                // Stagnation streamline: horizontal line hitting the nose, shifted slightly
-                // under the nose as AoA rises (it is the divider between upper / lower flow).
                 const stagY = this.leY + chord * 0.002 * simState.aoa;
                 const leX = this.leX;
-                const upstreamReach = 0.45 * chord;   // how far ahead of the nose the flow starts bending
-                const gap0 = 4;                       // minimum clearance above/below the surface (px)
-                const spread = 0.6;                   // streamline compression factor (<1 keeps lane order)
-                const margin = 2.5;                   // hard collision margin (px) from the drawn surface
+                const upstreamReach = 0.45 * chord;
+                const gap0 = 4;
+                const spread = 0.6;
+                const margin = 2.5;
 
                 this.particles.forEach(p => {
                     p.age += 1;
@@ -1432,9 +1404,6 @@
                     p.prevY = p.y;
                     p.x += baseSpeed;
 
-                    // --- 1. Decide upper/lower from the stagnation streamline (not centerY) ---
-                    // Side is only re-evaluated while the particle is still upstream of the nose,
-                    // then frozen so it can never swap sides afterwards.
                     if (p.side === null || p.x < leX - 0.03 * chord) {
                         p.side = (p.baseY < stagY) ? 'upper' : 'lower';
                     }
@@ -1444,7 +1413,6 @@
                     const dx = p.x - centerX;
                     const normX = (dx / chord) + 0.28;
 
-                    // --- 2. Target position derived from the SAME surface used for drawing ---
                     let idxQ = Math.floor(p.x / bs);
                     idxQ = Math.min(nBins - 1, Math.max(this.iLE, idxQ));
 
@@ -1463,7 +1431,9 @@
                         }
                     }
 
-                    // --- 3. Turbulence: only the thin upper-surface layer, only after separation ---
+                    // True Aerodynamic Difference:
+                    // Morphing wing stays attached across all standard flap settings (only stalls at extreme AoA > 19)
+                    // Conventional wing separates early at the hinge (>10 deg flap or >12 deg AoA)
                     let targetTurb = 0;
                     if (isUpper && normX > 0.65 && normX <= 2.2 && lane < 0.3 * chord) {
                         if (this.isMorphing) {
@@ -1482,7 +1452,6 @@
                     p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
 
                     if (p.turbIntensity > 0.05) {
-                        // Eddies only ever lift the particle AWAY from the body (never downward)
                         const wingFactor = this.isMorphing ? 0.65 : 1.0;
                         const eddyAmp = Math.min(
                             chord * 0.09,
@@ -1492,10 +1461,8 @@
                         p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
                     }
 
-                    // --- 4. Fast follow so the particle never lags behind the surface ---
                     p.y += (targetY - p.y) * 0.35;
 
-                    // --- 5. Hard collision constraint: upper stays above, lower stays below ---
                     let bi = Math.floor(p.x / bs);
                     bi = Math.min(nBins - 1, Math.max(0, bi));
                     if (isUpper) {
@@ -1588,9 +1555,8 @@
             const totalFleetRetrofit = retrofitCostPerPlane * fleetSize;
             const paybackYears = Math.max(1.1, (totalFleetRetrofit / annualCostSavedUSD)).toFixed(1);
 
-            // Dynamic NASA ACTE Noise Model: Scales from -3.0 dB(A) up to -7.5 dB(A)
             const noiseReduction = (3.0 + (dragCut / 12.0) * 4.2).toFixed(1);
-            const noiseFeesSavedUSD = fleetSize * (noiseReduction * 28000); // ~$150k-$300k per airframe in airport noise quota discounts
+            const noiseFeesSavedUSD = fleetSize * (noiseReduction * 28000);
 
             document.getElementById('res-fuel-gal').innerText = Math.round(annualGalSaved).toLocaleString();
             document.getElementById('res-fuel-litres').innerText = (annualLitresSaved / 1000000).toFixed(1) + 'M';
@@ -1599,7 +1565,6 @@
             document.getElementById('res-co2-tons').innerText = Math.round(co2TonsMitigated).toLocaleString();
             document.getElementById('res-payback').innerText = paybackYears;
             
-            // Update Noise Card dynamically
             const noiseEl = document.getElementById('res-noise-cut');
             const noiseDescEl = document.getElementById('res-noise-desc');
             if (noiseEl) noiseEl.innerText = `-${noiseReduction} dB(A)`;
