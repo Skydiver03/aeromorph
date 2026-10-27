@@ -387,7 +387,7 @@
                         <div class="h-64 sm:h-72 w-full relative">
                             <canvas id="canvas-conv" class="w-full h-full block rounded-lg"></canvas>
                             <div class="absolute bottom-2 left-2 text-[10px] font-mono text-slate-400 bg-navy-950/80 px-2 py-1 rounded border border-navy-800">
-                                Flow: <span class="text-cyan-400">Laminar Attached</span> · <span class="text-rose-400">Turbulent Vortex Wake</span>
+                                Flow: <span class="text-cyan-400">Attached Streamlines</span> · <span class="text-rose-400">Separated Hinge Wake</span>
                             </div>
                         </div>
                     </div>
@@ -409,7 +409,7 @@
                         <div class="h-64 sm:h-72 w-full relative">
                             <canvas id="canvas-morph" class="w-full h-full block rounded-lg"></canvas>
                             <div class="absolute bottom-2 right-2 text-[10px] font-mono text-emerald-400 bg-navy-950/90 px-2 py-1 rounded border border-emerald-500/40">
-                                <i class="fa-solid fa-cubes-stacked mr-1"></i>Honeycomb cellular ribs flex without in-plane chord stretching
+                                <i class="fa-solid fa-cubes-stacked mr-1"></i>Smooth Curvature Prevents Hinge Separation
                             </div>
                         </div>
                     </div>
@@ -453,7 +453,7 @@
                         </div>
                         <input type="range" id="calc-fleet-slider" min="1" max="100" step="1" value="20" oninput="runRoiCalculation()">
                         <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                            <span>1 Plane (Single Testbed)</span>
+                            <span>1 Plane</span>
                             <span>50 Planes</span>
                             <span>100 Planes (Major Carrier)</span>
                         </div>
@@ -516,6 +516,7 @@
                         <div class="text-xs font-mono text-cyan-400 mt-1">Metric Tons of $CO_2$ / Year</div>
                     </div>
 
+                    <!-- Properly placed and hooked up noise curfew card -->
                     <div class="hud-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                             <span>Airport Noise Curfew Advantage</span>
@@ -904,7 +905,6 @@
 
             let c_cl = 0.25 + (simState.aoa * 0.09) + (simState.flap * 0.038);
             let c_cd = 0.02 + Math.pow(simState.aoa * 0.016, 2) + Math.pow(simState.flap * 0.022, 2);
-            
             if (simState.flap > 12) {
                 c_cd += (simState.flap - 12) * 0.012;
             }
@@ -937,7 +937,7 @@
             statConvLd.innerText = convLD;
             statMorphLd.innerText = morphLD;
 
-            // Normalized against max realistic L/D of 35
+            // Normalized against maximum realistic L/D of 35
             const maxLD = 35;
             barConvLd.style.width = `${Math.min(100, (convLD / maxLD) * 100)}%`;
             barMorphLd.style.width = `${Math.min(100, (morphLD / maxLD) * 100)}%`;
@@ -1024,21 +1024,23 @@
                     this.canvas.height = rect.height;
                     this.width = rect.width;
                     this.height = rect.height;
+                    this.initParticles();
                 }
             }
 
             initParticles() {
                 this.particles = [];
-                const count = 300;
+                const count = 360;
                 for (let i = 0; i < count; i++) {
                     const startX = Math.random() * this.width;
-                    const startY = Math.random() * this.height;
+                    const seedY = 12 + (i / count) * (this.height - 24);
                     this.particles.push({
                         x: startX,
-                        y: startY,
+                        y: seedY,
                         prevX: startX,
-                        prevY: startY,
-                        baseY: startY,
+                        prevY: seedY,
+                        baseY: seedY,
+                        speedFactor: 0.94 + Math.random() * 0.12,
                         turbIntensity: 0,
                         age: Math.random() * 100,
                         side: null,
@@ -1359,6 +1361,10 @@
                 const teU = upW[upW.length - 1];
                 const teL = lowW[lowW.length - 1];
                 const teX = (teU.x + teL.x) / 2;
+                this.teX = teX;
+                this.teUpY = teU.y;
+                this.teLowY = teL.y;
+
                 const teAng = Math.max(-20, Math.min(55, aoaDeg + flapDeg)) * Math.PI / 180;
                 const finalAng = teAng * 0.5;
                 const relax = 0.3 * chord;
@@ -1384,94 +1390,100 @@
 
                 const baseSpeed = (simState.speed / 450) * 8.5;
                 const flapDeflect = simState.flap;
+                const aoaDeg = simState.aoa;
+                const aoaRad = (aoaDeg * Math.PI) / 180;
 
-                this.buildEnvelope(chord, centerX, centerY, simState.aoa, flapDeflect);
+                this.buildEnvelope(chord, centerX, centerY, aoaDeg, flapDeflect);
                 const top = this.envTop;
                 const bot = this.envBot;
                 const nBins = top.length;
                 const bs = 2;
 
-                const stagY = this.leY + chord * 0.002 * simState.aoa;
+                const Y_ceil = 10;
+                const Y_floor = this.height - 10;
                 const leX = this.leX;
+                const leY = this.leY;
                 const upstreamReach = 0.45 * chord;
-                const gap0 = 4;
-                const spread = 0.6;
-                const margin = 2.5;
+                const gap0 = 3.0; // tight clearance so air hugs the surface directly
+
+                // Stagnation line inlet height
+                const stagY = this.leY + chord * 0.002 * aoaDeg;
+                const H_up0 = Math.max(20, stagY - Y_ceil);
+                const H_low0 = Math.max(20, Y_floor - stagY);
+
+                const hingeX = centerX + (0.70 - 0.28) * chord * Math.cos(aoaRad);
+
+                // Morphing wing maintains laminar attached flow (only separates at extreme stall > 18 deg)
+                // Conventional wing breaks down early at the flap hinge
+                const isSeparated = this.isMorphing ? (aoaDeg > 18) : (aoaDeg > 12 || flapDeflect > 10);
 
                 this.particles.forEach(p => {
                     p.age += 1;
                     p.prevX = p.x;
                     p.prevY = p.y;
-                    p.x += baseSpeed;
+                    p.x += baseSpeed * p.speedFactor;
 
-                    if (p.side === null || p.x < leX - 0.03 * chord) {
+                    if (p.side === null || p.x < leX - 0.05 * chord) {
                         p.side = (p.baseY < stagY) ? 'upper' : 'lower';
                     }
-                    const isUpper = p.side === 'upper';
-                    const lane = isUpper ? Math.max(0, stagY - p.baseY) : Math.max(0, p.baseY - stagY);
-
-                    const dx = p.x - centerX;
-                    const normX = (dx / chord) + 0.28;
-
-                    let idxQ = Math.floor(p.x / bs);
-                    idxQ = Math.min(nBins - 1, Math.max(this.iLE, idxQ));
-
-                    let wUp = (p.x - (leX - upstreamReach)) / upstreamReach;
-                    wUp = Math.min(1, Math.max(0, wUp));
-                    wUp = wUp * wUp * (3 - 2 * wUp);
+                    const isUpper = (p.side === 'upper');
 
                     let targetY = p.baseY;
-                    if (wUp > 0) {
-                        if (isUpper) {
-                            const limit = top[idxQ] - gap0 - spread * lane;
-                            targetY = p.baseY + wUp * Math.min(0, limit - p.baseY);
-                        } else {
-                            const limit = bot[idxQ] + gap0 + spread * lane;
-                            targetY = p.baseY + wUp * Math.max(0, limit - p.baseY);
-                        }
-                    }
-
-                    // True Aerodynamic Difference:
-                    // Morphing wing stays attached across all standard flap settings (only stalls at extreme AoA > 19)
-                    // Conventional wing separates early at the hinge (>10 deg flap or >12 deg AoA)
                     let targetTurb = 0;
-                    if (isUpper && normX > 0.65 && normX <= 2.2 && lane < 0.3 * chord) {
-                        if (this.isMorphing) {
-                            targetTurb = Math.min(
-                                0.55,
-                                Math.max(0, (simState.aoa - 19) * 0.085)
-                            );
-                        } else {
-                            if (simState.aoa > 12) {
-                                targetTurb = Math.min(1.0, (simState.aoa - 12) * 0.18 + (flapDeflect * 0.02));
-                            } else if (flapDeflect > 10) {
-                                targetTurb = Math.min(1.0, (flapDeflect - 10) * 0.04);
-                            }
-                        }
-                    }
-                    p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
 
-                    if (p.turbIntensity > 0.05) {
-                        const wingFactor = this.isMorphing ? 0.65 : 1.0;
-                        const eddyAmp = Math.min(
-                            chord * 0.09,
-                            p.turbIntensity * (flapDeflect * 0.4 + simState.aoa * 0.9 + 3) * wingFactor
-                        );
-                        targetY -= (0.5 + 0.5 * Math.sin(p.age * 0.35 + p.baseY * 0.1)) * eddyAmp;
-                        p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
-                    }
-
-                    p.y += (targetY - p.y) * 0.35;
-
-                    let bi = Math.floor(p.x / bs);
-                    bi = Math.min(nBins - 1, Math.max(0, bi));
                     if (isUpper) {
-                        const lim = top[bi] - margin;
-                        if (p.y > lim) p.y = lim;
+                        // Ratio: 0 at ceiling, 1 at the wing upper skin
+                        const ratio = Math.min(1.0, Math.max(0, (p.baseY - Y_ceil) / H_up0));
+
+                        let surfY = stagY;
+                        if (p.x >= leX) {
+                            const bi = Math.min(nBins - 1, Math.max(0, Math.floor(p.x / bs)));
+                            surfY = top[bi];
+
+                            // Conventional wing separates at hinge line; morphing wing hugs all the way
+                            if (isSeparated && p.x > hingeX) {
+                                const biHinge = Math.min(nBins - 1, Math.max(0, Math.floor(hingeX / bs)));
+                                const hingeY = top[biHinge];
+                                const detachSlope = Math.tan((aoaDeg * 0.3 - 2) * Math.PI / 180);
+                                const detachedY = hingeY + (p.x - hingeX) * detachSlope;
+                                surfY = Math.min(surfY, detachedY);
+                                targetTurb = Math.min(1.0, (flapDeflect * 0.03 + (aoaDeg - 10) * 0.08));
+                            }
+                        } else if (p.x >= leX - upstreamReach) {
+                            const w = (p.x - (leX - upstreamReach)) / upstreamReach;
+                            const wEase = w * w * (3 - 2 * w);
+                            surfY = stagY + wEase * (leY - stagY);
+                        }
+
+                        // Hugs the upper surface directly when ratio = 1
+                        const channelHeight = Math.max(15, surfY - gap0 - Y_ceil);
+                        targetY = Y_ceil + ratio * channelHeight;
+
+                        if (targetTurb > 0.1 && ratio > 0.5) {
+                            const eddy = Math.sin(p.age * 0.25 + p.x * 0.05) * targetTurb * (flapDeflect * 0.35 + 4);
+                            targetY -= Math.abs(eddy);
+                        }
                     } else {
-                        const lim = bot[bi] + margin;
-                        if (p.y < lim) p.y = lim;
+                        // Lower surface streamline
+                        const ratio = Math.min(1.0, Math.max(0, (Y_floor - p.baseY) / H_low0));
+
+                        let surfY = stagY;
+                        if (p.x >= leX) {
+                            const bi = Math.min(nBins - 1, Math.max(0, Math.floor(p.x / bs)));
+                            surfY = bot[bi];
+                        } else if (p.x >= leX - upstreamReach) {
+                            const w = (p.x - (leX - upstreamReach)) / upstreamReach;
+                            const wEase = w * w * (3 - 2 * w);
+                            surfY = stagY + wEase * (leY - stagY);
+                        }
+
+                        // Hugs the lower surface directly when ratio = 1
+                        const channelHeight = Math.max(15, Y_floor - (surfY + gap0));
+                        targetY = Y_floor - ratio * channelHeight;
                     }
+
+                    p.turbIntensity += (targetTurb - p.turbIntensity) * 0.12;
+                    p.y = targetY;
 
                     if (p.x > this.width) {
                         p.x = 0;
@@ -1489,19 +1501,20 @@
                         this.ctx.lineTo(p.x, p.y);
 
                         if (p.turbIntensity > 0.15) {
-                            const r = Math.round(230 + p.turbIntensity * 25);
-                            const g = Math.round(140 * (1 - p.turbIntensity));
+                            const r = Math.round(235 + p.turbIntensity * 20);
+                            const g = Math.round(110 * (1 - p.turbIntensity));
                             const b = Math.round(70 * (1 - p.turbIntensity));
-                            const alpha = 0.4 + p.turbIntensity * 0.45;
+                            const alpha = 0.45 + p.turbIntensity * 0.45;
                             this.ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                            this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.6;
+                            this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.5;
                         } else {
                             if (this.isMorphing) {
-                                this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.55)';
+                                this.ctx.strokeStyle = 'rgba(52, 211, 153, 0.65)';
+                                this.ctx.lineWidth = 1.35;
                             } else {
-                                this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+                                this.ctx.strokeStyle = 'rgba(56, 189, 248, 0.50)';
+                                this.ctx.lineWidth = 1.25;
                             }
-                            this.ctx.lineWidth = 1.25;
                         }
                         this.ctx.stroke();
                     }
@@ -1509,7 +1522,7 @@
                     p.justReset = false;
                 });
 
-                this.drawAirfoil(this.ctx, centerX, centerY, chord, simState.aoa, simState.flap);
+                this.drawAirfoil(this.ctx, centerX, centerY, chord, aoaDeg, flapDeflect);
             }
         }
 
