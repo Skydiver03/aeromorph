@@ -1030,13 +1030,15 @@
             }
 
             initParticles() {
-                // Smoke-line style seeding: evenly spread lanes (baseY), random start along x.
-                // Anything seeded inside the wing is pushed out on the first frame (not drawn).
+                // Particles are now seeded with a lane (baseY) and an unassigned side.
+                // The side (upper / lower of the stagnation streamline) is decided in render()
+                // and any particle that lands inside the airfoil is pushed out by the
+                // collision constraint on the very first frame (it is not drawn on that frame).
                 this.particles = [];
-                const count = 450;
+                const count = 300;
                 for (let i = 0; i < count; i++) {
                     const startX = Math.random() * this.width;
-                    const startY = ((i + Math.random()) / count) * this.height;
+                    const startY = Math.random() * this.height;
                     this.particles.push({
                         x: startX,
                         y: startY,
@@ -1045,14 +1047,9 @@
                         baseY: startY,
                         turbIntensity: 0,
                         age: Math.random() * 100,
-                        ph: Math.random() * 6.283,
+                        side: null,
                         justReset: true
                     });
-                }
-                // pool of turbulent dead-water / wake particles (only active while separated)
-                this.eddies = [];
-                for (let i = 0; i < 160; i++) {
-                    this.eddies.push({ x: 0, y: 0, prevX: 0, prevY: 0, age: 0, life: 80, ph: Math.random() * 6.283, on: false });
                 }
             }
 
@@ -1249,37 +1246,35 @@
             }
 
             // ------------------------------------------------------------------
-            // WIND-TUNNEL FLOW FIELD
-            // The wing outline used by drawAirfoil is turned into a closed set of vortex
-            // panels (Kutta condition at the trailing edge). Particles are advected by the
-            // resulting velocity field, exactly like smoke filaments in a tunnel:
-            //   - the nose stagnation point, upwash, suction-side speed-up and downwash
-            //     behind the wing come out of the field by themselves,
-            //   - streamlines cannot cross the wing, and everything is continuous in time,
-            //     so dragging the sliders just bends the flow smoothly.
-            // Separation (only under the same conditions as the on-screen warnings) is then
-            // layered on top as a detached shear layer + slow turbulent dead-water bubble.
+            // FLOW-FIELD GEOMETRY (shares the exact same surface definitions as
+            // drawAirfoil, so the wing you see and the wing the flow "feels" match).
+            // Builds, in WORLD canvas coordinates, a per-column envelope:
+            //   envTop[i] = highest (smallest y) point of the body / wake in that column
+            //   envBot[i] = lowest  (largest  y) point of the body / wake in that column
+            // Beyond the trailing edge the envelope continues as a thin downwash
+            // wake sheet so upper and lower streamlines can never swap sides.
             // ------------------------------------------------------------------
-            buildFlowField(chord, centerX, centerY, aoaDeg, flapDeg) {
-                const key = [chord.toFixed(1), centerX.toFixed(1), centerY.toFixed(1), aoaDeg, flapDeg, this.width].join('|');
-                if (key === this.flowKey) return;
-                this.flowKey = key;
-
-                const bs = 2; // envelope bin width (px)
+            buildEnvelope(chord, centerX, centerY, aoaDeg, flapDeg) {
+                const bs = 2; // bin width in px
                 const n = Math.ceil(this.width / bs) + 2;
                 if (!this.envTop || this.envTop.length !== n) {
                     this.envTop = new Float32Array(n);
                     this.envBot = new Float32Array(n);
-                    this.envBar = new Float32Array(n);
                 }
                 const top = this.envTop;
                 const bot = this.envBot;
                 top.fill(Infinity);
                 bot.fill(-Infinity);
 
-                // ---- local (wing-frame) surfaces: identical to drawAirfoil ----
-                const upL = [];
-                const lowL = [];
+                const aoaRad = (aoaDeg * Math.PI) / 180;
+                const ca = Math.cos(aoaRad);
+                const sa = Math.sin(aoaRad);
+                const upW = [];
+                const lowW = [];
+                const addPt = (arr, x, y) => {
+                    arr.push({ x: centerX + x * ca - y * sa, y: centerY + x * sa + y * ca });
+                };
+
                 if (this.isMorphing) {
                     const xMorphStartNorm = 0.65;
                     const xStart = (xMorphStartNorm - 0.28) * chord;
@@ -1291,9 +1286,10 @@
                         const xNorm = (i / rigidSamples) * xMorphStartNorm;
                         const x = (xNorm - 0.28) * chord;
                         const yt = nacaHalfThickness(xNorm, chord, 0.13);
-                        upL.push({ x: x, y: -yt });
-                        lowL.push({ x: x, y: yt });
+                        addPt(upW, x, -yt);
+                        addPt(lowW, x, yt);
                     }
+
                     const morphSamples = 30;
                     for (let j = 1; j <= morphSamples; j++) {
                         const s = (j / morphSamples) * L_morph;
@@ -1312,8 +1308,8 @@
                         const nx = Math.sin(phi);
                         const ny = -Math.cos(phi);
                         const yt = nacaHalfThickness(currentNorm, chord, 0.13);
-                        upL.push({ x: xc + yt * nx, y: yc + yt * ny });
-                        lowL.push({ x: xc - yt * nx, y: yc - yt * ny });
+                        addPt(upW, xc + yt * nx, yc + yt * ny);
+                        addPt(lowW, xc - yt * nx, yc - yt * ny);
                     }
                 } else {
                     const xHingeNorm = 0.70;
@@ -1321,14 +1317,16 @@
                     const dRad = (flapDeg * Math.PI) / 180;
                     const cd = Math.cos(dRad);
                     const sd = Math.sin(dRad);
+
                     const samples = 65;
                     for (let i = 0; i <= samples; i++) {
                         const xNorm = (i / samples) * xHingeNorm;
                         const x = (xNorm - 0.28) * chord;
                         const yt = nacaHalfThickness(xNorm, chord, 0.13);
-                        upL.push({ x: x, y: -yt });
-                        lowL.push({ x: x, y: yt });
+                        addPt(upW, x, -yt);
+                        addPt(lowW, x, yt);
                     }
+
                     const flapSamples = 25;
                     const flapChord = (1.0 - xHingeNorm) * chord;
                     for (let k = 0; k <= flapSamples; k++) {
@@ -1336,22 +1334,12 @@
                         const globalNorm = xHingeNorm + localNorm * (1.0 - xHingeNorm);
                         const xLoc = localNorm * flapChord;
                         const yt = nacaHalfThickness(globalNorm, chord, 0.13);
-                        upL.push({ x: hingeX + xLoc * cd + yt * sd, y: xLoc * sd - yt * cd });
-                        lowL.push({ x: hingeX + xLoc * cd - yt * sd, y: xLoc * sd + yt * cd });
+                        // flap local frame is rotated by delta about the hinge
+                        addPt(upW, hingeX + xLoc * cd + yt * sd, xLoc * sd - yt * cd);
+                        addPt(lowW, hingeX + xLoc * cd - yt * sd, xLoc * sd + yt * cd);
                     }
                 }
 
-                // ---- world frame ----
-                const aoaRad = (aoaDeg * Math.PI) / 180;
-                const ca = Math.cos(aoaRad);
-                const sa = Math.sin(aoaRad);
-                const toW = (q) => ({ x: centerX + q.x * ca - q.y * sa, y: centerY + q.x * sa + q.y * ca });
-                const upW = upL.map(toW);
-                const lowW = lowL.map(toW);
-                this.upW = upW;
-                this.upLx = upL.map(q => q.x);
-
-                // ---- per-column envelope (top = highest, bot = lowest point of the wing) ----
                 const addSeg = (a, b) => {
                     const x0 = a.x, y0 = a.y, x1 = b.x, y1 = b.y;
                     const minX = Math.min(x0, x1);
@@ -1376,231 +1364,38 @@
                         if (hi > bot[i]) bot[i] = hi;
                     }
                 };
+
                 for (let i = 0; i < upW.length - 1; i++) addSeg(upW[i], upW[i + 1]);
                 for (let i = 0; i < lowW.length - 1; i++) addSeg(lowW[i], lowW[i + 1]);
                 addSeg(upW[0], lowW[0]);
                 addSeg(upW[upW.length - 1], lowW[lowW.length - 1]);
 
+                // Leading edge world position
                 this.leX = centerX + (-0.28 * chord) * ca;
                 this.leY = centerY + (-0.28 * chord) * sa;
+
+                let iLE = 0;
+                while (iLE < n && !isFinite(top[iLE])) iLE++;
+                let iTE = n - 1;
+                while (iTE > 0 && !isFinite(top[iTE])) iTE--;
+                this.iLE = Math.min(iLE, n - 1);
+
+                // Downwash wake sheet continuing from the trailing edge
                 const teU = upW[upW.length - 1];
                 const teL = lowW[lowW.length - 1];
-                this.teX = (teU.x + teL.x) / 2;
-                this.teUpY = teU.y;
-                this.teLowY = teL.y;
-
-                // ---- vortex panel solution (y-up frame: Y = -y) ----
-                const clean = (arr) => {
-                    const out = [];
-                    for (const q of arr) {
-                        while (out.length > 1 && out[out.length - 1].x >= q.x - 0.3) out.pop();
-                        out.push(q);
-                    }
-                    return out;
-                };
-                const sub = (arr) => arr.filter((q, i) => i < 12 || i % 2 === 0 || i === arr.length - 1);
-                const lowS = sub(clean(lowL));
-                const upS = sub(clean(upL));
-                const teLoc = {
-                    x: (lowS[lowS.length - 1].x + upS[upS.length - 1].x) / 2,
-                    y: (lowS[lowS.length - 1].y + upS[upS.length - 1].y) / 2
-                };
-                lowS[lowS.length - 1] = teLoc;
-                upS[upS.length - 1] = teLoc;
-
-                // counter-clockwise: lower surface LE->TE, then upper surface TE->LE
-                const pts = [];
-                for (let i = 0; i < lowS.length - 1; i++) pts.push(lowS[i]);
-                const teIndex = pts.length;
-                pts.push(teLoc);
-                for (let i = upS.length - 2; i >= 1; i--) pts.push(upS[i]);
-                const N = pts.length;
-
-                const PX = new Float64Array(N);
-                const PY = new Float64Array(N);
-                for (let i = 0; i < N; i++) {
-                    const q = toW(pts[i]);
-                    PX[i] = q.x;
-                    PY[i] = -q.y;
+                const teX = (teU.x + teL.x) / 2;
+                const teAng = Math.max(-20, Math.min(55, aoaDeg + flapDeg)) * Math.PI / 180;
+                const finalAng = teAng * 0.5;
+                const relax = 0.3 * chord;
+                let off = 0;
+                for (let i = iTE + 1; i < n; i++) {
+                    const xc = (i + 0.5) * bs;
+                    const sdist = Math.max(0, xc - teX);
+                    const ang = finalAng + (teAng - finalAng) * Math.exp(-sdist / relax);
+                    off += bs * Math.tan(ang);
+                    top[i] = teU.y + off;
+                    bot[i] = teL.y + off;
                 }
-                const P = {
-                    N: N,
-                    px: PX, py: PY,
-                    tx: new Float64Array(N), ty: new Float64Array(N),
-                    L: new Float64Array(N),
-                    mx: new Float64Array(N), my: new Float64Array(N),
-                    far2: new Float64Array(N), g2: new Float64Array(N),
-                    gam: new Float64Array(N)
-                };
-                for (let i = 0; i < N; i++) {
-                    const j = (i + 1) % N;
-                    const dx = PX[j] - PX[i];
-                    const dy = PY[j] - PY[i];
-                    const L = Math.max(1e-6, Math.hypot(dx, dy));
-                    P.L[i] = L;
-                    P.tx[i] = dx / L;
-                    P.ty[i] = dy / L;
-                    P.mx[i] = 0.5 * (PX[i] + PX[j]);
-                    P.my[i] = 0.5 * (PY[i] + PY[j]);
-                    P.far2[i] = (3 * L) * (3 * L);
-                }
-
-                const TWO_PI = 2 * Math.PI;
-                const A = [];
-                const b = new Float64Array(N);
-                for (let i = 0; i < N; i++) {
-                    const row = new Float64Array(N);
-                    const nox = P.ty[i];
-                    const noy = -P.tx[i];
-                    for (let j = 0; j < N; j++) {
-                        if (i === j) continue;
-                        const dxp = P.mx[i] - PX[j];
-                        const dyp = P.my[i] - PY[j];
-                        const xi = dxp * P.tx[j] + dyp * P.ty[j];
-                        const eta = -dxp * P.ty[j] + dyp * P.tx[j];
-                        const Lj = P.L[j];
-                        const beta = Math.atan2(eta, xi - Lj) - Math.atan2(eta, xi);
-                        const uxi = -beta / TWO_PI;
-                        const vet = 0.5 * Math.log((xi * xi + eta * eta + 1e-6) / ((xi - Lj) * (xi - Lj) + eta * eta + 1e-6)) / TWO_PI;
-                        const ux = uxi * P.tx[j] - vet * P.ty[j];
-                        const uy = uxi * P.ty[j] + vet * P.tx[j];
-                        row[j] = ux * nox + uy * noy;
-                    }
-                    A.push(row);
-                    b[i] = -nox; // free stream (1, 0)
-                }
-                // Kutta condition replaces one (redundant) equation on the lower surface
-                const iK = Math.floor(teIndex / 2);
-                A[iK].fill(0);
-                A[iK][teIndex - 1] = 1;
-                A[iK][teIndex] = 1;
-                b[iK] = 0;
-
-                // Gaussian elimination with partial pivoting
-                for (let c = 0; c < N; c++) {
-                    let piv = c;
-                    let mx = Math.abs(A[c][c]);
-                    for (let r = c + 1; r < N; r++) {
-                        const v = Math.abs(A[r][c]);
-                        if (v > mx) { mx = v; piv = r; }
-                    }
-                    if (mx < 1e-12) continue;
-                    if (piv !== c) {
-                        const t = A[c]; A[c] = A[piv]; A[piv] = t;
-                        const tb = b[c]; b[c] = b[piv]; b[piv] = tb;
-                    }
-                    for (let r = c + 1; r < N; r++) {
-                        const f = A[r][c] / A[c][c];
-                        if (f === 0) continue;
-                        for (let k = c; k < N; k++) A[r][k] -= f * A[c][k];
-                        b[r] -= f * b[c];
-                    }
-                }
-                for (let r = N - 1; r >= 0; r--) {
-                    let s = b[r];
-                    for (let k = r + 1; k < N; k++) s -= A[r][k] * P.gam[k];
-                    P.gam[r] = Math.abs(A[r][r]) < 1e-12 ? 0 : s / A[r][r];
-                }
-                for (let i = 0; i < N; i++) P.g2[i] = P.gam[i] * P.L[i] / TWO_PI;
-                this.pan = P;
-            }
-
-            // Velocity of the potential flow at canvas point (x, y); result in this._u, this._v (canvas axes)
-            potVel(x, yc) {
-                const P = this.pan;
-                const TWO_PI = 2 * Math.PI;
-                const X = x;
-                const Y = -yc;
-                let u = 1;
-                let v = 0;
-                let best = Infinity;
-                let bi = -1;
-                for (let i = 0; i < P.N; i++) {
-                    const dx = X - P.mx[i];
-                    const dy = Y - P.my[i];
-                    const r2 = dx * dx + dy * dy;
-                    if (r2 > P.far2[i]) {
-                        const k = P.g2[i] / r2;
-                        u -= k * dy;
-                        v += k * dx;
-                    } else {
-                        const dxp = X - P.px[i];
-                        const dyp = Y - P.py[i];
-                        const xi = dxp * P.tx[i] + dyp * P.ty[i];
-                        const eta = -dxp * P.ty[i] + dyp * P.tx[i];
-                        const L = P.L[i];
-                        const g = P.gam[i];
-                        const beta = Math.atan2(eta, xi - L) - Math.atan2(eta, xi);
-                        const uxi = -g * beta / TWO_PI;
-                        const vet = g * 0.5 * Math.log((xi * xi + eta * eta + 1e-6) / ((xi - L) * (xi - L) + eta * eta + 1e-6)) / TWO_PI;
-                        u += uxi * P.tx[i] - vet * P.ty[i];
-                        v += uxi * P.ty[i] + vet * P.tx[i];
-                        if (r2 < best) { best = r2; bi = i; }
-                    }
-                }
-                // Near the skin remove any component pointing INTO the wing (panel discretisation noise)
-                if (bi >= 0) {
-                    const nox = P.ty[bi];
-                    const noy = -P.tx[bi];
-                    const d = (X - P.mx[bi]) * nox + (Y - P.my[bi]) * noy;
-                    const vn = u * nox + v * noy;
-                    if (vn < 0 && d < 10) {
-                        let t = (d - 1) / 9;
-                        t = Math.min(1, Math.max(0, t));
-                        const w = 1 - t * t * (3 - 2 * t);
-                        u -= w * vn * nox;
-                        v -= w * vn * noy;
-                    }
-                }
-                const sp = Math.hypot(u, v);
-                if (sp > 3.5) { u *= 3.5 / sp; v *= 3.5 / sp; }
-                this._u = u;
-                this._v = -v;
-            }
-
-            // Detached shear layer ("barrier") that leaves the upper surface at the separation point
-            buildBarrier(chord, sepS, xsNorm, aoaDeg, flapDeg) {
-                this.barOn = false;
-                if (!(sepS > 0) || xsNorm > 0.995) return;
-                const bs = 2;
-                const bar = this.envBar;
-                const top = this.envTop;
-                const n = bar.length;
-                const xsLoc = (xsNorm - 0.28) * chord;
-                let js = -1;
-                for (let i = 2; i < this.upLx.length - 1; i++) {
-                    if (this.upLx[i] >= xsLoc) { js = i; break; }
-                }
-                if (js < 0) return;
-                const P = this.upW[js];
-                const Q = this.upW[js - 1];
-                let th = Math.atan2(P.y - Q.y, P.x - Q.x);
-                th = Math.min(0.7, Math.max(-0.3, th));
-                const wakeAng = Math.max(-10, Math.min(30, 0.5 * (aoaDeg + flapDeg))) * Math.PI / 180;
-                const thEnd = 0.4 * wakeAng;
-                const Lr = 0.3 * chord;
-                this.xsW = P.x;
-                this.wakeAng = wakeAng;
-                bar.fill(Infinity);
-                let y = P.y;
-                const i0 = Math.max(0, Math.floor(P.x / bs));
-                for (let i = i0; i < n; i++) {
-                    const x = (i + 0.5) * bs;
-                    let yy = y;
-                    if (x <= this.teX && isFinite(top[i]) && yy > top[i] - 1.5) yy = top[i] - 1.5;
-                    bar[i] = yy;
-                    y = yy;
-                    const ang = thEnd + (th - thEnd) * Math.exp(-Math.max(0, x - P.x) / Lr);
-                    y += bs * Math.tan(ang);
-                }
-                this.barOn = true;
-            }
-
-            // Lower edge of the dead-water region at column x (wing skin, then the wake)
-            deadBottom(x, bj) {
-                if (x <= this.teX) return this.envTop[bj] - 1.5;
-                const dxw = x - this.teX;
-                return this.teLowY + dxw * Math.tan(this.wakeAng) + 0.25 * dxw;
             }
 
             render() {
@@ -1613,182 +1408,121 @@
                 const centerY = this.height * 0.50;
 
                 const baseSpeed = (simState.speed / 450) * 8.5;
+                const aoaRad = (simState.aoa * Math.PI) / 180;
                 const flapDeflect = simState.flap;
 
-                const smooth = (t) => {
-                    t = Math.min(1, Math.max(0, t));
-                    return t * t * (3 - 2 * t);
-                };
-
-                // ------------------------------------------------------------------
-                // SEPARATION STRENGTH - same thresholds as the on-screen warnings:
-                //   conventional : AoA > 14 deg OR flap > 18 deg
-                //   morphing     : AoA > 18 deg (telemetry stall model)
-                // Below these the flow is fully attached.
-                // ------------------------------------------------------------------
-                let sepS = 0;
-                let xsTarget = 1.0;
-                if (this.isMorphing) {
-                    sepS = Math.min(1, Math.max(0, (simState.aoa - 18) * 0.25));
-                    xsTarget = 0.92 - 0.5 * sepS;
-                } else {
-                    const sA = Math.min(1, Math.max(0, (simState.aoa - 14) * 0.2));
-                    const sF = Math.min(1, Math.max(0, (flapDeflect - 18) * 0.1));
-                    sepS = Math.max(sA, sF);
-                    xsTarget = (sF > sA) ? 0.72 : (0.92 - 0.5 * sA);
-                }
-                const xsNorm = 1 - (1 - xsTarget) * smooth(sepS * 4); // separation point creeps in smoothly
-
-                this.buildFlowField(chord, centerX, centerY, simState.aoa, flapDeflect);
-                this.buildBarrier(chord, sepS, xsNorm, simState.aoa, flapDeflect);
-
+                // Shared geometry for flow + drawing
+                this.buildEnvelope(chord, centerX, centerY, simState.aoa, flapDeflect);
                 const top = this.envTop;
                 const bot = this.envBot;
-                const bar = this.envBar;
                 const nBins = top.length;
                 const bs = 2;
-                const margin = 2.0;
+
+                // Stagnation streamline: horizontal line hitting the nose, shifted slightly
+                // under the nose as AoA rises (it is the divider between upper / lower flow).
+                const stagY = this.leY + chord * 0.002 * simState.aoa;
                 const leX = this.leX;
-                const leY = this.leY;
-                const teX = this.teX;
-                const barOn = this.barOn;
-                const xsW = this.xsW;
-                const binOf = (x) => Math.min(nBins - 1, Math.max(0, Math.floor(x / bs)));
+                const upstreamReach = 0.45 * chord;   // how far ahead of the nose the flow starts bending
+                const gap0 = 4;                       // minimum clearance above/below the surface (px)
+                const spread = 0.6;                   // streamline compression factor (<1 keeps lane order)
+                const margin = 2.5;                   // hard collision margin (px) from the drawn surface
 
                 this.particles.forEach(p => {
                     p.age += 1;
                     p.prevX = p.x;
                     p.prevY = p.y;
+                    p.x += baseSpeed;
 
-                    const bi = binOf(p.x);
+                    // --- 1. Decide upper/lower from the stagnation streamline (not centerY) ---
+                    // Side is only re-evaluated while the particle is still upstream of the nose,
+                    // then frozen so it can never swap sides afterwards.
+                    if (p.side === null || p.x < leX - 0.03 * chord) {
+                        p.side = (p.baseY < stagY) ? 'upper' : 'lower';
+                    }
+                    const isUpper = p.side === 'upper';
+                    const lane = isUpper ? Math.max(0, stagY - p.baseY) : Math.max(0, p.baseY - stagY);
 
-                    // ---- local modifiers evaluated at the start of the frame ----
-                    let W = 0, dirX = 1, dirY = 0;   // shear-layer blending toward the detached direction
-                    let sMul = 1;                    // speed multiplier
-                    let swU = 0, swV = 0;            // gentle swirl inside the dead-water region
-                    let turbTarget = 0;
+                    const dx = p.x - centerX;
+                    const normX = (dx / chord) + 0.28;
 
-                    // boundary layer: air touching the skin moves slower (no-slip)
-                    if (isFinite(top[bi])) {
-                        const mid = 0.5 * (top[bi] + bot[bi]);
-                        const c = (p.y < mid) ? (top[bi] - p.y) : (p.y - bot[bi]);
-                        const xi = Math.min(1, Math.max(0, (p.x - leX) / (teX - leX)));
-                        const delta = chord * (0.004 + 0.016 * xi);
-                        sMul *= 1 - 0.45 * Math.exp(-Math.max(0, c) / delta);
+                    // --- 2. Target position derived from the SAME surface used for drawing ---
+                    let idxQ = Math.floor(p.x / bs);
+                    idxQ = Math.min(nBins - 1, Math.max(this.iLE, idxQ));
+
+                    let wUp = (p.x - (leX - upstreamReach)) / upstreamReach;
+                    wUp = Math.min(1, Math.max(0, wUp));
+                    wUp = wUp * wUp * (3 - 2 * wUp);
+
+                    let targetY = p.baseY;
+                    if (wUp > 0) {
+                        if (isUpper) {
+                            const limit = top[idxQ] - gap0 - spread * lane;
+                            targetY = p.baseY + wUp * Math.min(0, limit - p.baseY);
+                        } else {
+                            const limit = bot[idxQ] + gap0 + spread * lane;
+                            targetY = p.baseY + wUp * Math.max(0, limit - p.baseY);
+                        }
                     }
 
-                    if (barOn && p.x > xsW) {
-                        const yb = bar[bi];
-                        const rampX = smooth((p.x - xsW) / (0.1 * chord));
-                        const wakeFade = p.x <= teX ? 1 : 1 - smooth((p.x - teX) / (0.85 * chord));
-                        if (isFinite(yb)) {
-                            if (p.y < yb) {
-                                // outer flow above the detached shear layer: stops following the surface
-                                W = sepS * rampX * wakeFade * (1 - smooth((yb - p.y) / (0.3 * chord)));
-                                const s = (bar[Math.min(nBins - 1, bi + 1)] - bar[bi]) / bs;
-                                const nrm = Math.hypot(1, isFinite(s) ? s : 0);
-                                dirX = 1 / nrm;
-                                dirY = (isFinite(s) ? s : 0) / nrm;
-                            } else {
-                                const bottom = this.deadBottom(p.x, bi);
-                                const mR = sepS * rampX * wakeFade * smooth((bottom + 4 - p.y) / 10) * smooth((p.y - yb) / 4);
-                                if (mR > 0) {
-                                    sMul *= 1 - 0.75 * mR;
-                                    swV = 0.22 * mR * Math.sin(p.age * 0.1 + p.x * 0.05 + p.ph);
-                                    turbTarget = mR;
-                                }
+                    // --- 3. Turbulence: only the thin upper-surface layer, only after separation ---
+                    let targetTurb = 0;
+                    if (isUpper && normX > 0.65 && normX <= 2.2 && lane < 0.3 * chord) {
+                        if (this.isMorphing) {
+                            if (simState.aoa > 17) {
+                                targetTurb = Math.min(1.0, (simState.aoa - 17) * 0.25);
+                            }
+                        } else {
+                            if (simState.aoa > 12) {
+                                targetTurb = Math.min(1.0, (simState.aoa - 12) * 0.18 + (flapDeflect * 0.02));
+                            } else if (flapDeflect > 10) {
+                                targetTurb = Math.min(1.0, (flapDeflect - 10) * 0.04);
                             }
                         }
                     }
-                    p.turbIntensity += (turbTarget - p.turbIntensity) * 0.08;
+                    p.turbIntensity += (targetTurb - p.turbIntensity) * 0.10;
 
-                    // ---- advect with RK2 through the potential-flow field ----
-                    const evalV = (x, y) => {
-                        this.potVel(x, y);
-                        let u = this._u;
-                        let v = this._v;
-                        if (W > 0) {
-                            const sp = Math.hypot(u, v);
-                            u += W * (sp * dirX - u);
-                            v += W * (sp * dirY - v);
-                        }
-                        u = u * sMul + swU;
-                        v = v * sMul + swV;
-                        const sp2 = u * u + v * v;
-                        if (sp2 < 0.0144 && sp2 > 1e-12) {
-                            const k = 0.12 / Math.sqrt(sp2);
-                            u *= k;
-                            v *= k;
-                        }
-                        this._u = u;
-                        this._v = v;
-                    };
-
-                    let near = false;
-                    if (isFinite(top[bi])) {
-                        near = p.y > top[bi] - 40 && p.y < bot[bi] + 40;
-                    } else if (p.x < leX) {
-                        near = Math.hypot(p.x - leX, p.y - leY) < 50;
-                    }
-                    const nSub = near ? 3 : 1;
-                    const h = baseSpeed / nSub;
-                    let px = p.x;
-                    let py = p.y;
-                    for (let s = 0; s < nSub; s++) {
-                        evalV(px, py);
-                        const mxp = px + 0.5 * h * this._u;
-                        const myp = py + 0.5 * h * this._v;
-                        evalV(mxp, myp);
-                        px += h * this._u;
-                        py += h * this._v;
-                    }
-                    p.x = px;
-                    p.y = py;
-
-                    // ---- constraints ----
-                    const bi2 = binOf(p.x);
-                    if (isFinite(top[bi2])) {
-                        // never inside the wing
-                        if (p.y > top[bi2] - margin && p.y < bot[bi2] + margin) {
-                            const mid = 0.5 * (top[bi2] + bot[bi2]);
-                            p.y = (p.y < mid) ? (top[bi2] - margin) : (bot[bi2] + margin);
-                        }
-                    }
-                    if (barOn && p.x > xsW && p.x < teX + 0.5 * chord) {
-                        // air that was above the shear layer stays above it
-                        const yb0 = bar[bi];
-                        const yb2 = bar[bi2];
-                        if (isFinite(yb0) && isFinite(yb2) && p.prevY < yb0 - 0.5 && p.y > yb2 - 1.5) {
-                            p.y = yb2 - 1.5;
-                        }
+                    if (p.turbIntensity > 0.05) {
+                        // Eddies only ever lift the particle AWAY from the body (never downward)
+                        const eddyAmp = Math.min(chord * 0.09, p.turbIntensity * (flapDeflect * 0.4 + simState.aoa * 0.9 + 3));
+                        targetY -= (0.5 + 0.5 * Math.sin(p.age * 0.35 + p.baseY * 0.1)) * eddyAmp;
+                        p.x += (Math.random() - 0.5) * p.turbIntensity * 2.0;
                     }
 
-                    if (!isFinite(p.x) || !isFinite(p.y)) {
-                        p.x = 0;
-                        p.y = p.baseY;
-                        p.prevX = 0;
-                        p.prevY = p.baseY;
-                        p.justReset = true;
+                    // --- 4. Fast follow so the particle never lags behind the surface ---
+                    p.y += (targetY - p.y) * 0.35;
+
+                    // --- 5. Hard collision constraint: upper stays above, lower stays below ---
+                    let bi = Math.floor(p.x / bs);
+                    bi = Math.min(nBins - 1, Math.max(0, bi));
+                    if (isUpper) {
+                        const lim = top[bi] - margin;
+                        if (p.y > lim) p.y = lim;
+                    } else {
+                        const lim = bot[bi] + margin;
+                        if (p.y < lim) p.y = lim;
                     }
+
                     if (p.x > this.width) {
                         p.x = 0;
                         p.y = p.baseY;
                         p.prevX = 0;
                         p.prevY = p.baseY;
                         p.turbIntensity = 0;
+                        p.side = null;
                         p.justReset = true;
                     }
 
-                    if (!p.justReset) {
+                    if (!p.justReset && p.x >= p.prevX) {
                         this.ctx.beginPath();
                         this.ctx.moveTo(p.prevX, p.prevY);
                         this.ctx.lineTo(p.x, p.y);
+
                         if (p.turbIntensity > 0.15) {
-                            const rr = Math.round(230 + p.turbIntensity * 25);
+                            const r = Math.round(230 + p.turbIntensity * 25);
                             const g = Math.round(140 * (1 - p.turbIntensity));
                             const b = Math.round(70 * (1 - p.turbIntensity));
                             const alpha = 0.4 + p.turbIntensity * 0.45;
-                            this.ctx.strokeStyle = `rgba(${rr}, ${g}, ${b}, ${alpha})`;
+                            this.ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                             this.ctx.lineWidth = 1.4 + p.turbIntensity * 0.6;
                         } else {
                             if (this.isMorphing) {
@@ -1800,61 +1534,9 @@
                         }
                         this.ctx.stroke();
                     }
+
                     p.justReset = false;
                 });
-
-                // ---- turbulent dead-water / wake eddies (only exist while separated) ----
-                const nAct = barOn ? Math.round(sepS * this.eddies.length) : 0;
-                const xEnd = teX + 0.5 * chord;
-                for (let k = 0; k < this.eddies.length; k++) {
-                    const e = this.eddies[k];
-                    if (k >= nAct) { e.on = false; continue; }
-                    if (!e.on || e.age >= e.life) {
-                        // (re)spawn inside the dead-water region
-                        let ok = false;
-                        for (let tries = 0; tries < 6 && !ok; tries++) {
-                            const ex = xsW + 2 + Math.random() * (xEnd - xsW - 2);
-                            const bj = binOf(ex);
-                            const yb = bar[bj];
-                            const bottom = this.deadBottom(ex, bj);
-                            if (isFinite(yb) && bottom - yb > 5) {
-                                e.x = ex;
-                                e.y = yb + 2 + Math.random() * (bottom - yb - 4);
-                                ok = true;
-                            }
-                        }
-                        if (!ok) { e.on = false; continue; }
-                        e.prevX = e.x;
-                        e.prevY = e.y;
-                        e.age = 0;
-                        e.life = 60 + Math.random() * 70;
-                        e.ph = Math.random() * 6.283;
-                        e.on = true;
-                        continue;
-                    }
-                    e.age += 1;
-                    e.prevX = e.x;
-                    e.prevY = e.y;
-                    const prog = Math.min(1, Math.max(0, (e.x - xsW) / (xEnd - xsW)));
-                    const uu = (0.10 + 0.40 * prog * prog) * (0.75 + 0.25 * Math.sin(e.age * 0.13 + e.ph));
-                    let vv = 0.2 * Math.sin(e.age * 0.11 + e.ph + e.x * 0.04);
-                    if (e.x > teX) vv += uu * Math.tan(this.wakeAng) * prog;
-                    e.x += baseSpeed * uu;
-                    e.y += baseSpeed * vv;
-                    const bj = binOf(e.x);
-                    const yb = bar[bj];
-                    if (!isFinite(yb) || e.x > xEnd) { e.age = e.life; continue; }
-                    const bottom = this.deadBottom(e.x, bj);
-                    if (e.y < yb + 1) e.y = yb + 1;
-                    if (e.y > bottom - 1) e.y = bottom - 1;
-                    const a = Math.sin(Math.PI * Math.min(1, e.age / e.life)) * (0.35 + 0.45 * sepS);
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(e.prevX, e.prevY);
-                    this.ctx.lineTo(e.x, e.y);
-                    this.ctx.strokeStyle = `rgba(250, ${Math.round(70 + 60 * prog)}, 50, ${a.toFixed(3)})`;
-                    this.ctx.lineWidth = 1.6;
-                    this.ctx.stroke();
-                }
 
                 this.drawAirfoil(this.ctx, centerX, centerY, chord, simState.aoa, simState.flap);
             }
