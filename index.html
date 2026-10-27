@@ -1468,8 +1468,8 @@
                     let targetTurb = 0;
                     if (isUpper && normX > 0.65 && normX <= 2.2 && lane < 0.3 * chord) {
                         if (this.isMorphing) {
-                            if (simState.aoa > 17) {
-                                targetTurb = Math.min(1.0, (simState.aoa - 17) * 0.25);
+                            if (simState.aoa > 20) {
+                                targetTurb = Math.min(1.0, (simState.aoa - 20) * 0.5);
                             }
                         } else {
                             if (simState.aoa > 12) {
