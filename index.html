@@ -1629,8 +1629,8 @@
                 let sepS = 0;
                 let xsTarget = 1.0;
                 if (this.isMorphing) {
-                    sepS = Math.min(1, Math.max(0, (simState.aoa - 18) * 0.10));
-                    xsTarget = 0.98 - 0.25 * sepS;
+                    sepS = Math.min(1, Math.max(0, (simState.aoa - 18) * 0.25));
+                    xsTarget = 0.92 - 0.5 * sepS;
                 } else {
                     const sA = Math.min(1, Math.max(0, (simState.aoa - 14) * 0.2));
                     const sF = Math.min(1, Math.max(0, (flapDeflect - 18) * 0.1));
