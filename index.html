@@ -136,20 +136,23 @@
             </div>
 
             <!-- Main Tabbed Navigation -->
-            <nav class="hidden md:flex items-center gap-2 bg-navy-950/80 p-1.5 rounded-xl border border-navy-700/60">
-                <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="nav-tab-btn active px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+            <nav class="hidden md:flex items-center gap-1.5 bg-navy-950/80 p-1.5 rounded-xl border border-navy-700/60">
+                <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="nav-tab-btn active px-3.5 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-wind text-cyan-400"></i> Wind Tunnel Simulator
                 </button>
-                <button onclick="switchTab('calculator')" id="tab-btn-calculator" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                <button onclick="switchTab('calculator')" id="tab-btn-calculator" class="nav-tab-btn px-3.5 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-calculator text-emerald-400"></i> Fuel & Carbon ROI
                 </button>
-                <button onclick="switchTab('slides')" id="tab-btn-slides" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                <button onclick="switchTab('slides')" id="tab-btn-slides" class="nav-tab-btn px-3.5 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-file-powerpoint text-amber-400"></i> Slide Deck (41 Slides)
                 </button>
-                <button onclick="switchTab('research')" id="tab-btn-research" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                <button onclick="switchTab('report')" id="tab-btn-report" class="nav-tab-btn px-3.5 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-blue-400"></i> Research & Documentation
+                </button>
+                <button onclick="switchTab('research')" id="tab-btn-research" class="nav-tab-btn px-3.5 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-chart-line text-cyan-400"></i> Flight Data & Math
                 </button>
-                <button onclick="switchTab('team')" id="tab-btn-team" class="nav-tab-btn px-4 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
+                <button onclick="switchTab('team')" id="tab-btn-team" class="nav-tab-btn px-3.5 py-2 text-xs font-medium rounded-lg text-slate-300 border border-transparent transition-all flex items-center gap-2">
                     <i class="fa-solid fa-users text-purple-400"></i> Team (4 Speakers)
                 </button>
             </nav>
@@ -180,6 +183,9 @@
             </button>
             <button onclick="switchTab('slides'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-amber-400 hover:bg-navy-800 flex items-center gap-3">
                 <i class="fa-solid fa-file-powerpoint w-5 text-amber-400"></i> Slide Deck (41 Slides)
+            </button>
+            <button onclick="switchTab('report'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-blue-400 hover:bg-navy-800 flex items-center gap-3">
+                <i class="fa-solid fa-book-open w-5 text-blue-400"></i> Research & Documentation
             </button>
             <button onclick="switchTab('research'); toggleMobileMenu();" class="w-full text-left py-2.5 px-3 rounded text-sm text-slate-200 hover:text-cyan-400 hover:bg-navy-800 flex items-center gap-3">
                 <i class="fa-solid fa-chart-line w-5 text-cyan-400"></i> Flight Data & Math
@@ -453,7 +459,7 @@
                         </div>
                         <input type="range" id="calc-fleet-slider" min="1" max="100" step="1" value="20" oninput="runRoiCalculation()">
                         <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
-                            <span>1 Plane</span>
+                            <span>1 Plane (Single Testbed)</span>
                             <span>50 Planes</span>
                             <span>100 Planes (Major Carrier)</span>
                         </div>
@@ -516,7 +522,6 @@
                         <div class="text-xs font-mono text-cyan-400 mt-1">Metric Tons of $CO_2$ / Year</div>
                     </div>
 
-                    <!-- Properly placed and hooked up noise curfew card -->
                     <div class="hud-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
                             <span>Airport Noise Curfew Advantage</span>
@@ -568,6 +573,40 @@
                 <p class="text-slate-400 text-xs p-4 text-center">
                     Your browser does not support inline PDF viewing. 
                     <a href="presentation.pdf" target="_blank" class="text-cyan-400 underline">Click here to open and view the presentation</a>.
+                </p>
+            </iframe>
+        </div>
+    </main>
+
+    <!-- NEW TAB: RESEARCH & DOCUMENTATION (REPORT PDF VIEWER) -->
+    <main id="view-report" class="tab-view hidden flex-grow py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 bg-navy-900 border border-navy-700/80 p-4 rounded-xl">
+            <div>
+                <div class="flex items-center gap-2 text-blue-400 font-mono text-xs uppercase tracking-wider mb-0.5">
+                    <i class="fa-solid fa-book-open"></i> Technical Literature & Project Report
+                </div>
+                <h2 class="font-space text-xl sm:text-2xl font-bold text-white">Project Research & Documentation</h2>
+                <p class="text-xs text-slate-400">Comprehensive project report, mathematical models, and engineering references.</p>
+            </div>
+            
+            <div class="flex items-center gap-2.5">
+                <a href="report.pdf" target="_blank" class="px-3 py-2 rounded-lg bg-navy-800 hover:bg-navy-700 border border-navy-600 text-slate-200 text-xs font-medium transition flex items-center gap-1.5 no-underline">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-cyan-400"></i> Open Fullscreen
+                </a>
+                <a href="report.pdf" download="report.pdf" class="px-3.5 py-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-navy-950 font-bold text-xs transition flex items-center gap-1.5 no-underline shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-download"></i> Download Report PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="hud-border p-2 sm:p-3 rounded-2xl bg-navy-950 border border-navy-700/80 shadow-2xl">
+            <iframe 
+                src="report.pdf#toolbar=1&navpanes=1" 
+                class="w-full h-[78vh] min-h-[580px] rounded-xl border border-navy-800 bg-navy-900" 
+                title="Project Documentation">
+                <p class="text-slate-400 text-xs p-4 text-center">
+                    Your browser does not support inline PDF viewing. 
+                    <a href="report.pdf" target="_blank" class="text-cyan-400 underline">Click here to open and read the project documentation</a>.
                 </p>
             </iframe>
         </div>
@@ -717,8 +756,8 @@
                         <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">SPEAKER 1</span>
                         <span class="text-xs text-slate-500 font-mono">00:00 - 10:00</span>
                     </div>
-                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-cyan-600 to-navy-800 border border-cyan-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
-                        <i class="fa-solid fa-plane-slash text-cyan-300 text-xl"></i>
+                    <div class="w-16 h-16 rounded-xl overflow-hidden border border-cyan-500/30 mb-3 shadow-lg bg-navy-900">
+                        <img src="friend1.jpg" alt="Vasu Goel" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-space font-bold text-white text-base">Vasu Goel</h3>
                     <p class="text-xs font-mono text-cyan-400 mb-2">SAP ID: 70022600095</p>
@@ -738,8 +777,8 @@
                         <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">SPEAKER 2</span>
                         <span class="text-xs text-slate-500 font-mono">10:00 - 20:00</span>
                     </div>
-                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-emerald-600 to-navy-800 border border-emerald-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
-                        <i class="fa-solid fa-crow text-emerald-300 text-xl"></i>
+                    <div class="w-16 h-16 rounded-xl overflow-hidden border border-emerald-500/30 mb-3 shadow-lg bg-navy-900">
+                        <img src="friend2.jpg" alt="Rachit Hegonde" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-space font-bold text-white text-base">Rachit Hegonde</h3>
                     <p class="text-xs font-mono text-emerald-400 mb-2">SAP ID: 70022600389</p>
@@ -759,8 +798,8 @@
                         <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">SPEAKER 3</span>
                         <span class="text-xs text-slate-500 font-mono">20:00 - 30:00</span>
                     </div>
-                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-amber-600 to-navy-800 border border-amber-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
-                        <i class="fa-solid fa-shapes text-amber-300 text-xl"></i>
+                    <div class="w-16 h-16 rounded-xl overflow-hidden border border-amber-500/30 mb-3 shadow-lg bg-navy-900">
+                        <img src="friend3.jpg" alt="Naren Gounder" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-space font-bold text-white text-base">Naren Gounder</h3>
                     <p class="text-xs font-mono text-amber-400 mb-2">SAP ID: 70022600146</p>
@@ -780,8 +819,8 @@
                         <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/30">SPEAKER 4</span>
                         <span class="text-xs text-slate-500 font-mono">30:00 - 40:00</span>
                     </div>
-                    <div class="w-16 h-16 rounded-xl bg-gradient-to-tr from-purple-600 to-navy-800 border border-purple-500/30 flex items-center justify-center text-white text-2xl font-space font-bold mb-3 shadow-lg">
-                        <i class="fa-solid fa-chart-pie text-purple-300 text-xl"></i>
+                    <div class="w-16 h-16 rounded-xl overflow-hidden border border-purple-500/30 mb-3 shadow-lg bg-navy-900">
+                        <img src="friend4.jpg" alt="Parv Jain" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-space font-bold text-white text-base">Parv Jain</h3>
                     <p class="text-xs font-mono text-purple-400 mb-2">SAP ID: 70022600047</p>
@@ -1406,15 +1445,12 @@
                 const upstreamReach = 0.45 * chord;
                 const gap0 = 3.0; // tight clearance so air hugs the surface directly
 
-                // Stagnation line inlet height
                 const stagY = this.leY + chord * 0.002 * aoaDeg;
                 const H_up0 = Math.max(20, stagY - Y_ceil);
                 const H_low0 = Math.max(20, Y_floor - stagY);
 
                 const hingeX = centerX + (0.70 - 0.28) * chord * Math.cos(aoaRad);
 
-                // Morphing wing maintains laminar attached flow (only separates at extreme stall > 18 deg)
-                // Conventional wing breaks down early at the flap hinge
                 const isSeparated = this.isMorphing ? (aoaDeg > 18) : (aoaDeg > 12 || flapDeflect > 10);
 
                 this.particles.forEach(p => {
@@ -1432,7 +1468,6 @@
                     let targetTurb = 0;
 
                     if (isUpper) {
-                        // Ratio: 0 at ceiling, 1 at the wing upper skin
                         const ratio = Math.min(1.0, Math.max(0, (p.baseY - Y_ceil) / H_up0));
 
                         let surfY = stagY;
@@ -1440,7 +1475,6 @@
                             const bi = Math.min(nBins - 1, Math.max(0, Math.floor(p.x / bs)));
                             surfY = top[bi];
 
-                            // Conventional wing separates at hinge line; morphing wing hugs all the way
                             if (isSeparated && p.x > hingeX) {
                                 const biHinge = Math.min(nBins - 1, Math.max(0, Math.floor(hingeX / bs)));
                                 const hingeY = top[biHinge];
@@ -1455,7 +1489,6 @@
                             surfY = stagY + wEase * (leY - stagY);
                         }
 
-                        // Hugs the upper surface directly when ratio = 1
                         const channelHeight = Math.max(15, surfY - gap0 - Y_ceil);
                         targetY = Y_ceil + ratio * channelHeight;
 
@@ -1464,7 +1497,6 @@
                             targetY -= Math.abs(eddy);
                         }
                     } else {
-                        // Lower surface streamline
                         const ratio = Math.min(1.0, Math.max(0, (Y_floor - p.baseY) / H_low0));
 
                         let surfY = stagY;
@@ -1477,7 +1509,6 @@
                             surfY = stagY + wEase * (leY - stagY);
                         }
 
-                        // Hugs the lower surface directly when ratio = 1
                         const channelHeight = Math.max(15, Y_floor - (surfY + gap0));
                         targetY = Y_floor - ratio * channelHeight;
                     }
